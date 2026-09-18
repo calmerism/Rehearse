@@ -1,0 +1,269 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --canvas: #FFFFFF;
+    --canvas-parchment: #FFFFFF;
+    --ink: #171717;
+    --ink-muted: #6B6B6B;
+    --hairline: #E5E5E5;
+    --tile: #FFFFFF;
+    --accent: #D05236;
+    --accent-hover: #C94730;
+    --green: #31805A;
+  }
+
+  .dark {
+    --canvas: #171717;
+    --canvas-parchment: #171717;
+    --ink: #FFFFFF;
+    --ink-muted: #8E8E8E;
+    --hairline: rgba(255, 255, 255, 0.08);
+    --tile: #212121;
+    --tile-elevated: #2A2A2A;
+    --accent: #D05236;
+    --accent-hover: #C94730;
+    --green: #31805A;
+  }
+
+  body {
+    background-color: var(--canvas-parchment);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.47;
+    letter-spacing: -0.022em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    user-select: none;
+  }
+
+  /* SF Pro Headline Standards */
+  h1, .apple-hero {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.028em;
+  }
+
+  h2, .apple-display-lg {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+  }
+
+  h3, .apple-display-md {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Apple Active Press Micro-interaction (scale 0.96 with instant response) */
+.apple-action {
+  transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1), opacity 120ms ease, background-color 160ms ease, color 160ms ease;
+  will-change: transform;
+}
+
+.apple-action:active {
+  transform: scale(0.96);
+}
+
+/* Apple Card Subtle Hover Elevation */
+.apple-card-hover {
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease;
+}
+
+.apple-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.06);
+}
+
+.dark .apple-card-hover:hover {
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4);
+}
+
+/* Frosted Sub-Nav & Header */
+.apple-frosted {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.dark .apple-frosted {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background-color: rgba(23, 23, 23, 0.85);
+}
+
+/* Apple Hairline Utility */
+.apple-hairline-b {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.apple-hairline-t {
+  border-top: 1px solid var(--hairline);
+}
+
+.apple-hairline {
+  border: 1px solid var(--hairline);
+}
+
+/* iOS Safe Area Bottom Utility */
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
+}
+
+/* Apple Keyframes & Animation Classes */
+@keyframes appleFadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes appleModalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes appleBackdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes orbDrift1 {
+  0%   { transform: translate(0,    0)    scale(1);    }
+  33%  { transform: translate(6%,   4%)   scale(1.06); }
+  66%  { transform: translate(-4%,  8%)   scale(0.96); }
+  100% { transform: translate(4%,  -4%)   scale(1.04); }
+}
+
+@keyframes orbDrift2 {
+  0%   { transform: translate(0,    0)    scale(1);    }
+  33%  { transform: translate(-5%,  6%)   scale(1.04); }
+  66%  { transform: translate(7%,  -3%)   scale(0.97); }
+  100% { transform: translate(-3%,  5%)   scale(1.03); }
+}
+
+@keyframes orbDrift3 {
+  0%   { transform: translate(0,    0)    scale(1);    }
+  33%  { transform: translate(4%,  -6%)   scale(1.05); }
+  66%  { transform: translate(-6%,  4%)   scale(0.95); }
+  100% { transform: translate(5%,   6%)   scale(1.02); }
+}
+
+.orb-1 { animation: orbDrift1 28s ease-in-out infinite alternate; }
+.orb-2 { animation: orbDrift2 34s ease-in-out infinite alternate; }
+.orb-3 { animation: orbDrift3 40s ease-in-out infinite alternate; }
+
+
+@keyframes appleAcousticWave {
+  0%, 100% {
+    transform: scaleY(0.25);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes appleListeningWave {
+  0%, 100% {
+    transform: scaleY(0.35);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scaleY(0.8);
+    opacity: 0.9;
+  }
+}
+
+@keyframes appleNeuralSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes appleNeuralCoreBreath {
+  0%, 100% {
+    transform: scale(0.88);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+}
+
+.animate-apple-in {
+  animation: appleFadeSlideUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-apple-modal {
+  animation: appleModalIn 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-apple-backdrop {
+  animation: appleBackdropIn 240ms ease-out both;
+}
+
+.apple-stagger-1 {
+  animation-delay: 45ms;
+}
+
+.apple-stagger-2 {
+  animation-delay: 90ms;
+}
+
+.apple-stagger-3 {
+  animation-delay: 135ms;
+}
+
+.apple-stagger-4 {
+  animation-delay: 180ms;
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-apple-in,
+  .animate-apple-modal,
+  .animate-apple-backdrop {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .apple-card-hover:hover {
+    transform: none !important;
+  }
+}
