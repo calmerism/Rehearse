@@ -258,14 +258,14 @@ export const LiveInterviewScreen: React.FC<LiveInterviewScreenProps> = ({
   return (
     <div className="min-h-[calc(100dvh-44px)] flex flex-col justify-between max-w-[1240px] mx-auto px-4 sm:px-8 py-2.5 sm:py-5">
       {/* Top Chrome: Apple Minimalist Navigation Bar */}
-      <div className="flex items-center justify-between text-[12px] sm:text-[13px] py-2 sm:py-3 border-b border-black/[0.05] dark:border-white/[0.08] mb-2 sm:mb-4 gap-2">
+      <div className="flex items-center justify-between text-[12px] sm:text-[13px] py-2 sm:py-3 mb-2 sm:mb-4 gap-2">
         {/* Left: Role, Type Tag, Clock Pill */}
         <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
           <span className="font-semibold text-apple-ink dark:text-white truncate max-w-[140px] sm:max-w-none text-[13px] sm:text-[14px] tracking-tight">
             {context.role}
           </span>
-          <span className="text-[11px] font-medium uppercase tracking-wider text-apple-inkMuted dark:text-white/60 px-2 py-0.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.06] shrink-0">
-            {context.interviewType}
+          <span className="text-[12px] font-normal text-apple-inkMuted dark:text-white/60 px-2.5 py-0.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.06] shrink-0">
+            {context.interviewType.replace('_', ' ')}
           </span>
           <div
             className={`flex items-center gap-1.5 font-mono text-[12px] px-2.5 py-1 rounded-full border shrink-0 transition-colors ${
@@ -304,7 +304,7 @@ export const LiveInterviewScreen: React.FC<LiveInterviewScreenProps> = ({
 
           <button
             onClick={handleEndInterviewEarly}
-            className="px-3.5 py-1.5 text-[12px] font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 bg-red-500/[0.08] hover:bg-red-500/[0.14] border border-red-500/20 rounded-full transition-all apple-action"
+            className="px-4 py-1.5 text-[12px] sm:text-[13px] font-semibold text-white bg-apple-amber-500 hover:bg-apple-amber-600 active:scale-[0.97] rounded-full transition-all apple-action shadow-sm"
           >
             End
           </button>
