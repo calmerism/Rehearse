@@ -264,8 +264,8 @@ export const LiveInterviewScreen: React.FC<LiveInterviewScreenProps> = ({
           <span className="font-semibold text-apple-ink dark:text-white truncate max-w-[140px] sm:max-w-none text-[13px] sm:text-[14px] tracking-tight">
             {context.role}
           </span>
-          <span className="text-[12px] font-normal text-apple-inkMuted dark:text-white/60 px-2.5 py-0.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.06] shrink-0">
-            {context.interviewType.replace('_', ' ')}
+          <span className="text-[12px] font-bold text-apple-ink dark:text-white px-2.5 py-0.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.06] shrink-0">
+            {context.interviewType.split('_').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
           </span>
           <div
             className={`flex items-center gap-1.5 font-mono text-[12px] px-2.5 py-1 rounded-full border shrink-0 transition-colors ${
