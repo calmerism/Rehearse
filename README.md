@@ -1,6 +1,8 @@
-# Rehearse
+![Rehearse](public/rehearse.png)
 
 Practice the interview, not just the questions.
+
+A group project built for Azure AI-103 by Sukhraj, Aditya Goyal, Vansh, and Kashish.
 
 https://getrehearse.vercel.app
 
