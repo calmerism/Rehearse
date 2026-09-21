@@ -1,4 +1,4 @@
-![Rehearse](public/rehearse.png)
+<img src="public/rehearse.png" alt="Rehearse" width="220" />
 
 Practice the interview, not just the questions.
 
