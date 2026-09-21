@@ -59,8 +59,8 @@ Candidates regularly struggle not from a lack of technical knowledge, but becaus
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/calmerism/AI-103-Rehearse.git
-cd AI-103-Rehearse
+git clone https://github.com/calmerism/RehearseWeb.git
+cd RehearseWeb
 npm install
 ```
 
