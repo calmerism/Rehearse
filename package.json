@@ -1,6 +1,7 @@
 {
   "name": "rehearse",
   "version": "1.0.0",
+  "description": "An autonomous voice-driven AI technical interview simulator.",
   "private": true,
   "scripts": {
     "dev": "next dev",
