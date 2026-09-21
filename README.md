@@ -55,8 +55,8 @@ Your speech audio is streamed only for real-time transcription and synthesis. We
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/calmerism/Rehearse.git
-cd Rehearse
+git clone https://github.com/calmerism/Rehearse103.git
+cd Rehearse103
 npm install
 ```
 
