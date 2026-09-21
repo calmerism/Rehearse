@@ -49,33 +49,49 @@ flowchart TD
 
 ---
 
-## 1. Project Overview
+## 1. The Problem Being Solved
 
-In standard interview prep, candidates memorize answers and study algorithms, but rarely practice **how they answer in a live conversation**. When an interviewer interrupts with a deep follow-up ("*Why did you choose PostgreSQL over MongoDB?*"), candidates often struggle to communicate their technical trade-offs.
+In standard interview prep, candidates memorize answers, solve isolated LeetCode algorithms, or review flashcards, but rarely practice **how they articulate and defend decisions in a live verbal conversation**. When a real engineering interviewer interrupts with an adaptive follow-up ("*Why did you choose PostgreSQL over MongoDB?*" or "*How would this scale under 100x traffic?*"), candidates frequently struggle to communicate their technical trade-offs under pressure.
 
-**AI Interview Coach** bridges this gap. It simulates an authentic interview loop:
-1. **Set Up Interview** (Role, Type, optional Company, Resume, Duration)
-2. **Rehearse & Speak** (Voice input)
-3. **AI Listens & Transcribes** (Azure AI Speech)
-4. **AI Understands & Adapts** (Microsoft Foundry)
-5. **AI Asks Contextual Follow-ups** (Deepens or pivots based on your actual answers)
-6. **Interview Ends**
-7. **Actionable Feedback** (Technical Answers, Communication, Interview Handling)
-8. **Rehearse Again** (Seeds the next session specifically targeting identified weaknesses)
+**AI Interview Coach ("Rehearse")** bridges this critical gap by simulating the authentic conversational dynamics of a high-stakes technical, behavioral, or mixed interview.
 
 ---
 
-## 2. Azure AI-103 Capabilities Demonstrated
+## 2. How the AI Is Used to Solve It
 
-| # | AI-103 Capability | Technology | Role in Product |
+Rehearse uses AI as an active conversational partner rather than a passive question bank:
+1. **Conversational Neural Voice Interaction**: Rather than typing into a chatbot, candidates speak into their microphone and hear studio-grade neural voice synthesis, reproducing the sensory pressure and natural flow of a real video interview.
+2. **Context-Grounded Real-Time Probing**: The AI inspects candidate answers in real time, extracts specific technologies and architectural claims (e.g. database schema, concurrency, caching, rate limiting), and poses targeted follow-up challenges.
+3. **Autonomous Duration & Competency Pacing**: The autonomous agent tracks elapsed time against the scheduled duration (10m, 20m, 30m), rotating across core engineering competencies to ensure broad evaluation.
+4. **Closed-Loop Deliberate Practice**: Produces diagnostic qualitative scoring across Technical Depth, Communication, and Interview Handling, and automatically seeds the candidate's diagnosed weakness into subsequent rehearsals ("Rehearse Again").
+
+---
+
+## 3. Azure AI-103 Concepts Applied
+
+| # | AI-103 Capability | Technology | Implementation & Role in Product |
 |---|---|---|---|
-| **1** | **Speech** | **Azure AI Speech** | Transcribes candidate voice responses in real time and synthesizes interviewer speech using natural neural voices (`en-US-JennyMultilingualNeural`). |
-| **2** | **Generative AI** | **Microsoft Foundry** | Analyzes candidate answers against interview context and resume data; generates structured JSON for dynamic questions, evaluation, and final feedback reports. |
-| **3** | **Agent** | **Autonomous Interview Agent** | State machine that orchestrates turn-taking, assesses topic coverage, tracks elapsed time, decides whether to drill deeper with follow-ups or advance to new topics, and triggers conclusion. |
+| **1** | **Speech Services** | **Azure AI Speech** | Real-time continuous Speech-to-Text (STT) for candidate responses and 24kHz 160kbps Neural Text-to-Speech (TTS) using conversational SSML prosody styling (`en-US-JennyNeural`, `GuyNeural`, etc.). |
+| **2** | **Generative AI** | **Microsoft Foundry / Azure OpenAI** | Generative reasoning with `gpt-4o` / `gpt-4.1-mini`; analyzes answers against candidate context and resume data; generates structured JSON for dynamic questions, evaluation, and final feedback reports. |
+| **3** | **Autonomous Agent** | **Agent State Machine** | Event-driven finite state machine orchestrating turn-taking (`idle`, `speaking`, `listening`, `thinking`), enforcing scheduled duration clock limits, rotating engineering pillars, and driving iterative rehearsal. |
+| **4** | **Document Processing** | **Serverless Resume Parser** | Serverless text extraction for multi-column PDF, DOCX, and plain-text resumes to ground questions directly in candidate projects and credentials. |
+| **5** | **Responsible AI & Security** | **Serverless API Proxying** | Encapsulates all cloud credentials in serverless API routes (`/api/speech`, `/api/interviews`, `/api/resume`), provides local fallback resilience, and processes video 100% client-side. |
 
 ---
 
-## 3. Design System (Apple Design Principles)
+## 4. End-to-End Core Functionality Demonstration
+
+Rehearse demonstrates a complete, uninterrupted rehearsal loop:
+1. **Context & Resume Grounding**: Role, Format (Technical, Behavioral, Mixed), Meeting Duration (10m, 20m, 30m), and optional PDF/DOCX resume upload.
+2. **Lobby Calibration**: Live microphone audio meter check and optional local video self-view.
+3. **Live Rehearsal Stage**: Active avatar states, real-time STT transcription, dynamic follow-up scrutiny, countdown timer pacing, and keyboard text fallback.
+4. **Diagnostic Feedback Report**: Multi-dimensional qualitative ratings (**Technical Answers**, **Communication**, **Interview Handling**), **What Went Well**, **What to Improve**, and **Next Rehearsal Focus**.
+5. **Targeted "Rehearse Again" Loop**: Carries forward candidate context and pre-seeds the next session's system prompt with the diagnosed weakness for measurable improvement.
+6. **Session History & Transcript Review**: Full past session archive with question-and-answer transcripts, candidate responses, and coaching notes.
+
+---
+
+## 5. Design System (Apple Design Principles)
 
 This application strictly implements the guidelines from Apple's WWDC Human Interface talks:
 - **Calm & Intentional**: No "vibecoded" purple gradients, glowing blobs, floating glass cards, or gamification badges.
@@ -86,9 +102,9 @@ This application strictly implements the guidelines from Apple's WWDC Human Inte
 
 ---
 
-## 4. Product Structure & Screens
+## 6. Product Structure & Screens
 
-1. **Home**: Clean hero with "Start Rehearsal", "View History", and a "Last Rehearsal" card highlighting your current weakness and a quick "Rehearse Again" button.
+1. **Home**: Clean hero with "Start Rehearsal", "View History", and four structured pillars detailing the problem, AI solution, Azure AI-103 capabilities, and end-to-end loop.
 2. **Interview Setup**: Role, Company (optional), Interview Type (Technical, Behavioural, Mixed), Duration (10m, 20m, 30m), and Resume upload / sample loader.
 3. **Interview Lobby**: Readiness overview, live audio level meter check, and optional camera self-view preview for posture check.
 4. **Live Interview**: Centered AI Interviewer avatar with 4 distinct subtle states (**Idle**, **Listening**, **Thinking**, **Speaking**), crisp current question display, restrained live speech peek, and finish speaking controls.
@@ -99,7 +115,7 @@ This application strictly implements the guidelines from Apple's WWDC Human Inte
 
 ---
 
-## 5. Quick Start (Local Setup)
+## 7. Quick Start (Local Setup)
 
 ### Prerequisites
 - Node.js 18+ (Node 20+ recommended)
@@ -121,7 +137,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 6. Environment Variables (`.env`)
+## 8. Environment Variables (`.env`)
 
 Copy `.env.example` to `.env.local`:
 
@@ -147,7 +163,7 @@ NEXT_PUBLIC_FORCE_DEMO_MODE=false
 
 ---
 
-## 7. Azure Setup Guide (Step-by-Step)
+## 9. Azure Setup Guide (Step-by-Step)
 
 ### Step 1: Microsoft Foundry / Azure OpenAI Setup
 1. Sign in to the [Azure Portal](https://portal.azure.com) or [Microsoft Foundry Portal](https://ai.azure.com).
@@ -165,7 +181,7 @@ NEXT_PUBLIC_FORCE_DEMO_MODE=false
 
 ---
 
-## 8. Reliable Demo Mode
+## 10. Reliable Demo Mode
 
 The application is engineered with a **service abstraction layer**:
 - `ISpeechService` -> `AzureSpeechService` & `MockSpeechService`
@@ -179,7 +195,7 @@ If Azure credentials are not provided or if `NEXT_PUBLIC_FORCE_DEMO_MODE=true` i
 
 ---
 
-## 9. Default Demo Script (3–5 Minute Walkthrough)
+## 11. Default Demo Script (3–5 Minute Walkthrough)
 
 To present the application for an Azure AI-103 evaluation:
 
@@ -221,7 +237,7 @@ To present the application for an Azure AI-103 evaluation:
 
 ---
 
-## 10. Automated Tests
+## 12. Automated Tests
 
 The repository contains test suites verifying the interview agent loop, state transitions, dynamic follow-up heuristics, and edge cases:
 
@@ -239,7 +255,7 @@ npm run test
 
 ---
 
-## 11. Known Limitations & Future Scope
+## 13. Known Limitations & Future Scope
 
 ### V1 Scope Limitations
 - Focused exclusively on the interview conversation rehearsal loop.

@@ -188,6 +188,70 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         </div>
 
 
+        {/* Azure AI-103 Services Status */}
+        <div className="animate-apple-in apple-stagger-2">
+          <h2 className="text-[18px] font-semibold tracking-[-0.015em] text-apple-ink dark:text-white mb-1">
+            Azure AI-103 Architecture Status
+          </h2>
+          <div className="space-y-0.5">
+            <div className="py-3 px-3 -mx-3 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors flex items-center justify-between">
+              <div>
+                <span className="text-[15px] text-apple-ink dark:text-white block font-medium">
+                  Azure AI Speech Service
+                </span>
+                <span className="text-[13px] text-apple-inkMuted">
+                  {isDemoMode ? 'Browser Web Speech API (Local Fallback)' : 'Azure Cognitive Speech (24kHz Neural TTS & STT)'}
+                </span>
+              </div>
+              <span className={`text-[12px] font-medium px-2 py-0.5 rounded-full ${isDemoMode ? 'bg-neutral-100 dark:bg-white/[0.08] text-neutral-600 dark:text-neutral-400' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'}`}>
+                {isDemoMode ? 'Fallback Active' : 'Connected'}
+              </span>
+            </div>
+
+            <div className="py-3 px-3 -mx-3 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors flex items-center justify-between">
+              <div>
+                <span className="text-[15px] text-apple-ink dark:text-white block font-medium">
+                  Microsoft Foundry &amp; OpenAI
+                </span>
+                <span className="text-[13px] text-apple-inkMuted">
+                  {isDemoMode ? 'Mock Foundry Reasoning Engine (Contextual Heuristics)' : 'Microsoft Foundry GPT-4o Model Deployment'}
+                </span>
+              </div>
+              <span className={`text-[12px] font-medium px-2 py-0.5 rounded-full ${isDemoMode ? 'bg-neutral-100 dark:bg-white/[0.08] text-neutral-600 dark:text-neutral-400' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'}`}>
+                {isDemoMode ? 'Fallback Active' : 'Connected'}
+              </span>
+            </div>
+
+            <div className="py-3 px-3 -mx-3 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors flex items-center justify-between">
+              <div>
+                <span className="text-[15px] text-apple-ink dark:text-white block font-medium">
+                  Autonomous Interview Agent
+                </span>
+                <span className="text-[13px] text-apple-inkMuted">
+                  State machine, duration clock &amp; topic rotation
+                </span>
+              </div>
+              <span className="text-[12px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                Operational
+              </span>
+            </div>
+
+            <div className="py-3 px-3 -mx-3 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors flex items-center justify-between">
+              <div>
+                <span className="text-[15px] text-apple-ink dark:text-white block font-medium">
+                  Resume Document Parser
+                </span>
+                <span className="text-[13px] text-apple-inkMuted">
+                  PDF &amp; DOCX serverless extraction
+                </span>
+              </div>
+              <span className="text-[12px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                Ready
+              </span>
+            </div>
+          </div>
+        </div>
+
         {/* Display Group */}
         <div className="animate-apple-in apple-stagger-3">
           <h2 className="text-[18px] font-semibold tracking-[-0.015em] text-apple-ink dark:text-white mb-1">
