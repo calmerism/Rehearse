@@ -96,14 +96,20 @@ ${context.resumeText}
 CRITICAL RESUME ANCHORING INSTRUCTIONS:
 1. The candidate uploaded their actual resume above. You MUST ground the opening question directly in their real background, projects, technologies, or employment history.
 2. Pick a specific, prominent project, technology architecture, or key achievement from their resume and ask them to break down their technical implementation, design choices, or system architecture.
-3. DO NOT ask generic 'tell me about yourself' questions. Address them professionally as an interviewer who has carefully reviewed their resume and wants to dig into their actual work.` : `Ask a strong opening question tailored to the ${context.role} position.`}
+3. DO NOT ask generic 'tell me about yourself' questions. Address them professionally as an interviewer who has carefully reviewed their resume and wants to dig into their actual work.` : `CRITICAL DIRECTIVE — NO RESUME UPLOADED:
+1. The candidate has NOT uploaded a resume. You MUST NOT ask generic "tell me about a project you worked on" or demand that they recount a past project.
+2. Instead, ask a substantive, role-specific question that directly evaluates their core technical understanding, architecture principles, or problem-solving judgment for the "${context.role}" position:
+   - Technical/Coding: Pose a concrete architectural concept, runtime trade-off, or practical engineering challenge (e.g. database indexing strategies and query latency, client state management and rendering performance, API design and fault tolerance, concurrency, or memory management).
+   - System Design: Present a clear, practical system design prompt (e.g. designing a rate limiter, distributed cache, notification pipeline, or real-time event stream).
+   - Behavioural: Pose a situational or philosophy-based question (e.g. navigating technical disagreements on architecture, balancing technical debt vs shipping speed, or debugging an unfamiliar codebase under pressure).
+3. The question must be direct, engaging, and professional—testing their technical mind and problem-solving ability directly without requiring a past project story.`}
 
 Generate a concise, natural introduction and the first opening question.
 Respond in strict JSON format:
 {
   "introText": "Brief 1-2 sentence professional greeting acknowledging the interview context",
-  "questionText": "First relevant interview question directly referencing their resume project or core technical competency",
-  "topic": "Specific Topic or Project Name",
+  "questionText": "First relevant interview question directly evaluating their technical competence",
+  "topic": "Specific Topic Name",
   "difficulty": "medium"
 }`;
 
@@ -112,14 +118,20 @@ Respond in strict JSON format:
       true
     );
 
-    const fallbackOpeningText = context.interviewType === 'behavioural'
-      ? 'Tell me about a time you faced a significant challenge on a project and how you resolved it.'
-      : 'Tell me about a technical project you worked on recently and the key architecture decisions you made.';
+    const fallbackOpeningText = hasResume
+      ? (context.interviewType === 'behavioural'
+          ? 'Tell me about a time you faced a significant challenge on a project and how you resolved it.'
+          : 'Tell me about a technical project you worked on recently and the key architecture decisions you made.')
+      : (context.interviewType === 'behavioural'
+          ? 'How do you typically approach resolving technical disagreements when team members have strongly conflicting views on architecture or library selection?'
+          : (context.role.toLowerCase().includes('system design') || context.role.toLowerCase().includes('architect'))
+          ? 'How would you approach designing a scalable, distributed rate-limiting service to protect backend APIs from unexpected traffic spikes?'
+          : 'When designing an API service that handles high-throughput traffic, how do you approach database schema design and indexing to prevent latency bottlenecks?');
 
     const firstQuestion: Question = {
       id: `q_1`,
       text: response.questionText || response.question || response.prompt || fallbackOpeningText,
-      topic: response.topic || (context.interviewType === 'behavioural' ? 'Project Challenges & Problem Solving' : 'Background & Core Competencies'),
+      topic: response.topic || (context.interviewType === 'behavioural' ? 'Collaboration & Disagreements' : 'Core Architecture & Principles'),
       type: context.interviewType === 'behavioural' ? 'behavioural' : 'technical',
       difficulty: response.difficulty || 'medium',
       timestamp: new Date().toISOString(),
@@ -165,7 +177,12 @@ ${context.resumeText ? `CANDIDATE'S UPLOADED RESUME:
 """
 ${context.resumeText}
 """
-` : ''}
+` : `NO RESUME UPLOADED — CRITICAL INSTRUCTION:
+The candidate did NOT upload a resume. You MUST NOT repeatedly ask the candidate to describe past projects or say "In another project you worked on...".
+Instead, evaluate their competence across core engineering principles, hypothetical architectural scenarios, and practical problem-solving for ${context.role}:
+- Ask direct conceptual and design questions (e.g., how to prevent race conditions, index optimization, distributed locking, state synchronization, caching trade-offs).
+- Present hypothetical real-world scenarios (e.g., "How would you design...", "If a service experiences a sudden 10x traffic spike, what steps would you take...", "How would you architect...").
+- Evaluate technical decision-making and engineering judgment rather than demanding past project stories.`}
 
 Interview Questions & Answers So Far:
 ${history}
@@ -176,18 +193,18 @@ Latest Candidate Answer to "${currentQuestion.text}":
 ${isNearEnd ? `CRITICAL SCHEDULE PACING: The scheduled ${context.durationMinutes}-minute time limit has arrived. You MUST set action: "conclude" now. Provide a warm, gracious closing remark thanking the candidate for their time.` : wasFollowUp ? `CRITICAL PROGRESSION MANDATE: The previous question (Q${questionCount}) was already a follow-up probe. You MUST NOT ask another follow-up on this same project or topic. Action MUST BE "new_topic" (or "conclude" if finished).` : ''}
 
 MANDATORY TOPIC ROTATION & DIVERSITY RULES:
-1. MAXIMUM ONE FOLLOW-UP PER PROJECT/TOPIC:
-   Never spend more than one follow-up question on any single project, system, or technology. Once a project or topic has received an initial question and at most 1 follow-up, you MUST advance to a completely new topic (action: "new_topic").
+1. MAXIMUM ONE FOLLOW-UP PER TOPIC:
+   Never spend more than one follow-up question on any single topic, scenario, or technology. Once a topic has received an initial question and at most 1 follow-up, you MUST advance to a completely new topic (action: "new_topic").
 2. ROTATE ACROSS DISTINCT ENGINEERING PILLARS:
    A comprehensive engineering interview must evaluate candidate competence across multiple distinct pillars:
-   - Pillar A: High-level System Architecture & Core Framework Choices (e.g. primary project)
-   - Pillar B: Scalability Bottlenecks, Data Store Selection, or Caching Trade-offs (secondary project or storage deep-dive)
+   - Pillar A: Core System Architecture & Framework Fundamentals (architectural design, component lifecycles, runtime mechanics)
+   - Pillar B: Scalability Bottlenecks, Data Store Selection, Indexing & Caching Trade-offs
    - Pillar C: Distributed Systems, Concurrency, Message Queuing, or Fault Tolerance
-   - Pillar D: Production Incident Debugging, Observability, Root Cause Analysis, or Alerting
-   - Pillar E: Behavioral, Technical Disagreements, or Delivery Trade-offs
+   - Pillar D: Production Incident Debugging, Observability, Root Cause Analysis, or Resiliency
+   - Pillar E: Behavioral, Technical Disagreements, Engineering Judgment, or Delivery Trade-offs
    Ensure the next question addresses a pillar that has NOT been covered yet in previous questions.
 3. STRICT ZERO REPETITION:
-   Under NO circumstances repeat questions or linger on technologies already probed (e.g. if you already discussed databases, vector embeddings, or a specific repo, pivot to a completely different project, backend service, distributed reliability, or incident scenario).
+   Under NO circumstances repeat questions or linger on technologies already probed. Pivot to a completely different engineering pillar, backend service, distributed reliability, or incident scenario.
 4. NO QUOTES:
    Do NOT wrap questionText in quotation marks.
 5. If ${isNearEnd ? 'target questions or time limit is reached, set action: "conclude"' : 'interview is ongoing, advance with action: ' + (wasFollowUp ? '"new_topic"' : '"follow_up" or "new_topic"')}.

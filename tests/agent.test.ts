@@ -233,5 +233,52 @@ describe('AI Interview Agent & Foundry Service', () => {
     const laterTopics = questions.slice(2).map((q) => q.topic);
     expect(laterTopics.some((t) => t.includes('Observability') || t.includes('Concurrency') || t.includes('Engineering'))).toBe(true);
   });
+
+  it('does not just ask about a project when resume is not uploaded', async () => {
+    const foundry = new MockFoundryService();
+    const noResumeContext: CandidateContext = {
+      role: 'Backend Engineer',
+      interviewType: 'technical',
+      durationMinutes: 10,
+    };
+
+    const { firstQuestion } = await foundry.generateIntroductionAndOpening(noResumeContext);
+
+    // Opening question should not force candidate to talk about a past project
+    expect(firstQuestion.text.toLowerCase()).not.toContain('tell me about a technical project');
+    expect(firstQuestion.text.toLowerCase()).not.toContain('project you have worked on');
+    expect(firstQuestion.topic).toBe('Database Design & Indexing Strategy');
+    expect(firstQuestion.text.toLowerCase()).toContain('database');
+  });
+
+  it('evaluates role-specific technical concepts when no resume is uploaded for Frontend', async () => {
+    const foundry = new MockFoundryService();
+    const frontendContext: CandidateContext = {
+      role: 'Frontend Engineer',
+      interviewType: 'technical',
+      durationMinutes: 10,
+    };
+
+    const { firstQuestion } = await foundry.generateIntroductionAndOpening(frontendContext);
+
+    expect(firstQuestion.text.toLowerCase()).not.toContain('project');
+    expect(firstQuestion.topic).toBe('State Architecture & Rendering Performance');
+    expect(firstQuestion.text.toLowerCase()).toContain('state management');
+  });
+
+  it('evaluates practical system design scenarios when no resume is uploaded for System Design', async () => {
+    const foundry = new MockFoundryService();
+    const sysDesignContext: CandidateContext = {
+      role: 'System Design Engineer',
+      interviewType: 'technical',
+      durationMinutes: 20,
+    };
+
+    const { firstQuestion } = await foundry.generateIntroductionAndOpening(sysDesignContext);
+
+    expect(firstQuestion.text.toLowerCase()).not.toContain('project you have worked on');
+    expect(firstQuestion.topic).toBe('Distributed Rate Limiter Design');
+    expect(firstQuestion.text.toLowerCase()).toContain('rate-limiting');
+  });
 });
 

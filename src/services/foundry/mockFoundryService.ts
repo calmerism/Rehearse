@@ -18,31 +18,80 @@ export class MockFoundryService implements IFoundryService {
   ): Promise<{ introText: string; firstQuestion: Question }> {
     const role = context.role || 'Software Engineer Intern';
     const type = context.interviewType;
+    const hasResume = !!(context.resumeText && context.resumeText.trim().length > 0);
+    const roleLower = role.toLowerCase();
 
     let introText = `Hi, I will be conducting your ${type} rehearsal today for the ${role} position. I will ask a few questions and follow up based on what you share. Please take your time and answer as you would in a real interview. Let's begin.`;
 
-    let questionText = `Tell me about a technical project you have worked on recently, and one challenging engineering decision you had to make.`;
-    let topic = 'Projects & Architecture';
-    let qType: Question['type'] = 'technical';
+    let questionText = '';
+    let topic = '';
+    let qType: Question['type'] = type === 'behavioural' ? 'behavioural' : 'technical';
 
-    if (type === 'behavioural') {
-      questionText = `Tell me about a time you had to collaborate closely with a team or teammate on a challenging project. What was your role and how did you navigate disagreements?`;
-      topic = 'Collaboration & Teamwork';
-      qType = 'behavioural';
-    } else if (type === 'mixed') {
-      questionText = `To kick things off, tell me about your background, a significant software project you contributed to, and your specific role in it.`;
-      topic = 'Background & Technical Contribution';
-      qType = 'behavioural';
-    }
+    if (hasResume) {
+      // Grounded in candidate's uploaded resume
+      questionText = `Tell me about a technical project you have worked on recently, and one challenging engineering decision you had to make.`;
+      topic = 'Projects & Architecture';
 
-    // If context has a focus area from previous rehearsal weakness:
-    if (context.focusArea) {
-      if (context.focusArea.toLowerCase().includes('decision') || context.focusArea.toLowerCase().includes('trade-off')) {
-        questionText = `Welcome back to your rehearsal. Keeping your focus on technical trade-offs, tell me about a project where you had to choose between two competing technologies or design patterns, and why you chose your approach.`;
-        topic = 'Technical Trade-offs';
-      } else if (context.focusArea.toLowerCase().includes('structure')) {
-        questionText = `Welcome back. Focusing today on structured responses, walk me through an end-to-end feature you built, structuring your answer by problem, approach, and outcome.`;
-        topic = 'Structured Technical Walkthrough';
+      if (type === 'behavioural') {
+        questionText = `Tell me about a time you had to collaborate closely with a team or teammate on a challenging project. What was your role and how did you navigate disagreements?`;
+        topic = 'Collaboration & Teamwork';
+      } else if (type === 'mixed') {
+        questionText = `To kick things off, tell me about your background, a significant software project you contributed to, and your specific role in it.`;
+        topic = 'Background & Technical Contribution';
+      }
+
+      if (context.focusArea) {
+        if (context.focusArea.toLowerCase().includes('decision') || context.focusArea.toLowerCase().includes('trade-off')) {
+          questionText = `Welcome back to your rehearsal. Keeping your focus on technical trade-offs, tell me about a project where you had to choose between two competing technologies or design patterns, and why you chose your approach.`;
+          topic = 'Technical Trade-offs';
+        } else if (context.focusArea.toLowerCase().includes('structure')) {
+          questionText = `Welcome back. Focusing today on structured responses, walk me through an end-to-end feature you built, structuring your answer by problem, approach, and outcome.`;
+          topic = 'Structured Technical Walkthrough';
+        }
+      }
+    } else {
+      // When NO resume is uploaded: DO NOT just ask about a project!
+      // Evaluate core technical fundamentals, conceptual depth, or practical scenarios tailored to the role
+      if (context.focusArea) {
+        if (context.focusArea.toLowerCase().includes('decision') || context.focusArea.toLowerCase().includes('trade-off')) {
+          questionText = `Welcome back. Focusing today on technical trade-offs, how do you evaluate whether to choose an asynchronous message queue versus synchronous REST or gRPC communication between services, and what operational trade-offs do you weigh?`;
+          topic = 'Technical Trade-offs';
+        } else if (context.focusArea.toLowerCase().includes('structure')) {
+          questionText = `Welcome back. Focusing today on structured technical explanations, how would you walk through the ACID guarantees of a relational database and how they contrast with eventual consistency in distributed systems?`;
+          topic = 'ACID Guarantees & Distributed Consistency';
+        }
+      }
+
+      if (!questionText) {
+        if (roleLower.includes('system design') || roleLower.includes('architect')) {
+          questionText = `To start our system design rehearsal, how would you approach architecting a resilient, distributed rate-limiting service that protects downstream APIs from traffic spikes while keeping latency under 10 milliseconds?`;
+          topic = 'Distributed Rate Limiter Design';
+        } else if (type === 'behavioural') {
+          questionText = `To kick off our conversation, how do you typically approach navigating technical disagreements when teammates advocate for fundamentally conflicting architecture decisions or libraries?`;
+          topic = 'Technical Disagreements & Collaboration';
+        } else if (type === 'mixed') {
+          questionText = `To kick off our conversation, what core architectural principles do you prioritize when designing maintainable, production-ready software, and how do you evaluate technical debt?`;
+          topic = 'Architecture Principles & Technical Debt';
+        } else {
+          // Technical interview tailored to role
+          if (roleLower.includes('frontend') || roleLower.includes('react') || roleLower.includes('web') || roleLower.includes('ui')) {
+            questionText = `To begin our technical rehearsal, how do you approach state management and rendering optimization in a client application to prevent unnecessary re-renders and maintain smooth 60fps performance?`;
+            topic = 'State Architecture & Rendering Performance';
+          } else if (roleLower.includes('ios') || roleLower.includes('mobile') || roleLower.includes('android') || roleLower.includes('swift')) {
+            questionText = `To begin our technical rehearsal, how do you approach offline data persistence, background task execution, and memory management on mobile devices?`;
+            topic = 'Mobile Architecture & Concurrency';
+          } else if (roleLower.includes('data') || roleLower.includes('ml') || roleLower.includes('ai') || roleLower.includes('machine learning')) {
+            questionText = `To begin our technical rehearsal, how do you approach pipeline reliability, data validation, and handling schema drift when processing high-volume datasets?`;
+            topic = 'Data Reliability & Schema Management';
+          } else if (roleLower.includes('devops') || roleLower.includes('sre') || roleLower.includes('cloud') || roleLower.includes('infra')) {
+            questionText = `To begin our technical rehearsal, how do you design a zero-downtime deployment strategy with automated canary validation and rollback for critical microservices?`;
+            topic = 'Deployment Strategy & Resiliency';
+          } else {
+            // General Software Engineer / Full Stack / Backend / Intern
+            questionText = `To begin our technical rehearsal, when designing an API that handles high-throughput traffic, how do you approach database schema design and indexing strategy to ensure low latency as data volume scales?`;
+            topic = 'Database Design & Indexing Strategy';
+          }
+        }
       }
     }
 
@@ -161,7 +210,8 @@ export class MockFoundryService implements IFoundryService {
       .map((k) => conceptPatterns[k]);
 
     const allEntities = Array.from(new Set([...detectedTechs, ...detectedConcepts]));
-    const primaryEntity = allEntities[0] || (context.interviewType === 'behavioural' ? 'your past project' : 'your technical architecture');
+    const hasResume = !!(context.resumeText && context.resumeText.trim().length > 0);
+    const primaryEntity = allEntities[0] || (hasResume ? (context.interviewType === 'behavioural' ? 'your past project' : 'your technical architecture') : (context.interviewType === 'behavioural' ? 'your collaborative approach' : 'your technical approach'));
 
     // Assess the candidate's answer based on substance, trade-offs, and metrics
     const words = transcript.split(/\s+/).filter(Boolean);
@@ -199,7 +249,9 @@ export class MockFoundryService implements IFoundryService {
       if (isBrief) {
         difficulty = 'easy';
         topic = 'Answer Depth & Elaboration';
-        followUpQuestionText = `You touched on ${primaryEntity}, but kept it fairly brief. Could you elaborate and walk me through the specific implementation steps, architecture choices, and concrete challenges you had to solve?`;
+        followUpQuestionText = hasResume
+          ? `You touched on ${primaryEntity}, but kept it fairly brief. Could you elaborate and walk me through the specific implementation steps, architecture choices, and concrete challenges you had to solve?`
+          : `You touched on ${primaryEntity}, but kept it fairly brief. Could you elaborate on the underlying engineering principles, architecture choices, and concrete edge cases you would handle?`;
       } else if (lower.includes('postgres') || lower.includes('sql') || lower.includes('database') || lower.includes('relational') || lower.includes('acid')) {
         if (lower.includes('relational') || lower.includes('acid') || lower.includes('schema') || lower.includes('order') || lower.includes('user')) {
           difficulty = 'hard';
@@ -208,12 +260,16 @@ export class MockFoundryService implements IFoundryService {
         } else {
           difficulty = 'medium';
           topic = 'Database Selection & Trade-offs';
-          followUpQuestionText = `Why did you choose PostgreSQL for that project instead of a NoSQL store like MongoDB or DynamoDB?`;
+          followUpQuestionText = hasResume
+            ? `Why did you choose PostgreSQL for that project instead of a NoSQL store like MongoDB or DynamoDB?`
+            : `Why would you choose PostgreSQL in this scenario instead of a NoSQL store like MongoDB or DynamoDB? What are the consistency and scaling trade-offs?`;
         }
       } else if (lower.includes('react') || lower.includes('frontend') || lower.includes('ui') || lower.includes('component')) {
         difficulty = 'medium';
         topic = 'Frontend Performance & State';
-        followUpQuestionText = `In that React application, how did you handle component re-rendering and state management to prevent UI jank or performance bottlenecks?`;
+        followUpQuestionText = hasResume
+          ? `In that React application, how did you handle component re-rendering and state management to prevent UI jank or performance bottlenecks?`
+          : `In a client application with frequent state changes, how do you optimize component re-rendering and state management to prevent UI jank?`;
       } else if (lower.includes('node') || lower.includes('api') || lower.includes('backend') || lower.includes('endpoint')) {
         difficulty = 'medium';
         topic = 'API Reliability & Architecture';
@@ -245,7 +301,7 @@ export class MockFoundryService implements IFoundryService {
             understoodIntent: true,
             clarity,
             technicalAccuracy,
-            extractedKeyPoints: allEntities.length > 0 ? allEntities.slice(0, 3) : ['Core project implementation'],
+            extractedKeyPoints: allEntities.length > 0 ? allEntities.slice(0, 3) : [hasResume ? 'Core project implementation' : 'Core architectural approach'],
             requiresFollowUp: true,
             reasoningNote: isBrief
               ? 'Answer was brief; prompting for technical depth and architecture.'
