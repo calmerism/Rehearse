@@ -3,32 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rehearse — Keynote Presentation (Azure AI-103)</title>
+  <title>Rehearse — Azure AI-103 Keynote Presentation</title>
   <style>
     :root {
-      --bg: #0B0B0D;
-      --card-bg: rgba(255, 255, 255, 0.03);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --text: #FFFFFF;
-      --text-muted: #8E8E93;
+      --bg: #000000;
+      --surface: #0E0E10;
+      --surface-elevated: #16161A;
+      --text-primary: #F5F5F7;
+      --text-secondary: #86868B;
+      --text-tertiary: #515154;
       --accent: #D05236;
-      --accent-tint: rgba(208, 82, 54, 0.1);
-      --accent-border: rgba(208, 82, 54, 0.3);
-      --green: #30D158;
-      --blue: #0A84FF;
+      --accent-soft: rgba(208, 82, 54, 0.15);
+      --action-blue: #2997FF;
+      --border-subtle: rgba(255, 255, 255, 0.1);
+      --border-strong: rgba(255, 255, 255, 0.18);
+      --code-bg: #121215;
+      --success: #30D158;
     }
 
     [data-theme="light"] {
-      --bg: #FAFAFC;
-      --card-bg: rgba(0, 0, 0, 0.02);
-      --card-border: rgba(0, 0, 0, 0.08);
-      --text: #1D1D1F;
-      --text-muted: #86868B;
+      --bg: #FBFBFD;
+      --surface: #FFFFFF;
+      --surface-elevated: #F5F5F7;
+      --text-primary: #1D1D1F;
+      --text-secondary: #6E6E73;
+      --text-tertiary: #A1A1A6;
       --accent: #D05236;
-      --accent-tint: rgba(208, 82, 54, 0.06);
-      --accent-border: rgba(208, 82, 54, 0.2);
-      --green: #34C759;
-      --blue: #0071E3;
+      --accent-soft: rgba(208, 82, 54, 0.08);
+      --action-blue: #0071E3;
+      --border-subtle: rgba(0, 0, 0, 0.08);
+      --border-strong: rgba(0, 0, 0, 0.15);
+      --code-bg: #F0F0F3;
+      --success: #34C759;
     }
 
     * {
@@ -38,104 +44,98 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    body {
+    html, body {
       background-color: var(--bg);
-      color: var(--text);
+      color: var(--text-primary);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
-      overflow: hidden;
       height: 100vh;
       width: 100vw;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: background-color 0.3s ease, color 0.3s ease;
+      transition: background-color 0.25s ease, color 0.25s ease;
       user-select: none;
     }
 
-    /* Header Chrome */
+    /* Top Chrome */
     header {
       width: 100%;
-      padding: 20px 32px;
+      padding: 20px 36px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       z-index: 20;
     }
 
-    .header-left {
+    .brand-group {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .badge-pill {
-      font-size: 12px;
+    .brand {
+      font-size: 15px;
       font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 9999px;
-      border: 1px solid var(--card-border);
-      background: var(--card-bg);
-      color: var(--text);
+      letter-spacing: -0.015em;
+      color: var(--text-primary);
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-    .badge-pill:hover {
-      background: var(--card-border);
     }
 
-    .nav-hints {
+    .brand-tag {
       font-size: 12px;
-      color: var(--text-muted);
-    }
-    kbd {
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: var(--card-border);
-      font-family: monospace;
-      font-size: 11px;
+      color: var(--text-tertiary);
+      border-left: 1px solid var(--border-subtle);
+      padding-left: 12px;
     }
 
-    .header-right {
+    .controls {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
 
     .counter {
-      font-family: "SF Mono", monospace;
       font-size: 13px;
-      color: var(--text-muted);
-      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+      min-width: 48px;
+      text-align: right;
     }
 
-    .btn-icon {
+    .icon-btn {
       background: none;
-      border: none;
-      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
       cursor: pointer;
-      padding: 6px;
+      padding: 7px 11px;
       border-radius: 9999px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      transition: color 0.2s ease, background-color 0.2s ease;
+      gap: 6px;
+      font-size: 12px;
+      font-family: inherit;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
-    .btn-icon:hover {
-      color: var(--text);
-      background: var(--card-bg);
+    .icon-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+      background: var(--surface-elevated);
+    }
+    .icon-btn:active {
+      transform: scale(0.97);
     }
 
-    /* Main Slide Stage */
+    /* Main Stage */
     main {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 40px;
+      padding: 0 48px;
       position: relative;
+      overflow: hidden;
     }
 
     .slide {
@@ -143,535 +143,1198 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      max-width: 980px;
+      max-width: 1040px;
       width: 100%;
-      animation: appleSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+      transform: scale(0.985);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .slide.active {
       display: flex;
+      opacity: 1;
+      transform: scale(1);
     }
 
-    @keyframes appleSlideIn {
-      from {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .slide-tag {
-      font-size: 12px;
+    /* Headings & Typography */
+    .hero-title {
+      font-size: clamp(54px, 7.5vw, 88px);
       font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 12px;
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+      color: var(--text-primary);
+      margin-bottom: 18px;
     }
 
-    .slide-title {
-      font-size: clamp(34px, 5.5vw, 62px);
+    .section-title {
+      font-size: clamp(32px, 4.4vw, 50px);
       font-weight: 700;
-      letter-spacing: -0.035em;
-      line-height: 1.06;
-      margin-bottom: 16px;
-      max-width: 860px;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      max-width: 880px;
     }
 
-    .slide-subhead {
-      font-size: clamp(16px, 2.2vw, 20px);
+    .lead-text {
+      font-size: clamp(16px, 1.8vw, 20px);
       font-weight: 400;
-      color: var(--text-muted);
-      line-height: 1.5;
-      max-width: 680px;
+      line-height: 1.48;
+      color: var(--text-secondary);
+      max-width: 720px;
       margin-bottom: 28px;
     }
 
-    /* Minimalist Cards Layout */
-    .card-grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      width: 100%;
-      margin-top: 12px;
+    .accent {
+      color: var(--accent);
     }
 
-    .card-grid-4 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      width: 100%;
+    /* Slide 1 Status Pill */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      border: 1px solid var(--border-subtle);
+      background: var(--surface);
+      font-size: 13px;
+      color: var(--text-secondary);
       margin-top: 12px;
     }
-
-    .card-grid-5 {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      width: 100%;
-      margin-top: 12px;
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
     }
 
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 24px;
+    /* Slide 2: Comparative Split */
+    .compare-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      width: 100%;
+      max-width: 960px;
+      margin-top: 8px;
       text-align: left;
+    }
+
+    .compare-panel {
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 22px;
+      background: var(--surface);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: border-color 0.2s ease;
     }
 
-    .card.accent {
-      border-color: var(--accent-border);
-      background: var(--accent-tint);
-    }
-
-    .card-num {
-      font-size: 32px;
-      font-weight: 800;
-      color: var(--accent);
-      line-height: 1;
-      margin-bottom: 12px;
-    }
-
-    .card-stat {
-      font-size: 42px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .card-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 6px;
-      line-height: 1.25;
-    }
-
-    .card-desc {
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.45;
-    }
-
-    .quote-box {
-      font-size: clamp(28px, 4vw, 48px);
-      font-weight: 700;
-      letter-spacing: -0.025em;
-      line-height: 1.2;
-      color: var(--text);
-      max-width: 820px;
-      margin: 16px 0 24px;
-    }
-
-    /* Footer Navigation */
-    footer {
-      width: 100%;
-      padding: 24px 32px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      z-index: 20;
-    }
-
-    .nav-controls {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .nav-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 9999px;
-      border: 1px solid var(--card-border);
-      background: var(--card-bg);
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .nav-btn:hover:not(:disabled) {
-      background: var(--card-border);
-    }
-    .nav-btn:disabled {
-      opacity: 0.25;
-      cursor: not-allowed;
-    }
-
-    .dots {
+    .window-chrome {
       display: flex;
       align-items: center;
       gap: 6px;
+      margin-bottom: 14px;
+    }
+    .win-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--border-strong);
     }
 
-    .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 9999px;
-      background: var(--card-border);
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    .panel-header-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
     }
 
-    .dot.active {
-      width: 24px;
-      background: var(--accent);
+    .panel-subtext {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
     }
 
-    .progress-bar-bg {
+    .code-box {
+      background: var(--code-bg);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+    }
+
+    .badge-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+
+    .verdict-tag {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--success);
+    }
+
+    /* Slide 3: Dialogue Crucible */
+    .dialogue-timeline {
       width: 100%;
-      max-width: 320px;
-      height: 2px;
+      max-width: 820px;
+      margin-top: 12px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .dialogue-bubble {
+      padding: 18px 22px;
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+      background: var(--surface);
+    }
+
+    .dialogue-speaker {
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .dialogue-content {
+      font-size: 17px;
+      line-height: 1.45;
+      color: var(--text-primary);
+    }
+
+    .dialogue-bubble.probe {
+      border-color: rgba(208, 82, 54, 0.35);
+      background: var(--accent-soft);
+    }
+
+    /* Slide 4: Neural Speech HUD */
+    .speech-hud {
+      width: 100%;
+      max-width: 760px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      background: var(--surface);
+      padding: 28px;
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .wave-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 52px;
+      margin: 16px 0;
+    }
+
+    .wave-bar {
+      width: 4px;
       border-radius: 9999px;
-      background: var(--card-border);
+      background: var(--accent);
+      transition: height 0.1s ease;
+    }
+
+    .audio-action-btn {
+      background: var(--accent);
+      color: #FFFFFF;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 9999px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .audio-action-btn:hover {
+      opacity: 0.92;
+    }
+    .audio-action-btn:active {
+      transform: scale(0.96);
+    }
+
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      width: 100%;
+      max-width: 760px;
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .spec-item {
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .spec-val {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .spec-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.35;
+    }
+
+    /* Slide 5: Inspector Panel */
+    .inspector-panel {
+      width: 100%;
+      max-width: 820px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      background: var(--surface);
+      text-align: left;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .inspector-header {
+      padding: 10px 18px;
+      background: var(--surface-elevated);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .inspector-code {
+      padding: 18px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      overflow-x: auto;
+    }
+
+    .json-key { color: var(--action-blue); }
+    .json-str { color: #E5C07B; }
+
+    /* Slide 6: Meeting HUD */
+    .meeting-hud {
+      width: 100%;
+      max-width: 840px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      background: var(--surface);
+      padding: 22px 28px;
+      text-align: left;
+      margin-top: 8px;
+    }
+
+    .hud-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .pillar-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .pillar-box {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: var(--surface-elevated);
+    }
+
+    .pillar-box.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .pillar-state {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      margin-bottom: 4px;
+    }
+
+    .pillar-box.active .pillar-state {
+      color: var(--accent);
+    }
+
+    .pillar-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Slide 7: Diagnostic Report */
+    .diagnostic-sheet {
+      width: 100%;
+      max-width: 800px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      background: var(--surface);
+      padding: 24px 28px;
+      text-align: left;
+      margin-top: 6px;
+    }
+
+    .score-trio {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 18px 0;
+      padding: 16px 0;
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .score-card {
+      text-align: center;
+    }
+
+    .score-dim {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .score-grade {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .grade-good { color: #E5C07B; }
+    .grade-strong { color: var(--success); }
+    .grade-improve { color: var(--accent); }
+
+    .seed-box {
+      margin-top: 14px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Slide 8: Timeline Scrubber */
+    .timeline-scrubber {
+      width: 100%;
+      max-width: 900px;
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .timeline-bar {
+      display: grid;
+      grid-template-columns: 0.5fr 1fr 2fr 0.75fr 0.75fr;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .time-segment {
+      padding: 14px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background: var(--surface);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .time-segment:hover, .time-segment.selected {
+      border-color: var(--accent);
+      background: var(--surface-elevated);
+    }
+
+    .time-code {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .time-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .time-rubric {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* Slide 9: Stats Rigor */
+    .rigor-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      width: 100%;
+      max-width: 860px;
+      margin-top: 24px;
+      text-align: left;
+    }
+
+    .rigor-card {
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      background: var(--surface);
+      padding: 24px;
+    }
+
+    .rigor-metric {
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .rigor-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .rigor-desc {
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--text-secondary);
+    }
+
+    /* Slide 10: QR & Final Action */
+    .qr-stage {
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      margin-top: 16px;
+      text-align: left;
+    }
+
+    .qr-card {
+      background: #FFFFFF;
+      padding: 16px;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .qr-card svg {
+      width: 160px;
+      height: 160px;
+    }
+
+    .qr-meta {
+      max-width: 360px;
+    }
+
+    .open-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #FFFFFF;
+      text-decoration: none;
+      padding: 12px 26px;
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 16px;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .open-btn:hover {
+      opacity: 0.92;
+    }
+    .open-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Bottom Chrome */
+    footer {
+      width: 100%;
+      padding: 20px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 20;
+    }
+
+    .nav-hints {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    .key-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-subtle);
+      background: var(--surface);
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin: 0 2px;
+    }
+
+    .progress-track {
+      width: 180px;
+      height: 3px;
+      background: var(--border-subtle);
+      border-radius: 9999px;
       overflow: hidden;
     }
 
-    .progress-bar-fill {
+    .progress-indicator {
       height: 100%;
-      background: var(--accent);
-      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      background: var(--text-secondary);
+      transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    @media (max-width: 768px) {
-      .card-grid-3, .card-grid-4, .card-grid-5 {
+    /* Light-Table Slide Navigator (Overview Mode) */
+    .overview-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+      padding: 40px;
+      overflow-y: auto;
+    }
+    [data-theme="light"] .overview-modal {
+      background: rgba(251, 251, 253, 0.92);
+    }
+
+    .overview-modal.open {
+      display: block;
+    }
+
+    .overview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1100px;
+      margin: 0 auto 28px;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .overview-thumb {
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: var(--surface);
+      padding: 16px;
+      aspect-ratio: 16 / 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .overview-thumb:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .overview-thumb.current {
+      border-color: var(--action-blue);
+      box-shadow: 0 0 0 2px var(--action-blue);
+    }
+
+    .thumb-num {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+    .thumb-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    @media (max-width: 820px) {
+      .compare-container, .rigor-grid, .score-trio, .spec-grid {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 14px;
       }
-      .nav-hints {
-        display: none;
+      .qr-stage {
+        flex-direction: column;
+        gap: 24px;
+      }
+      .pillar-row {
+        flex-direction: column;
+      }
+      .timeline-bar {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body data-theme="dark">
 
-  <!-- Header -->
   <header>
-    <div class="header-left">
-      <a href="https://getrehearse.vercel.app" class="badge-pill">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <span>getrehearse.vercel.app</span>
-      </a>
-      <span class="nav-hints">Press <kbd>Space</kbd> or <kbd>→</kbd> to advance</span>
+    <div class="brand-group">
+      <a href="https://getrehearse.vercel.app" class="brand">Rehearse</a>
+      <span class="brand-tag">Azure AI-103 Project Evaluation</span>
     </div>
-
-    <div class="header-right">
-      <span class="counter" id="counter">01 / 08</span>
-      <button class="btn-icon" id="theme-btn" title="Toggle Theme (T)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+    <div class="controls">
+      <span class="counter" id="slide-counter">1 / 10</span>
+      <button class="icon-btn" id="overview-btn" title="Slide Overview (O)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Overview</span>
       </button>
-      <button class="btn-icon" id="fs-btn" title="Fullscreen (F)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+      <button class="icon-btn" id="theme-btn" title="Toggle Theme (T)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+      </button>
+      <button class="icon-btn" id="fs-btn" title="Fullscreen (F)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
       </button>
     </div>
   </header>
 
-  <!-- Slide Viewport -->
   <main>
-    <!-- Slide 1 -->
-    <div class="slide active" id="slide-0">
-      <div class="slide-tag">Azure AI-103 Final Project • Chitkara University</div>
-      <h1 class="slide-title">Rehearse.</h1>
-      <p class="slide-subhead">Practice the interview, not just the questions.</p>
-      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-        <span class="badge-pill">Azure AI Speech</span>
-        <span class="badge-pill">Microsoft Foundry GPT-4o</span>
-        <span class="badge-pill">Autonomous Agent FSM</span>
+    <!-- Slide 1: Cover -->
+    <div class="slide active" id="slide-0" data-title="Rehearse">
+      <h1 class="hero-title">Rehearse.</h1>
+      <p class="lead-text" style="font-size: clamp(20px, 2.5vw, 26px); font-weight: 300;">
+        Practice the interview, not just the questions.
+      </p>
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span>Production Deployment Active • getrehearse.vercel.app</span>
+      </div>
+      <div style="font-size: 13px; color: var(--text-tertiary); margin-top: 24px;">
+        Chitkara University • Evaluation Date: 24 – 25 September 2026
       </div>
     </div>
 
-    <!-- Slide 2 -->
-    <div class="slide" id="slide-1">
-      <div class="slide-tag">The Placement Challenge</div>
-      <h1 class="slide-title">Memorizing answers fails in live interviews.</h1>
-      <p class="slide-subhead">Static prep tests syntax. Real interviewers test verbal reasoning under scrutiny.</p>
-      <div class="card-grid-3">
-        <div class="card">
-          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">LeetCode</div>
-          <div class="card-title">Syntax in isolation</div>
-          <div class="card-desc">Tests algorithmic memory with zero verbal interaction or defense pressure.</div>
+    <!-- Slide 2: The Placement Dilemma -->
+    <div class="slide" id="slide-1" data-title="The Placement Dilemma">
+      <h2 class="section-title">Memorizing answers won't prepare you for technical scrutiny.</h2>
+      <p class="lead-text">
+        Candidates solve hundreds of algorithms in silence. Real interviews test your ability to verbally articulate and defend trade-offs.
+      </p>
+      <div class="compare-container">
+        <div class="compare-panel">
+          <div>
+            <div class="window-chrome"><span class="win-dot"></span><span class="win-dot"></span><span class="win-dot"></span></div>
+            <div class="panel-header-title">The Silent Code Editor (LeetCode)</div>
+            <div class="panel-subtext">Algorithmic isolation without dialogue</div>
+            <div class="code-box">
+              <span style="color:var(--text-secondary)">// Candidate solves in isolation</span><br>
+              <span style="color:var(--action-blue)">function</span> twoSum(nums, target) {<br>
+              &nbsp;&nbsp;<span style="color:var(--action-blue)">const</span> map = <span style="color:var(--action-blue)">new</span> Map();<br>
+              &nbsp;&nbsp;<span style="color:var(--action-blue)">for</span> (<span style="color:var(--action-blue)">let</span> i = 0; i &lt; nums.length; i++) { ... }<br>
+              }
+            </div>
+          </div>
+          <div class="badge-row">
+            <span class="verdict-tag">48/48 Test Cases Passed</span>
+            <span>Zero Follow-Up Questions</span>
+          </div>
         </div>
-        <div class="card">
-          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Mock Questionnaires</div>
-          <div class="card-title">Static & non-adaptive</div>
-          <div class="card-desc">Cannot challenge shallow answers, interrupt, or test missing trade-offs.</div>
-        </div>
-        <div class="card accent">
-          <div style="font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase;">Live Interviews</div>
-          <div class="card-title">High conversational scrutiny</div>
-          <div class="card-desc">Candidates freeze when forced to defend system architecture choices under pressure.</div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Slide 3 -->
-    <div class="slide" id="slide-2">
-      <div class="slide-tag">Live Conversational Friction</div>
-      <div class="quote-box">“Why did you choose PostgreSQL over MongoDB?”</div>
-      <p class="slide-subhead">Candidates struggle not from a lack of technical knowledge, but from zero verbal practice defending trade-offs.</p>
-      <div style="display: flex; gap: 12px; justify-content: center;">
-        <span class="badge-pill" style="border-color: var(--accent-border);">ACID Guarantees vs Eventual Consistency</span>
-        <span class="badge-pill">100x Traffic Spikes</span>
-      </div>
-    </div>
-
-    <!-- Slide 4 -->
-    <div class="slide" id="slide-3">
-      <div class="slide-tag">The Product Engine</div>
-      <h1 class="slide-title">An active, adaptive conversational partner.</h1>
-      <p class="slide-subhead">Rehearse listens, challenges your claims in real time, and drives deliberate practice.</p>
-      <div class="card-grid-3">
-        <div class="card">
-          <div class="card-num">01</div>
-          <div class="card-title">Spoken Dialogue</div>
-          <div class="card-desc">Real-time STT voice recognition & studio 24kHz neural speech replace artificial chat interfaces.</div>
-        </div>
-        <div class="card">
-          <div class="card-num">02</div>
-          <div class="card-title">Dynamic Scrutiny</div>
-          <div class="card-desc">Generative reasoning inspects claims, detecting specific technologies to challenge system trade-offs.</div>
-        </div>
-        <div class="card">
-          <div class="card-num">03</div>
-          <div class="card-title">Continuity Loop</div>
-          <div class="card-desc">Diagnostic scoring extracts weaknesses; "Rehearse Again" pre-seeds gaps into subsequent sessions.</div>
+        <div class="compare-panel" style="border-color: rgba(208, 82, 54, 0.35);">
+          <div>
+            <div class="window-chrome"><span class="win-dot" style="background:var(--accent)"></span><span class="win-dot"></span><span class="win-dot"></span></div>
+            <div class="panel-header-title">The Real Interview Room (Rehearse)</div>
+            <div class="panel-subtext">Verbal defense under architectural pressure</div>
+            <div class="code-box" style="background:var(--accent-soft); color:var(--text-primary);">
+              <span style="color:var(--accent); font-weight:600;">Interviewer:</span> “Your solution allocates O(n) auxiliary memory. In an ultra-low latency gateway with 16MB L3 cache limits, how do you handle hash collisions without memory overhead?”
+            </div>
+          </div>
+          <div class="badge-row">
+            <span style="color:var(--accent); font-weight:600;">System Scrutiny</span>
+            <span>Evaluates Verbal Trade-Offs</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Slide 5 -->
-    <div class="slide" id="slide-4">
-      <div class="slide-tag">Microsoft Azure Services (25% Weight)</div>
-      <h1 class="slide-title">Four core Azure AI pillars applied.</h1>
-      <p class="slide-subhead">Production cloud architecture with dual-layer offline fallback resilience.</p>
-      <div class="card-grid-4">
-        <div class="card">
-          <div style="font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase;">Speech Services</div>
-          <div class="card-title">Azure AI Speech</div>
-          <div class="card-desc">Real-time continuous STT and 24kHz 160kbps Neural TTS with SSML prosody styling.</div>
+    <!-- Slide 3: The Interruption -->
+    <div class="slide" id="slide-2" data-title="The Interruption">
+      <h2 class="section-title">Senior interviewers don't test recall.<br><span class="accent">They challenge your decisions.</span></h2>
+      <p class="lead-text">
+        Real interviews are not an interrogation of textbook definitions. They are a live debate about constraints.
+      </p>
+      <div class="dialogue-timeline">
+        <div class="dialogue-bubble">
+          <div class="dialogue-speaker">Interviewer Prompt</div>
+          <div class="dialogue-content">“You chose PostgreSQL for order processing. Why not MongoDB or DynamoDB?”</div>
         </div>
-        <div class="card">
-          <div style="font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase;">Generative AI</div>
-          <div class="card-title">Microsoft Foundry</div>
-          <div class="card-desc">GPT-4o deployment enforcing structured JSON schemas for question generation & scoring.</div>
+        <div class="dialogue-bubble" style="background: var(--surface-elevated);">
+          <div class="dialogue-speaker">Candidate Verbal Defense</div>
+          <div class="dialogue-content">“Order processing requires strict multi-table ACID transactions for financial ledger consistency. MongoDB’s document model would require application-level locks.”</div>
         </div>
-        <div class="card">
-          <div style="font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase;">Agent Orchestration</div>
-          <div class="card-title">State Machine FSM</div>
-          <div class="card-desc">Duration clock pacing (10m, 20m, 30m) and 5-pillar topic rotation to eliminate repetition.</div>
-        </div>
-        <div class="card">
-          <div style="font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase;">Document Processing</div>
-          <div class="card-title">Resume Parser</div>
-          <div class="card-desc">Serverless PDF & DOCX text extraction to anchor inquiries directly in candidate credentials.</div>
+        <div class="dialogue-bubble probe">
+          <div class="dialogue-speaker" style="color:var(--accent);">Adaptive Counter-Probe</div>
+          <div class="dialogue-content">“Fair. But at 100,000 orders per second, your single primary node becomes a write bottleneck. What is your partition strategy?”</div>
         </div>
       </div>
     </div>
 
-    <!-- Slide 6 -->
-    <div class="slide" id="slide-5">
-      <div class="slide-tag">2-Minute Technical Demo Flow</div>
-      <h1 class="slide-title">The end-to-end rehearsal lifecycle.</h1>
-      <p class="slide-subhead">Follow this sequence on getrehearse.vercel.app during your evaluation.</p>
-      <div class="card-grid-5">
-        <div class="card">
-          <div style="font-size: 11px; font-weight: 700; color: var(--accent);">15 SEC</div>
-          <div class="card-title">Setup & Resume</div>
-          <div class="card-desc">Select role, 10 min, load sample resume.</div>
+    <!-- Slide 4: Spoken Dialogue -->
+    <div class="slide" id="slide-3" data-title="Spoken Dialogue">
+      <h2 class="section-title">Spoken conversation. Zero typing required.</h2>
+      <p class="lead-text">
+        Real technical presence requires speaking aloud, pacing your thoughts, and reacting to an interviewer's voice in real time.
+      </p>
+      <div class="speech-hud">
+        <div style="font-size:13px; color:var(--text-secondary);">Azure AI Neural Voice Synthesis Simulation</div>
+        <div class="wave-container" id="waveform">
+          <span class="wave-bar" style="height:14px;"></span>
+          <span class="wave-bar" style="height:24px;"></span>
+          <span class="wave-bar" style="height:38px;"></span>
+          <span class="wave-bar" style="height:48px;"></span>
+          <span class="wave-bar" style="height:36px;"></span>
+          <span class="wave-bar" style="height:22px;"></span>
+          <span class="wave-bar" style="height:14px;"></span>
         </div>
-        <div class="card">
-          <div style="font-size: 11px; font-weight: 700; color: var(--accent);">15 SEC</div>
-          <div class="card-title">Lobby Check</div>
-          <div class="card-desc">Microphone audio level check & voice preview.</div>
+        <button class="audio-action-btn" id="voice-sample-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <span id="voice-sample-label">Play Interviewer Voice Sample</span>
+        </button>
+      </div>
+
+      <div class="spec-grid">
+        <div class="spec-item">
+          <div class="spec-val">24 kHz</div>
+          <div class="spec-sub">Neural studio voice with Azure Speech</div>
         </div>
-        <div class="card">
-          <div style="font-size: 11px; font-weight: 700; color: var(--accent);">30 SEC</div>
-          <div class="card-title">Spoken Answer</div>
-          <div class="card-desc">AI speaks question; candidate talks into mic.</div>
+        <div class="spec-item">
+          <div class="spec-val">&lt; 280 ms</div>
+          <div class="spec-sub">Streaming continuous speech-to-text</div>
         </div>
-        <div class="card accent">
-          <div style="font-size: 11px; font-weight: 700; color: var(--accent);">30 SEC</div>
-          <div class="card-title">Adaptive Probing</div>
-          <div class="card-desc">AI challenges PostgreSQL vs NoSQL & scaling.</div>
-        </div>
-        <div class="card">
-          <div style="font-size: 11px; font-weight: 700; color: var(--accent);">30 SEC</div>
-          <div class="card-title">Rehearse Again</div>
-          <div class="card-desc">Show 3-axis score & pre-seed priority gap.</div>
+        <div class="spec-item">
+          <div class="spec-val">100% Local</div>
+          <div class="spec-sub">Client-side audio without persistent recordings</div>
         </div>
       </div>
     </div>
 
-    <!-- Slide 7 -->
-    <div class="slide" id="slide-6">
-      <div class="slide-tag">Testing & Responsible AI (15% Weight)</div>
-      <h1 class="slide-title">Engineered for reliability, privacy, and trust.</h1>
-      <p class="slide-subhead">Verified code quality, complete explainability, and privacy by design.</p>
-      <div class="card-grid-3">
-        <div class="card" style="text-align: center;">
-          <div class="card-stat" style="color: var(--green);">25 / 25</div>
-          <div class="card-title">Automated Tests Passing</div>
-          <div class="card-desc">Validating agent FSM, topic rotation, non-resume scenarios, and UI handlers.</div>
+    <!-- Slide 5: Reasoning Engine -->
+    <div class="slide" id="slide-4" data-title="Adaptive Reasoning">
+      <h2 class="section-title">Follow-ups that adapt to the candidate's exact words.</h2>
+      <p class="lead-text">
+        Microsoft Foundry and GPT-4o extract architectural claims from verbal responses and generate structured context-aware follow-ups.
+      </p>
+      <div class="inspector-panel">
+        <div class="inspector-header">
+          <span>Microsoft Foundry / Evaluation Engine</span>
+          <span>Structured JSON Schema</span>
         </div>
-        <div class="card" style="text-align: center;">
-          <div class="card-stat" style="color: var(--accent);">100%</div>
-          <div class="card-title">Local Video Privacy</div>
-          <div class="card-desc">Camera feed operates strictly in local memory via getUserMedia. Zero cloud video.</div>
+        <pre class="inspector-code"><code>{
+  <span class="json-key">"candidateClaim"</span>: <span class="json-str">"PostgreSQL selected for ACID financial guarantees"</span>,
+  <span class="json-key">"verifiedStrength"</span>: <span class="json-str">"Correctly identified ledger consistency requirements"</span>,
+  <span class="json-key">"identifiedBlindspot"</span>: <span class="json-str">"High-throughput write scaling & partition bottlenecks"</span>,
+  <span class="json-key">"adaptiveProbe"</span>: <span class="json-str">"At 100k writes/sec, how do you prevent replica lag and connection pool starvation?"</span>
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- Slide 6: Meeting Dynamics -->
+    <div class="slide" id="slide-5" data-title="Meeting Dynamics">
+      <h2 class="section-title">Structured like an authentic engineering interview.</h2>
+      <p class="lead-text">
+        An event-driven state machine manages time boundaries and systematically explores full-stack breadth.
+      </p>
+      <div class="meeting-hud">
+        <div class="hud-meta-row">
+          <span>Scheduled: 20 Minutes • Elapsed: 18:42</span>
+          <span style="color:var(--accent); font-weight:600;">Autonomous Meeting State Machine</span>
         </div>
-        <div class="card" style="text-align: center;">
-          <div class="card-stat" style="color: var(--blue);">0</div>
-          <div class="card-title">TypeScript Errors</div>
-          <div class="card-desc">Clean npx tsc --noEmit check with strict type safety across all boundaries.</div>
+        <div style="font-size:12px; color:var(--text-secondary); margin-bottom:4px;">5-Pillar Systematic Topic Rotation:</div>
+        <div class="pillar-row">
+          <div class="pillar-box">
+            <div class="pillar-state">COMPLETED ✓</div>
+            <div class="pillar-title">System Architecture</div>
+          </div>
+          <div class="pillar-box">
+            <div class="pillar-state">COMPLETED ✓</div>
+            <div class="pillar-title">Data Consistency</div>
+          </div>
+          <div class="pillar-box active">
+            <div class="pillar-state">IN PROGRESS •</div>
+            <div class="pillar-title">Concurrency & Locks</div>
+          </div>
+          <div class="pillar-box">
+            <div class="pillar-state">UPCOMING</div>
+            <div class="pillar-title">Observability</div>
+          </div>
+          <div class="pillar-box">
+            <div class="pillar-state">UPCOMING</div>
+            <div class="pillar-title">Teamwork</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Slide 8 -->
-    <div class="slide" id="slide-7">
-      <div class="slide-tag">Chitkara University • Final Evaluation</div>
-      <h1 class="slide-title">Rehearse before the real interview.</h1>
-      <p class="slide-subhead">Live production deployment at getrehearse.vercel.app</p>
-      <div style="margin-top: 20px;">
-        <a href="https://getrehearse.vercel.app" target="_blank" style="padding: 14px 32px; border-radius: 9999px; background: var(--accent); color: white; text-decoration: none; font-weight: 600; font-size: 15px; display: inline-block;">
-          Open Live Application
-        </a>
+    <!-- Slide 7: Closed-Loop Improvement -->
+    <div class="slide" id="slide-6" data-title="Closed-Loop Practice">
+      <h2 class="section-title">Target the weakness.<br><span class="accent">Closed-loop rehearsal.</span></h2>
+      <p class="lead-text">
+        Every rehearsal concludes with qualitative diagnostic scoring, automatically pre-seeding identified gaps into the next session.
+      </p>
+      <div class="diagnostic-sheet">
+        <div style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">Editorial Summary Verdict</div>
+        <div style="font-size:13.5px; color:var(--text-secondary); line-height:1.45;">
+          “Demonstrated solid fundamentals in SQL ACID guarantees; struggled to articulate horizontal write partitioning under saturation.”
+        </div>
+
+        <div class="score-trio">
+          <div class="score-card">
+            <div class="score-dim">Technical Depth</div>
+            <div class="score-grade grade-good">Good</div>
+          </div>
+          <div class="score-card">
+            <div class="score-dim">Communication</div>
+            <div class="score-grade grade-strong">Strong</div>
+          </div>
+          <div class="score-card">
+            <div class="score-dim">Interview Handling</div>
+            <div class="score-grade grade-improve">Needs Work</div>
+          </div>
+        </div>
+
+        <div class="seed-box">
+          <div>
+            <div style="font-size:11px; font-weight:600; color:var(--accent);">NEXT REHEARSAL FOCUS PRE-SEEDED</div>
+            <div style="font-size:13px; color:var(--text-primary); margin-top:2px;">Horizontal database partition and sharding strategies under write pressure</div>
+          </div>
+          <span style="font-size:12px; font-weight:600; color:var(--action-blue);">Rehearse Again →</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: Presentation Flow -->
+    <div class="slide" id="slide-7" data-title="5-Minute Presentation">
+      <h2 class="section-title">Five-minute presentation roadmap.</h2>
+      <p class="lead-text">
+        Timed and structured to address every area of the Chitkara University AI-103 evaluation rubric.
+      </p>
+      <div class="timeline-scrubber">
+        <div class="timeline-bar">
+          <div class="time-segment selected" onclick="selectTimeline(0)">
+            <div class="time-code">0:00 – 0:30</div>
+            <div class="time-label">Introduction</div>
+            <div class="time-rubric">Problem & Placement Gap</div>
+          </div>
+          <div class="time-segment" onclick="selectTimeline(1)">
+            <div class="time-code">0:30 – 1:30</div>
+            <div class="time-label">Architecture</div>
+            <div class="time-rubric">Azure Speech & Foundry</div>
+          </div>
+          <div class="time-segment" onclick="selectTimeline(2)">
+            <div class="time-code">1:30 – 3:30</div>
+            <div class="time-label">Live Demonstration</div>
+            <div class="time-rubric">Lobby, Spoken Answer, Probe</div>
+          </div>
+          <div class="time-segment" onclick="selectTimeline(3)">
+            <div class="time-code">3:30 – 4:15</div>
+            <div class="time-label">Diagnostic Report</div>
+            <div class="time-rubric">Scoring & Closed Loop</div>
+          </div>
+          <div class="time-segment" onclick="selectTimeline(4)">
+            <div class="time-code">4:15 – 5:00</div>
+            <div class="time-label">Rigor & Viva</div>
+            <div class="time-rubric">Testing, Privacy, Q&amp;A</div>
+          </div>
+        </div>
+        <div id="timeline-detail" style="font-size:13px; color:var(--text-secondary); padding:10px 14px; border:1px solid var(--border-subtle); border-radius:8px; background:var(--surface);">
+          Active Focus: <strong>0:00 – 0:30</strong> — Candidate problem statement, interview anxiety, and why algorithmic practice fails verbal rounds.
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: Technical Rigor -->
+    <div class="slide" id="slide-8" data-title="Technical Rigor">
+      <h2 class="section-title">Engineered with production discipline.</h2>
+      <p class="lead-text">
+        Built to exceed technical implementation, testing, and responsible AI evaluation benchmarks.
+      </p>
+      <div class="rigor-grid">
+        <div class="rigor-card">
+          <div class="rigor-metric">25</div>
+          <div class="rigor-title">Automated Unit &amp; Integration Tests</div>
+          <div class="rigor-desc">Rigorous test coverage across agent state lifecycles, speech token fallbacks, and storage integrity.</div>
+        </div>
+        <div class="rigor-card">
+          <div class="rigor-metric">100%</div>
+          <div class="rigor-title">Client-Side Video Privacy</div>
+          <div class="rigor-desc">In-browser rendering via getUserMedia. No candidate video frames are ever streamed or saved to cloud servers.</div>
+        </div>
+        <div class="rigor-card">
+          <div class="rigor-metric">0</div>
+          <div class="rigor-title">TypeScript Compiler Errors</div>
+          <div class="rigor-desc">Strict type-safety across client components and serverless Edge API handlers with zero build warnings.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10: Conclusion -->
+    <div class="slide" id="slide-9" data-title="Live Production &amp; Q&amp;A">
+      <h2 class="hero-title" style="font-size:clamp(40px, 5.5vw, 68px); margin-bottom:8px;">
+        getrehearse.vercel.app
+      </h2>
+      <p class="lead-text">
+        Live in production. Ready for evaluation and questions.
+      </p>
+      <div class="qr-stage">
+        <div class="qr-card">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" shape-rendering="crispEdges">
+            <path fill="#ffffff" d="M0 0h37v37H0z"/>
+            <path stroke="#000000" d="M4 4.5h7m2 0h2m1 0h4m3 0h2m1 0h7M4 5.5h1m5 0h1m2 0h10m1 0h1m1 0h1m5 0h1M4 6.5h1m1 0h3m1 0h1m1 0h1m3 0h2m1 0h1m2 0h1m1 0h1m1 0h1m1 0h3m1 0h1M4 7.5h1m1 0h3m1 0h1m1 0h2m1 0h1m2 0h2m1 0h1m4 0h1m1 0h3m1 0h1M4 8.5h1m1 0h3m1 0h1m1 0h2m5 0h2m1 0h3m1 0h1m1 0h3m1 0h1M4 9.5h1m5 0h1m1 0h1m2 0h2m4 0h2m3 0h1m5 0h1M4 10.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M12 11.5h4m2 0h1m1 0h1m2 0h2M4 12.5h1m1 0h5m4 0h2m3 0h2m2 0h1m1 0h5M4 13.5h3m1 0h2m2 0h1m1 0h1m2 0h3m2 0h7m3 0h1M4 14.5h1m1 0h1m1 0h1m1 0h3m2 0h1m1 0h4M4 15.5h3m1 0h1m7 0h2m1 0h1m3 0h2m3 0h2m1 0h1M5 16.5h1m1 0h2m1 0h1m2 0h3m2 0h2m1 0h1m1 0h1m3 0h1m1 0h2M4 17.5h3m1 0h1m3 0h1m1 0h2m3 0h5m1 0h4m3 0h1M4 18.5h1m1 0h1m2 0h3m1 0h2m9 0h3m1 0h3M8 19.5h2m5 0h2m1 0h1m1 0h1m1 0h1m1 0h2m1 0h2m2 0h1M4 20.5h7m2 0h3m4 0h3m4 0h1m1 0h2M4 21.5h1m2 0h3m1 0h4m2 0h3m1 0h8m1 0h1m1 0h1M4 22.5h1m1 0h5m3 0h8m2 0h1m2 0h2m1 0h1M4 23.5h1m1 0h2m1 0h1m1 0h4m2 0h1m1 0h1m2 0h2m3 0h2m2 0h1M4 24.5h1m5 0h1m3 0h3m1 0h2m1 0h1m2 0h5m1 0h3M12 25.5h1m2 0h2m2 0h2m1 0h3m3 0h5M4 26.5h7m2 0h4m5 0h3m1 0h1m1 0h3M4 27.5h1m5 0h1m1 0h2m2 0h1m1 0h1m1 0h1m2 0h2m3 0h1m2 0h2M4 28.5h1m1 0h3m1 0h1m1 0h1m2 0h2m4 0h1m2 0h5m1 0h1m1 0h1M4 29.5h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h3m4 0h1m4 0h2M4 30.5h1m1 0h3m1 0h1m1 0h1m1 0h4m1 0h1m2 0h1m2 0h7M4 31.5h1m5 0h1m2 0h2m1 0h4m2 0h4m1 0h1m1 0h1m1 0h1M4 32.5h7m1 0h3m2 0h1m1 0h3m1 0h1m3 0h2m1 0h1"/>
+          </svg>
+        </div>
+        <div class="qr-meta">
+          <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Scan to open on mobile</div>
+          <div style="font-size:13px; color:var(--text-secondary); line-height:1.45;">
+            Experience the microphone lobby calibration, spoken dialogue, and adaptive challenge live.
+          </div>
+          <a href="https://getrehearse.vercel.app" target="_blank" class="open-btn">
+            <span>Launch Rehearse Web App</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
       </div>
     </div>
   </main>
 
-  <!-- Footer -->
   <footer>
-    <div class="nav-controls">
-      <button class="nav-btn" id="prev-btn" aria-label="Previous slide">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-
-      <div class="dots" id="dots-container"></div>
-
-      <button class="nav-btn" id="next-btn" aria-label="Next slide">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
+    <div class="nav-hints">
+      Navigate with <span class="key-badge">←</span> <span class="key-badge">→</span> or <span class="key-badge">Space</span> • <span class="key-badge">O</span> Overview • <span class="key-badge">F</span> Fullscreen • <span class="key-badge">T</span> Theme
     </div>
-
-    <div class="progress-bar-bg">
-      <div class="progress-bar-fill" id="progress-fill" style="width: 12.5%;"></div>
+    <div class="progress-track">
+      <div class="progress-indicator" id="progress-bar" style="width: 10%;"></div>
     </div>
   </footer>
 
+  <!-- Light Table Overview Modal -->
+  <div class="overview-modal" id="overview-modal">
+    <div class="overview-header">
+      <div style="font-size:18px; font-weight:600; color:var(--text-primary);">Keynote Slide Navigator</div>
+      <button class="icon-btn" onclick="toggleOverview()">
+        <span>Close (Esc)</span>
+      </button>
+    </div>
+    <div class="overview-grid" id="overview-grid">
+      <!-- Generated dynamically -->
+    </div>
+  </div>
+
   <script>
-    const totalSlides = 8;
-    let currentSlide = 0;
+    const totalSlides = 10;
+    let current = 0;
 
-    const counter = document.getElementById('counter');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const progressFill = document.getElementById('progress-fill');
-    const dotsContainer = document.getElementById('dots-container');
+    const counter = document.getElementById('slide-counter');
+    const progressBar = document.getElementById('progress-bar');
+    const themeBtn = document.getElementById('theme-btn');
+    const fsBtn = document.getElementById('fs-btn');
+    const overviewBtn = document.getElementById('overview-btn');
+    const overviewModal = document.getElementById('overview-modal');
+    const overviewGrid = document.getElementById('overview-grid');
 
-    // Build dots
-    for (let i = 0; i < totalSlides; i++) {
-      const dot = document.createElement('div');
-      dot.className = `dot ${i === 0 ? 'active' : ''}`;
-      dot.addEventListener('click', () => goToSlide(i));
-      dotsContainer.appendChild(dot);
-    }
+    const timelineDetails = [
+      "0:00 – 0:30 — Candidate problem statement, interview anxiety, and why algorithmic practice fails verbal rounds.",
+      "0:30 – 1:30 — Azure Speech token architecture, continuous STT, and Microsoft Foundry GPT-4o reasoning pipeline.",
+      "1:30 – 3:30 — Live Working Demo: Lobby mic check, spoken technical answer, and real-time adaptive counter-probe.",
+      "3:30 – 4:15 — Qualitative performance report (Depth, Communication, Handling) and automatic Rehearse Again pre-seeding.",
+      "4:15 – 5:00 — 25 automated unit tests, 100% in-browser video privacy, and Viva defense questions."
+    ];
 
-    function updateSlide() {
-      // Toggle active slide
+    function showSlide(index) {
+      if (index < 0 || index >= totalSlides) return;
+      current = index;
       for (let i = 0; i < totalSlides; i++) {
         const el = document.getElementById(`slide-${i}`);
-        if (el) el.classList.toggle('active', i === currentSlide);
+        if (el) el.classList.toggle('active', i === current);
       }
-
-      // Update dots
-      const dots = dotsContainer.children;
-      for (let i = 0; i < totalSlides; i++) {
-        dots[i].classList.toggle('active', i === currentSlide);
-      }
-
-      // Counter
-      counter.textContent = `${String(currentSlide + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
-
-      // Progress bar
-      progressFill.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
-
-      // Buttons
-      prevBtn.disabled = currentSlide === 0;
-      nextBtn.disabled = currentSlide === totalSlides - 1;
+      counter.textContent = `${current + 1} / ${totalSlides}`;
+      progressBar.style.width = `${((current + 1) / totalSlides) * 100}%`;
+      updateOverviewSelection();
     }
 
-    function nextSlide() {
-      if (currentSlide < totalSlides - 1) {
-        currentSlide++;
-        updateSlide();
-      }
+    function next() {
+      if (current < totalSlides - 1) showSlide(current + 1);
     }
 
-    function prevSlide() {
-      if (currentSlide > 0) {
-        currentSlide--;
-        updateSlide();
-      }
+    function prev() {
+      if (current > 0) showSlide(current - 1);
     }
 
-    function goToSlide(n) {
-      currentSlide = n;
-      updateSlide();
-    }
-
-    prevBtn.addEventListener('click', prevSlide);
-    nextBtn.addEventListener('click', nextSlide);
-
-    // Keyboard navigation
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
-        e.preventDefault();
-        nextSlide();
-      } else if (e.key === 'ArrowLeft' || e.key === 'Backspace' || e.key === 'PageUp') {
-        e.preventDefault();
-        prevSlide();
-      } else if (e.key.toLowerCase() === 'f') {
-        e.preventDefault();
-        toggleFullscreen();
-      } else if (e.key.toLowerCase() === 't') {
-        e.preventDefault();
-        toggleTheme();
-      }
-    });
-
-    // Theme toggle
     function toggleTheme() {
-      const body = document.body;
-      const current = body.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      body.setAttribute('data-theme', next);
+      const b = document.body;
+      const cur = b.getAttribute('data-theme');
+      b.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
     }
-    document.getElementById('theme-btn').addEventListener('click', toggleTheme);
 
-    // Fullscreen toggle
-    function toggleFullscreen() {
+    function toggleFs() {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(() => {});
       } else {
         if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
       }
     }
-    document.getElementById('fs-btn').addEventListener('click', toggleFullscreen);
 
-    updateSlide();
+    function toggleOverview() {
+      overviewModal.classList.toggle('open');
+    }
+
+    function selectTimeline(idx) {
+      const segs = document.querySelectorAll('.time-segment');
+      segs.forEach((s, i) => s.classList.toggle('selected', i === idx));
+      const det = document.getElementById('timeline-detail');
+      if (det && timelineDetails[idx]) {
+        det.innerHTML = `Active Focus: <strong>${timelineDetails[idx]}</strong>`;
+      }
+    }
+
+    // Build Overview Grid
+    for (let i = 0; i < totalSlides; i++) {
+      const slideEl = document.getElementById(`slide-${i}`);
+      const title = slideEl ? slideEl.getAttribute('data-title') : `Slide ${i + 1}`;
+      const thumb = document.createElement('div');
+      thumb.className = `overview-thumb ${i === 0 ? 'current' : ''}`;
+      thumb.id = `thumb-${i}`;
+      thumb.innerHTML = `
+        <div class="thumb-num">0${i + 1}</div>
+        <div class="thumb-title">${title}</div>
+      `;
+      thumb.onclick = () => {
+        showSlide(i);
+        toggleOverview();
+      };
+      overviewGrid.appendChild(thumb);
+    }
+
+    function updateOverviewSelection() {
+      for (let i = 0; i < totalSlides; i++) {
+        const t = document.getElementById(`thumb-${i}`);
+        if (t) t.classList.toggle('current', i === current);
+      }
+    }
+
+    // Interactive Voice Simulation
+    const voiceBtn = document.getElementById('voice-sample-btn');
+    const voiceLabel = document.getElementById('voice-sample-label');
+    const waveform = document.getElementById('waveform');
+    let waveInterval = null;
+
+    if (voiceBtn) {
+      voiceBtn.addEventListener('click', () => {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const text = "Welcome to your technical rehearsal. Let's begin by discussing how you structure your database transactions and scale them under heavy write traffic.";
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.rate = 1.0;
+          utter.pitch = 1.0;
+
+          // Animate waveform
+          const bars = waveform.querySelectorAll('.wave-bar');
+          waveInterval = setInterval(() => {
+            bars.forEach(b => {
+              const h = Math.floor(Math.random() * 36) + 12;
+              b.style.height = `${h}px`;
+            });
+          }, 90);
+
+          voiceLabel.textContent = "Playing Neural Speech...";
+
+          utter.onend = () => {
+            clearInterval(waveInterval);
+            voiceLabel.textContent = "Play Interviewer Voice Sample";
+            bars.forEach((b, idx) => {
+              const h = [14, 24, 38, 48, 36, 22, 14][idx];
+              b.style.height = `${h}px`;
+            });
+          };
+
+          utter.onerror = () => {
+            clearInterval(waveInterval);
+            voiceLabel.textContent = "Play Interviewer Voice Sample";
+          };
+
+          window.speechSynthesis.speak(utter);
+        } else {
+          alert('Web Speech API is not supported on this browser.');
+        }
+      });
+    }
+
+    // Keyboard bindings
+    window.addEventListener('keydown', (e) => {
+      if (overviewModal.classList.contains('open')) {
+        if (e.key === 'Escape' || e.key.toLowerCase() === 'o') {
+          e.preventDefault();
+          toggleOverview();
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        next();
+      } else if (e.key === 'ArrowLeft' || e.key === 'Backspace' || e.key === 'PageUp') {
+        e.preventDefault();
+        prev();
+      } else if (e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        toggleFs();
+      } else if (e.key.toLowerCase() === 't') {
+        e.preventDefault();
+        toggleTheme();
+      } else if (e.key.toLowerCase() === 'o') {
+        e.preventDefault();
+        toggleOverview();
+      }
+    });
+
+    themeBtn.addEventListener('click', toggleTheme);
+    fsBtn.addEventListener('click', toggleFs);
+    overviewBtn.addEventListener('click', toggleOverview);
+
+    // Initial render
+    showSlide(current);
   </script>
 </body>
 </html>
