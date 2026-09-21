@@ -2,110 +2,100 @@
 
 Practice the interview, not just the questions.
 
-Rehearse is an autonomous, voice-driven AI technical interview simulator. It simulates the conversational dynamics of a real engineering interview: candidates speak their answers into a microphone, and an autonomous AI interviewer listens, challenges technical trade-offs in real time, and responds with natural 24kHz neural speech.
+https://getrehearse.vercel.app
 
-At the end of each session, Rehearse generates a multi-dimensional diagnostic report and provides a closed-loop practice engine: candidates can click **"Rehearse Again"**, and their diagnosed weaknesses are automatically pre-seeded into the opening challenge of their next session.
+Most engineering interview prep boils down to grinding LeetCode or memorizing definitions from a flashcard deck. That works fine for coding syntax tests, but it does almost nothing to prepare you for what an actual technical interview feels like.
 
-[Live Application: getrehearse.vercel.app](https://getrehearse.vercel.app)
+When a senior engineer asks you why you chose PostgreSQL over MongoDB for an order service, or how you would handle 100x write traffic on a Friday evening, you cannot lean on a unit test runner. You have to explain your thought process out loud, justify your trade-offs, and handle follow-up scrutiny in real time.
 
----
+Rehearse gives you a place to practice that verbal back-and-forth before it counts.
 
-## Why Rehearse?
 
-Most interview preparation platforms test syntax in isolation: candidates solve coding puzzles on LeetCode or memorize answers from static question banks. 
+## How it works
 
-In actual technical interviews, senior engineers test how you **verbally articulate and defend architectural decisions under pressure**:
-- *“You chose PostgreSQL for order processing. Why not MongoDB or DynamoDB?”*
-- *“Under a distributed network partition, how does your write path handle CAP theorem trade-offs?”*
-- *“If transactions scale by 100x tomorrow, where does your system break first?”*
+You speak into your microphone. Rehearse listens, transcribes your answer in real time, and responds with spoken audio using Azure Neural Voice.
 
-Candidates regularly struggle not from a lack of technical knowledge, but because they have never rehearsed live verbal defense. Rehearse provides that high-fidelity practice environment.
+Instead of running down a generic checklist of questions, the interviewer adapts to what you actually say:
+- Mention ACID guarantees, and it probes how your system behaves during a network partition.
+- Mention sharding, and it asks how you deal with hot partitions and cross-shard queries.
+- Mention Redis, and it asks about your cache invalidation strategy when writes spike.
 
----
+It keeps track of time just like a real interview (10, 20, or 30 minutes) and moves between topics so you get a well-rounded conversation covering architecture, databases, concurrency, and teamwork.
 
-## Key Features
+If you upload a resume (PDF or DOCX), it pulls from your actual past projects and tech stack instead of asking hypothetical questions.
 
-- **Spoken Conversation (Azure AI Speech)**: Continuous real-time speech-to-text with silence detection, paired with studio-grade 24kHz neural speech synthesis (`JennyNeural`, `GuyNeural`, `AvaNeural`).
-- **Adaptive Generative Scrutiny (Microsoft Foundry & GPT-4o)**: The AI does not ask generic scripted questions. It evaluates candidate answers in real time, extracts technical entities, and issues targeted follow-ups that challenge architectural trade-offs.
-- **Autonomous Meeting Dynamics**: Enforces realistic meeting durations (10m, 20m, 30m) with an autonomous state machine that paces the conversation, signals time warnings, and orchestrates a natural wrap-up.
-- **5-Pillar Topic Rotation**: Systematically rotates questions across high-level architecture, data stores, concurrency, observability, and team collaboration to ensure holistic evaluation.
-- **Resume Grounding**: Upload a PDF or DOCX resume to anchor questions directly in your real projects, technologies, and work history.
-- **Diagnostic Qualitative Scoring**: Evaluates answers across Technical Correctness, System Trade-Off Articulation, and Spoken Clarity.
-- **Closed-Loop "Rehearse Again"**: Diagnosed gaps automatically pre-seed the opening challenge of your next session for deliberate, targeted improvement.
-- **Client-Side Video Privacy**: Video camera streams run 100% locally in the browser via WebRTC `getUserMedia()`. Zero video frames are recorded or sent to cloud servers.
-- **Offline Fallback Engine**: If cloud services are unavailable, the application gracefully switches to browser Web Speech API and heuristic reasoning with zero downtime.
 
----
+## Targeted practice
 
-## Tech Stack
+At the end of each session, you get feedback broken down into three areas:
+- Technical correctness: Did you explain the concepts accurately?
+- Trade-off articulation: Did you justify your decisions and weigh alternatives?
+- Communication: Was your answer structured and clear?
 
-- **Framework**: Next.js 14 (App Router, Serverless Routes)
-- **Language**: TypeScript (Strict type safety)
-- **AI & Reasoning**: Microsoft Foundry / Azure OpenAI (GPT-4o)
-- **Speech Services**: Azure Cognitive Speech SDK (Continuous STT & Neural TTS)
-- **Audio Processing**: Web Audio API (Live Analyser Waveforms)
-- **Document Intelligence**: `unpdf` (Wasm PDF parsing) & `mammoth` (DOCX extraction)
-- **Styling**: Tailwind CSS with Apple-inspired design system
-- **Motion**: Framer Motion (Critically damped springs)
-- **Testing**: Vitest & React Testing Library (25 automated tests)
+If you hit Rehearse Again, Rehearse automatically takes the biggest gap identified in that round and brings it up in the next interview. That way you spend time fixing the specific things you struggle to explain out loud.
 
----
 
-## Getting Started
+## Privacy
 
-### Prerequisites
-- Node.js 18.x or later
+Your camera feed stays entirely inside your browser using local WebRTC. No video frames are ever recorded, streamed, or uploaded to any server.
+
+Your speech audio is streamed only for real-time transcription and synthesis. We do not run facial emotion tracking, eye-contact metrics, or speculative behavioral scores. The feedback is based purely on what you say and how you defend your technical choices.
+
+
+## Running locally
+
+### Requirements
+- Node.js 18 or later
 - npm or yarn
 
-### 1. Clone the repository
+### Setup
+
+Clone the repository and install dependencies:
+
 ```bash
 git clone https://github.com/calmerism/RehearseWeb.git
 cd RehearseWeb
 npm install
 ```
 
-### 2. Configure Environment Variables
-Create a `.env.local` file in the project root:
+Create a `.env.local` file with your Azure credentials:
+
 ```env
-# Azure Cognitive Speech Services
 AZURE_SPEECH_KEY="your_azure_speech_key"
 AZURE_SPEECH_REGION="koreacentral"
-
-# Microsoft Foundry / Azure OpenAI
 FOUNDRY_ENDPOINT="https://your-resource.openai.azure.com/"
 FOUNDRY_API_KEY="your_foundry_api_key"
 FOUNDRY_MODEL="gpt-4o"
 ```
-*(Note: If cloud keys are not provided, Rehearse automatically runs in Demo Mode using the browser's built-in Web Speech API and local heuristic reasoning).*
 
-### 3. Run Development Server
+If you do not have Azure keys handy, you can leave them empty. Rehearse includes a built-in demo mode that uses your browser's native Web Speech API and local reasoning heuristics, so you can still run and test the full interview loop offline.
+
+Start the local server:
+
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 4. Run Automated Tests
+Open http://localhost:3000 in your browser.
+
+Run tests:
+
 ```bash
 npm test
 ```
 
-### 5. Type Checking & Production Build
-```bash
-npx tsc --noEmit
-npm run build
-```
 
----
+## Built with
 
-## Privacy & Responsible AI
+- Next.js 14 (App Router)
+- TypeScript
+- Azure Cognitive Speech Services (Continuous STT and Neural TTS)
+- Microsoft Foundry / Azure OpenAI (GPT-4o)
+- Tailwind CSS
+- Framer Motion
+- Vitest
 
-- **Zero Cloud Video**: Candidate webcam video is handled strictly in the browser using HTML5 `<video>` and WebRTC `getUserMedia()`. No camera feeds are uploaded or stored.
-- **Token Encapsulation**: Azure Speech subscription keys are kept server-side; browser clients authenticate via 10-minute ephemeral tokens issued by Azure STS.
-- **No Pseudo-Science**: Scoring is grounded entirely in observable technical arguments and trade-off articulation, without facial emotion analysis or speculative behavioral claims.
-- **Candidate Agency**: Complete control over microphone vs. keyboard input, camera toggle, question skipping, and session duration.
-
----
 
 ## License
 
-MIT License.
+MIT
