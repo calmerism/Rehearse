@@ -37,6 +37,17 @@ function cleanTextForSSML(text: string): string {
     .trim();
 }
 
+/**
+ * POST /api/speech/tts
+ *
+ * Studio-Quality Azure Neural Text-to-Speech Streaming Endpoint.
+ *
+ * Responsibilities:
+ * 1. Resolves friendly voice identifiers to full Azure Neural voice strings (Jenny, Guy, Ava, Aria).
+ * 2. Cleans text and encapsulates it in W3C SSML with natural conversational prosody.
+ * 3. Requests 24kHz 160kbps MP3 audio stream from Azure Speech REST API.
+ * 4. Streams raw audio buffer back to the browser for low-latency playback.
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json();

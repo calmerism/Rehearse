@@ -9,6 +9,11 @@ import {
 import { IFoundryService } from '@/services/foundry/types';
 import { ISpeechService } from '@/services/speech/types';
 
+/**
+ * Event taxonomy emitted by InterviewAgent across its conversational lifecycle.
+ * UI components subscribe to these events to update avatars, visualizers,
+ * timers, and transcripts reactively.
+ */
 export type AgentEvent =
   | { type: 'state_changed'; state: InterviewState }
   | { type: 'intro_started'; text: string }
@@ -19,6 +24,15 @@ export type AgentEvent =
   | { type: 'interview_completed'; feedback: FeedbackReportData }
   | { type: 'error'; message: string };
 
+/**
+ * InterviewAgent: Autonomous State Machine & Conversational Pacing Controller
+ *
+ * Responsibilities:
+ * 1. Orchestrates the full lifecycle: Lobby -> Intro -> Questioning -> Time Pacing -> Wrap-up -> Feedback.
+ * 2. Enforces meeting clock limits (10m, 20m, 30m) and graceful session conclusion.
+ * 3. Bridges Speech Services (STT/TTS) and Microsoft Foundry (GPT-4o reasoning).
+ * 4. Eliminates voice overlap by concatenating greeting + opening question into a single audio utterance.
+ */
 export class InterviewAgent {
   private session: InterviewSession;
   private foundryService: IFoundryService;
@@ -39,6 +53,10 @@ export class InterviewAgent {
     this.speechService = speechService;
   }
 
+  /**
+   * Subscribe to agent state changes and audio transcript events.
+   * Returns an unsubscribe callback for clean component unmounting.
+   */
   public on(listener: (event: AgentEvent) => void): () => void {
     this.eventListeners.push(listener);
     return () => {
@@ -46,6 +64,9 @@ export class InterviewAgent {
     };
   }
 
+  /**
+   * Dispatches events to all active listeners and updates internal state.
+   */
   private emit(event: AgentEvent): void {
     if (this.isAborted && event.type !== 'state_changed') return;
     if (event.type === 'state_changed') {
@@ -148,18 +169,30 @@ export class InterviewAgent {
    * Candidate or timer signals that the answer is finished
    * @param overrideTranscript optional manual or typed transcript
    */
+  /**
+   * Processes the candidate's spoken or typed answer.
+   *
+   * Flow:
+   * 1. Stops the speech recognizer and captures final transcript.
+   * 2. Calculates answer duration and appends to session answers.
+   * 3. Checks the autonomous duration clock: if scheduled time has expired, concludes immediately.
+   * 4. Sends conversational history to Microsoft Foundry (GPT-4o) for trade-off evaluation.
+   * 5. Synthesizes and speaks the adaptive follow-up, then re-arms the microphone.
+   *
+   * @param overrideTranscript Optional typed or edited transcript overriding audio STT
+   */
   public async submitAnswer(overrideTranscript?: string): Promise<void> {
     try {
       this.emit({ type: 'state_changed', state: 'thinking' });
 
-      // Stop speech recognizer
+      // Stop speech recognizer and finalize recognized text
       const audioTranscript = await this.speechService.stopListening();
       const finalTranscript = (overrideTranscript ?? audioTranscript ?? '').trim();
 
       const durationSeconds = Math.round((Date.now() - this.answerStartTime) / 1000);
       const currentQuestion = this.session.questions[this.session.questions.length - 1];
 
-      // Record answer
+      // Record candidate's answer with precise timing
       const answerRecord: Answer = {
         id: `ans_${Date.now()}`,
         questionId: currentQuestion ? currentQuestion.id : 'unknown',
@@ -174,7 +207,8 @@ export class InterviewAgent {
       const elapsedSec = this.getElapsedSeconds();
       const maxDurationSec = (this.session.context.durationMinutes || 10) * 60;
 
-      // Hard schedule stop: If scheduled time limit is reached, conclude immediately
+      // Autonomous Duration Clock Guard:
+      // If elapsed time matches or exceeds the scheduled duration, conclude gracefully.
       if (elapsedSec >= maxDurationSec) {
         await this.concludeInterview(
           `We have reached our scheduled ${this.session.context.durationMinutes}-minute time limit. Thank you for your time and thoughtful responses today. I will now generate your feedback report.`
@@ -182,7 +216,7 @@ export class InterviewAgent {
         return;
       }
 
-      // Invoke Foundry reasoning layer: evaluate answer & formulate next step
+      // Invoke Microsoft Foundry reasoning engine to evaluate answer and decide next turn
       const decision = await this.foundryService.evaluateAndGenerateNext(
         this.session.context,
         this.session.questions,
@@ -198,13 +232,13 @@ export class InterviewAgent {
 
       if (this.isAborted) return;
 
-      // Check if interview should conclude
+      // If the agent determines the interview objectives have been satisfied, wrap up
       if (decision.action === 'conclude') {
         await this.concludeInterview(decision.questionText);
         return;
       }
 
-      // Construct next question
+      // Construct and enqueue the next adaptive question
       const nextQuestion: Question = {
         id: `q_${this.session.questions.length + 1}`,
         text: decision.questionText,
@@ -220,7 +254,7 @@ export class InterviewAgent {
       this.emit({ type: 'question_asked', question: nextQuestion });
       this.emit({ type: 'state_changed', state: 'speaking' });
 
-      // AI speaks the question
+      // AI speaks the next challenge using Azure Neural TTS
       await this.speechService.speak(nextQuestion.text, (isSpeaking) => {
         if (!this.isAborted) {
           this.emit({ type: 'state_changed', state: isSpeaking ? 'speaking' : 'idle' });
@@ -229,7 +263,7 @@ export class InterviewAgent {
 
       if (this.isAborted) return;
 
-      // Seamlessly transition to listening
+      // Smoothly re-arm speech recognition for candidate's next verbal turn
       await this.startListeningForAnswer();
     } catch (err: any) {
       if (this.isAborted) return;

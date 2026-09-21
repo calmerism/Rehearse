@@ -1,6 +1,11 @@
 import { ISpeechService } from './types';
 import { MockSpeechService } from './mockSpeechService';
 
+/**
+ * Configuration contract for Azure Speech Services.
+ * Supports both temporary STS token authentication (recommended for browser security)
+ * and direct subscription key fallback (used in secure backend environments).
+ */
 export interface AzureSpeechConfig {
   subscriptionKey?: string;
   region?: string;
@@ -8,6 +13,15 @@ export interface AzureSpeechConfig {
   voiceName?: string;
 }
 
+/**
+ * AzureSpeechService: Direct Integration with Azure Cognitive Speech Services
+ *
+ * Capabilities:
+ * 1. Continuous Speech-to-Text (STT) with interim real-time streaming and final punctuation.
+ * 2. High-fidelity Neural Text-to-Speech (TTS) using Azure's 24kHz HD neural voices.
+ * 3. Token-based ephemeral authentication: API keys are never exposed in browser network inspection.
+ * 4. Dynamic voice mapping for natural interview prosody (Jenny, Guy, Ava).
+ */
 export class AzureSpeechService implements ISpeechService {
   private config: AzureSpeechConfig;
   private recognizer: any = null;
@@ -27,6 +41,10 @@ export class AzureSpeechService implements ISpeechService {
     return true;
   }
 
+  /**
+   * Lazily loads the official Microsoft Cognitive Services Speech SDK.
+   * Keeps initial bundle size compact by dynamic import.
+   */
   async initialize(): Promise<boolean> {
     if (typeof window === 'undefined') return false;
 
@@ -39,6 +57,10 @@ export class AzureSpeechService implements ISpeechService {
     }
   }
 
+  /**
+   * Constructs the Azure SpeechConfig object from either an ephemeral authorization token
+   * or a subscription key.
+   */
   private getSpeechConfig() {
     if (!this.sdk) throw new Error('Azure Speech SDK not loaded');
 

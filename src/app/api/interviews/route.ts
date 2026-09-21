@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server';
 import { CandidateContext, InterviewSession } from '@/types/interview';
 import { getFoundryService } from '@/services/foundry/foundryFactory';
 
+/**
+ * POST /api/interviews
+ *
+ * Initializes a new interview session.
+ *
+ * Steps:
+ * 1. Parses candidate context (role, duration, interview type, resume text, focus area).
+ * 2. Selects appropriate Foundry service (real Azure OpenAI or offline heuristic fallback).
+ * 3. Generates the spoken introduction and first technical question grounded in the candidate's resume.
+ * 4. Returns the initial session object with status: 'in_progress'.
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json();

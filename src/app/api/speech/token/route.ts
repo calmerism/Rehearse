@@ -1,5 +1,16 @@
 import { NextResponse } from 'next/server';
 
+/**
+ * GET /api/speech/token
+ *
+ * Ephemeral Security Token Exchange for Azure Cognitive Speech.
+ *
+ * Security Architecture:
+ * - Direct Azure Speech subscription keys are kept strictly in server-side environment variables.
+ * - This endpoint issues a short-lived (10-minute) authorization token via Azure STS.
+ * - The browser client uses this token to connect to the Azure Speech WebSocket without
+ *   ever possessing or leaking the underlying subscription key.
+ */
 export async function GET(request: Request) {
   const speechKey =
     request.headers.get('x-speech-key') ||

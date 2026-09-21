@@ -5,6 +5,18 @@ import mammoth from 'mammoth';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+/**
+ * POST /api/resume/parse
+ *
+ * In-Memory Serverless Resume Document Text Extraction.
+ *
+ * Privacy & Engineering Details:
+ * 1. Accepts multipart/form-data uploads up to 10MB (.pdf, .docx, .txt).
+ * 2. Parses PDF streams in-memory via 'unpdf' (Wasm-based, no external binary dependencies).
+ * 3. Parses Word .docx documents via 'mammoth' raw text extraction.
+ * 4. Resumes are NEVER stored on disk or in persistent databases—text is returned strictly
+ *    in the HTTP response body to the candidate's browser session.
+ */
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();

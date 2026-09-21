@@ -6,6 +6,10 @@ import {
 } from '@/types/interview';
 import { IFoundryService, NextQuestionDecision } from './types';
 
+/**
+ * Microsoft Foundry & Azure OpenAI Service Configuration.
+ * Compatible with Azure OpenAI resource endpoints and Microsoft Foundry model deployments.
+ */
 export interface FoundryConfig {
   endpoint: string;
   apiKey: string;
@@ -13,6 +17,16 @@ export interface FoundryConfig {
   apiVersion?: string;
 }
 
+/**
+ * FoundryService: Microsoft Foundry / Azure OpenAI Reasoning Engine
+ *
+ * Core Capabilities:
+ * 1. Evaluates candidate verbal responses against engineering rubrics.
+ * 2. Enforces structured JSON output schema for reliable frontend parsing.
+ * 3. Ingests candidate resume content to anchor interview challenges in real experience.
+ * 4. Implements dynamic counter-questioning: challenges trade-offs rather than testing trivia.
+ * 5. Synthesizes a multi-dimensional diagnostic report upon session completion.
+ */
 export class FoundryService implements IFoundryService {
   private config: FoundryConfig;
 
@@ -27,6 +41,10 @@ export class FoundryService implements IFoundryService {
     return true;
   }
 
+  /**
+   * Dispatches a chat completion request to the Microsoft Foundry / Azure OpenAI endpoint.
+   * If a JSON schema is requested, enforces response_format: { type: 'json_object' }.
+   */
   private async callChatCompletion(messages: any[], jsonSchema?: any): Promise<any> {
     let cleanEndpoint = this.config.endpoint.replace(/\/$/, '');
     try {

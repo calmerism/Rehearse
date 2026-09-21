@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server';
 import { getFoundryService } from '@/services/foundry/foundryFactory';
 import { CandidateContext, Question, Answer } from '@/types/interview';
 
+/**
+ * POST /api/interviews/[id]/answer
+ *
+ * Evaluates candidate's spoken or typed answer in real time.
+ *
+ * Steps:
+ * 1. Validates answer transcript and matching question payload.
+ * 2. Invokes Microsoft Foundry to extract entities, verify trade-offs, and assess depth.
+ * 3. Formulates either an adaptive follow-up question or a wrap-up action.
+ * 4. Returns the decision payload ({ evaluation, action, questionText, topic, difficulty }).
+ */
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }

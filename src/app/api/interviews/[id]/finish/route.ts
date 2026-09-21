@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server';
 import { getFoundryService } from '@/services/foundry/foundryFactory';
 import { CandidateContext, Question, Answer } from '@/types/interview';
 
+/**
+ * POST /api/interviews/[id]/finish
+ *
+ * Concludes the interview session and synthesizes the diagnostic report.
+ *
+ * Steps:
+ * 1. Collects all questions, answers, and evaluations recorded during the session.
+ * 2. Invokes Microsoft Foundry to generate qualitative scores (Technical Correctness,
+ *    Trade-off Articulation, Spoken Clarity) and identified weakness areas.
+ * 3. Returns the structured FeedbackReportData payload.
+ */
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
