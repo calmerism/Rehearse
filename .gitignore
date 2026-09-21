@@ -18,6 +18,7 @@
 *.pem
 *.docx
 *.pptx
+keynote.html
 
 # debug
 npm-debug.log*
