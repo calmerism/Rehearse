@@ -108,6 +108,20 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
     }
   };
 
+  const handleLoadDemoResume = async () => {
+    setParseError(null);
+    setIsParsing(true);
+    try {
+      const res = await fetch('/demo-resume.pdf');
+      const blob = await res.blob();
+      const file = new File([blob], 'demo-resume.pdf', { type: 'application/pdf' });
+      await handleFileUpload(file);
+    } catch (err: any) {
+      setParseError('Failed to load demo resume');
+      setIsParsing(false);
+    }
+  };
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
@@ -410,16 +424,25 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
               </p>
             )}
 
-            {/* Manual text toggle for flexibility */}
+            {/* Demo resume and manual text toggle */}
             {!uploadedFile && !isParsing && (
-              <div className="mt-2 text-right">
-                <button
-                  type="button"
-                  onClick={() => setShowPreview(!showPreview)}
-                  className="text-[12px] text-apple-inkMuted hover:text-apple-ink dark:hover:text-white transition-colors"
-                >
-                  {showPreview ? 'Hide manual text' : 'Or paste text manually'}
-                </button>
+              <div className="mt-2.5">
+                <div className="flex items-center justify-between text-[12px]">
+                  <button
+                    type="button"
+                    onClick={handleLoadDemoResume}
+                    className="text-apple-amber-600 dark:text-apple-amber-400 hover:underline font-medium"
+                  >
+                    + Load Demo Resume (Alex Chen)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowPreview(!showPreview)}
+                    className="text-apple-inkMuted hover:text-apple-ink dark:hover:text-white transition-colors"
+                  >
+                    {showPreview ? 'Hide manual text' : 'Or paste text manually'}
+                  </button>
+                </div>
                 {showPreview && (
                   <textarea
                     rows={3}
