@@ -15,6 +15,89 @@ export class MockSpeechService implements ISpeechService {
   private static activeAbortController: AbortController | null = null;
   private static activeResolve: (() => void) | null = null;
   private static cachedVoices: SpeechSynthesisVoice[] = [];
+  private static audioCache = new Map<string, ArrayBuffer>();
+
+  /**
+   * Pre-warms and unlocks the AudioContext synchronously inside user interaction events (clicks).
+   * Prevents browser autoplay policies from blocking subsequent audio playback.
+   */
+  public static warmUpAudioContext(): void {
+    if (typeof window === 'undefined') return;
+    try {
+      const ctx = MockSpeechService.getAudioContext();
+      if (ctx && ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+    } catch {}
+  }
+
+  /**
+   * Asynchronously pre-fetches and caches neural speech audio in memory.
+   * Eliminates network latency and timeout risks for known static phrases (e.g. session conclusion).
+   */
+  public static async prefetch(text: string, voice?: string): Promise<void> {
+    if (typeof window === 'undefined' || typeof fetch !== 'function') return;
+    const cleanText = text.trim();
+    if (!cleanText) return;
+
+    try {
+      const prefs = sessionStore.getPreferences();
+      if (prefs.forceDemoMode) return;
+
+      const voiceName = voice || prefs.voiceName || 'en-US-JennyNeural';
+      const cacheKey = `${voiceName}:${cleanText}`;
+      if (MockSpeechService.audioCache.has(cacheKey)) return;
+
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (prefs.azureSpeechKey) headers['x-speech-key'] = prefs.azureSpeechKey;
+      if (prefs.azureSpeechRegion) headers['x-speech-region'] = prefs.azureSpeechRegion;
+
+      const res = await fetch('/api/speech/tts', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          text: cleanText,
+          voice: voiceName,
+        }),
+      });
+
+      if (res.ok) {
+        const arrayBuffer = await res.arrayBuffer();
+        if (arrayBuffer && arrayBuffer.byteLength > 0) {
+          MockSpeechService.audioCache.set(cacheKey, arrayBuffer);
+        }
+      }
+    } catch {
+      // Pre-fetching in background is non-blocking
+    }
+  }
+
+  /**
+   * Determines if a browser SpeechSynthesisVoice is high-fidelity and non-robotic.
+   */
+  public static isNaturalVoice(voice: SpeechSynthesisVoice): boolean {
+    const n = voice.name.toLowerCase();
+    const roboticNames = [
+      'david', 'zira', 'mark', 'desktop', 'albert', 'bad news', 'bahh',
+      'bells', 'boing', 'bubbles', 'cellos', 'deranged', 'fred', 'good news',
+      'hysterical', 'junior', 'kathy', 'organ', 'ralph', 'superstar',
+      'trinoids', 'whisper', 'wobble', 'zarvox', 'jester', 'pipe organ', 'victor'
+    ];
+    if (roboticNames.some((r) => n.includes(r))) return false;
+
+    return (
+      n.includes('siri') ||
+      n.includes('natural') ||
+      n.includes('neural') ||
+      n.includes('online') ||
+      n.includes('enhanced') ||
+      n.includes('premium') ||
+      n.includes('google us english') ||
+      n.includes('google uk english female') ||
+      n.includes('samantha') ||
+      n.includes('ava')
+    );
+  }
 
   public static getAudioContext(): any {
     if (typeof window === 'undefined') return null;
@@ -95,10 +178,10 @@ export class MockSpeechService implements ISpeechService {
 
     // Filter out known legacy robotic / novelty synthesizers
     const roboticNames = [
-      'albert', 'bad news', 'bahh', 'bells', 'boing', 'bubbles', 'cellos',
-      'deranged', 'fred', 'good news', 'hysterical', 'junior', 'kathy',
-      'organ', 'ralph', 'superstar', 'trinoids', 'whisper', 'wobble', 'zarvox',
-      'jester', 'pipe organ', 'victor'
+      'david', 'zira', 'mark', 'desktop', 'albert', 'bad news', 'bahh',
+      'bells', 'boing', 'bubbles', 'cellos', 'deranged', 'fred', 'good news',
+      'hysterical', 'junior', 'kathy', 'organ', 'ralph', 'superstar',
+      'trinoids', 'whisper', 'wobble', 'zarvox', 'jester', 'pipe organ', 'victor'
     ];
 
     const englishVoices = voices.filter(
@@ -108,7 +191,10 @@ export class MockSpeechService implements ISpeechService {
     );
 
     if (englishVoices.length === 0) {
-      return voices.find((v) => v.lang.startsWith('en')) || voices[0] || null;
+      const nonRobotic = voices.filter(
+        (v) => !roboticNames.some((r) => v.name.toLowerCase().includes(r))
+      );
+      return nonRobotic.find((v) => v.lang.startsWith('en')) || nonRobotic[0] || null;
     }
 
     // Tier 1: Apple Siri & High-definition Enhanced/Premium Neural voices
@@ -153,7 +239,7 @@ export class MockSpeechService implements ISpeechService {
     if (tier3) return tier3;
 
     // Tier 4: Default US English or first non-robotic English voice
-    return englishVoices.find((v) => v.lang === 'en-US') || englishVoices[0];
+    return englishVoices.find((v) => v.lang === 'en-US') || englishVoices[0] || null;
   }
 
   /**
@@ -324,162 +410,64 @@ export class MockSpeechService implements ISpeechService {
     }
   }
 
-  async speak(text: string, onSpeakingState?: (isSpeaking: boolean) => void): Promise<void> {
-    if (typeof window === 'undefined') return;
-
-    // Guaranteed: silence all previous audio before starting
-    MockSpeechService.stopAllAudio();
-
-    const currentSpeechId = ++MockSpeechService.globalSpeechId;
-    const abortController = new AbortController();
-    MockSpeechService.activeAbortController = abortController;
-
-    const prefs = sessionStore.getPreferences();
-
-    // 1. Try true Microsoft Azure Neural TTS (studio-grade human voice)
-    if (!prefs.forceDemoMode && typeof fetch === 'function') {
+  private async playAudioBuffer(
+    arrayBuffer: ArrayBuffer,
+    text: string,
+    currentSpeechId: number,
+    onSpeakingState?: (isSpeaking: boolean) => void
+  ): Promise<void> {
+    // A. High-fidelity Web Audio API buffer playback (Direct PCM, zero initial frame drop)
+    const audioCtx = MockSpeechService.getAudioContext();
+    if (audioCtx) {
       try {
-        const res = await fetch('/api/speech/tts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text,
-            voice: prefs.voiceName || 'en-US-JennyNeural',
-          }),
-          signal: abortController.signal,
-        });
-
-        // Aborted or superseded by another call
+        if (audioCtx.state === 'suspended') {
+          await audioCtx.resume();
+        }
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
         if (currentSpeechId !== MockSpeechService.globalSpeechId) {
           return;
         }
 
-        if (res.ok) {
-          const arrayBuffer = await res.arrayBuffer();
-          if (currentSpeechId !== MockSpeechService.globalSpeechId) {
-            return;
-          }
+        return await new Promise<void>((resolve) => {
+          let settled = false;
+          const source = audioCtx.createBufferSource();
+          source.buffer = audioBuffer;
+          source.connect(audioCtx.destination);
+          MockSpeechService.globalActiveSource = source;
 
-          // A. High-fidelity Web Audio API buffer playback (Direct PCM, zero initial frame drop)
-          const audioCtx = MockSpeechService.getAudioContext();
-          if (audioCtx) {
+          const cleanup = () => {
+            if (settled) return;
+            settled = true;
+            MockSpeechService.activeResolve = null;
+            if (MockSpeechService.globalActiveSource === source) {
+              MockSpeechService.globalActiveSource = null;
+            }
+            if (this.speechTimeout) {
+              clearTimeout(this.speechTimeout);
+              this.speechTimeout = null;
+            }
+            onSpeakingState?.(false);
+            resolve();
+          };
+
+          MockSpeechService.activeResolve = () => {
             try {
-              if (audioCtx.state === 'suspended') {
-                await audioCtx.resume();
-              }
-              const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
-              if (currentSpeechId !== MockSpeechService.globalSpeechId) {
-                return;
-              }
+              source.stop();
+            } catch {}
+            cleanup();
+          };
 
-              return await new Promise<void>((resolve) => {
-                let settled = false;
-                const source = audioCtx.createBufferSource();
-                source.buffer = audioBuffer;
-                source.connect(audioCtx.destination);
-                MockSpeechService.globalActiveSource = source;
+          source.onended = cleanup;
 
-                const cleanup = () => {
-                  if (settled) return;
-                  settled = true;
-                  MockSpeechService.activeResolve = null;
-                  if (MockSpeechService.globalActiveSource === source) {
-                    MockSpeechService.globalActiveSource = null;
-                  }
-                  if (this.speechTimeout) {
-                    clearTimeout(this.speechTimeout);
-                    this.speechTimeout = null;
-                  }
-                  onSpeakingState?.(false);
-                  resolve();
-                };
+          const durationMs = Math.max(audioBuffer.duration * 1000 + 400, 3000);
+          this.speechTimeout = setTimeout(cleanup, durationMs);
 
-                MockSpeechService.activeResolve = () => {
-                  try {
-                    source.stop();
-                  } catch {}
-                  cleanup();
-                };
-
-                source.onended = cleanup;
-
-                const durationMs = Math.max(audioBuffer.duration * 1000 + 400, 3000);
-                this.speechTimeout = setTimeout(cleanup, durationMs);
-
-                onSpeakingState?.(true);
-                // Start playback with a slight 20ms audio scheduling lead
-                source.start(audioCtx.currentTime + 0.02);
-              });
-            } catch (webAudioErr) {
-              console.warn('[MockSpeechService] Web Audio decode failed, falling back to HTMLAudioElement:', webAudioErr);
-            }
-          }
-
-          // B. Fallback: HTML5 Audio Element
-          const blob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
-          const audioUrl = URL.createObjectURL(blob);
-          MockSpeechService.globalActiveAudioUrl = audioUrl;
-
-          const audio = new Audio(audioUrl);
-          audio.preload = 'auto';
-          MockSpeechService.globalActiveAudio = audio;
-
-          return await new Promise<void>((resolve) => {
-            let settled = false;
-
-            MockSpeechService.activeResolve = () => {
-              if (settled) return;
-              settled = true;
-              onSpeakingState?.(false);
-              resolve();
-            };
-
-            const cleanup = () => {
-              if (settled) return;
-              settled = true;
-              MockSpeechService.activeResolve = null;
-              if (this.speechTimeout) {
-                clearTimeout(this.speechTimeout);
-                this.speechTimeout = null;
-              }
-              onSpeakingState?.(false);
-              if (MockSpeechService.globalActiveAudioUrl === audioUrl) {
-                try {
-                  URL.revokeObjectURL(audioUrl);
-                } catch {}
-                MockSpeechService.globalActiveAudioUrl = null;
-              }
-              if (MockSpeechService.globalActiveAudio === audio) {
-                MockSpeechService.globalActiveAudio = null;
-              }
-              resolve();
-            };
-
-            const maxDurationMs = Math.min(Math.max(text.length * 120, 5000), 30000);
-            this.speechTimeout = setTimeout(cleanup, maxDurationMs);
-
-            audio.onplay = () => {
-              if (currentSpeechId === MockSpeechService.globalSpeechId) {
-                onSpeakingState?.(true);
-              }
-            };
-            audio.onended = cleanup;
-            audio.onerror = () => cleanup();
-
-            const playPromise = audio.play();
-            if (playPromise !== undefined) {
-              playPromise.catch((err) => {
-                console.warn('[MockSpeechService] Audio play blocked or not supported:', err);
-                cleanup();
-              });
-            }
-          });
-        }
-      } catch (e: any) {
-        if (e.name === 'AbortError' || currentSpeechId !== MockSpeechService.globalSpeechId) {
-          return;
-        }
-        console.warn('[MockSpeechService] Azure TTS error, falling back to Web Speech:', e);
+          onSpeakingState?.(true);
+          // Start playback with a slight 20ms audio scheduling lead
+          source.start(audioCtx.currentTime + 0.02);
+        });
+      } catch (webAudioErr) {
+        console.warn('[MockSpeechService] Web Audio decode failed, falling back to HTMLAudioElement:', webAudioErr);
       }
     }
 
@@ -487,7 +475,171 @@ export class MockSpeechService implements ISpeechService {
       return;
     }
 
-    // 2. High-fidelity Web Speech fallback (Siri / Google Neural / Samantha)
+    // B. Fallback: HTML5 Audio Element
+    const blob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
+    const audioUrl = URL.createObjectURL(blob);
+    MockSpeechService.globalActiveAudioUrl = audioUrl;
+
+    const audio = new Audio(audioUrl);
+    audio.preload = 'auto';
+    MockSpeechService.globalActiveAudio = audio;
+
+    return await new Promise<void>((resolve) => {
+      let settled = false;
+
+      MockSpeechService.activeResolve = () => {
+        if (settled) return;
+        settled = true;
+        onSpeakingState?.(false);
+        resolve();
+      };
+
+      const cleanup = () => {
+        if (settled) return;
+        settled = true;
+        MockSpeechService.activeResolve = null;
+        if (this.speechTimeout) {
+          clearTimeout(this.speechTimeout);
+          this.speechTimeout = null;
+        }
+        onSpeakingState?.(false);
+        if (MockSpeechService.globalActiveAudioUrl === audioUrl) {
+          try {
+            URL.revokeObjectURL(audioUrl);
+          } catch {}
+          MockSpeechService.globalActiveAudioUrl = null;
+        }
+        if (MockSpeechService.globalActiveAudio === audio) {
+          MockSpeechService.globalActiveAudio = null;
+        }
+        resolve();
+      };
+
+      const maxDurationMs = Math.min(Math.max(text.length * 120, 5000), 30000);
+      this.speechTimeout = setTimeout(cleanup, maxDurationMs);
+
+      audio.onplay = () => {
+        if (currentSpeechId === MockSpeechService.globalSpeechId) {
+          onSpeakingState?.(true);
+        }
+      };
+      audio.onended = cleanup;
+      audio.onerror = () => cleanup();
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn('[MockSpeechService] Audio play blocked or not supported:', err);
+          cleanup();
+        });
+      }
+    });
+  }
+
+  async speak(text: string, onSpeakingState?: (isSpeaking: boolean) => void): Promise<void> {
+    if (typeof window === 'undefined') return;
+
+    // Guaranteed: silence all previous audio before starting
+    MockSpeechService.stopAllAudio();
+
+    const cleanText = text.trim();
+    if (!cleanText) return;
+
+    const currentSpeechId = ++MockSpeechService.globalSpeechId;
+    const abortController = new AbortController();
+    MockSpeechService.activeAbortController = abortController;
+
+    const prefs = sessionStore.getPreferences();
+    const voiceName = prefs.voiceName || 'en-US-JennyNeural';
+    const cacheKey = `${voiceName}:${cleanText}`;
+
+    // 1. Instantaneous Cache Hit (0ms network latency for pre-fetched conclusion & questions)
+    const cachedBuffer = MockSpeechService.audioCache.get(cacheKey);
+    if (cachedBuffer && cachedBuffer.byteLength > 0) {
+      if (currentSpeechId !== MockSpeechService.globalSpeechId) return;
+      await this.playAudioBuffer(cachedBuffer, cleanText, currentSpeechId, onSpeakingState);
+      return;
+    }
+
+    // 2. Microsoft Azure Neural TTS (studio-grade human voice)
+    if (!prefs.forceDemoMode && typeof fetch === 'function') {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (prefs.azureSpeechKey) headers['x-speech-key'] = prefs.azureSpeechKey;
+      if (prefs.azureSpeechRegion) headers['x-speech-region'] = prefs.azureSpeechRegion;
+
+      const fetchTTS = async (): Promise<Response> => {
+        return fetch('/api/speech/tts', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            text: cleanText,
+            voice: voiceName,
+          }),
+          signal: abortController.signal,
+        });
+      };
+
+      try {
+        let res: Response | null = null;
+        try {
+          res = await fetchTTS();
+        } catch (firstErr: any) {
+          if (firstErr.name === 'AbortError' || currentSpeechId !== MockSpeechService.globalSpeechId) {
+            return;
+          }
+          // Quick retry for cold starts or momentary socket resets
+          await new Promise((r) => setTimeout(r, 200));
+          if (currentSpeechId !== MockSpeechService.globalSpeechId) return;
+          res = await fetchTTS();
+        }
+
+        if (currentSpeechId !== MockSpeechService.globalSpeechId) {
+          return;
+        }
+
+        if (res && res.ok) {
+          const arrayBuffer = await res.arrayBuffer();
+          if (currentSpeechId !== MockSpeechService.globalSpeechId) {
+            return;
+          }
+
+          if (arrayBuffer && arrayBuffer.byteLength > 0) {
+            MockSpeechService.audioCache.set(cacheKey, arrayBuffer);
+            await this.playAudioBuffer(arrayBuffer, cleanText, currentSpeechId, onSpeakingState);
+            return;
+          }
+        }
+      } catch (e: any) {
+        if (e.name === 'AbortError' || currentSpeechId !== MockSpeechService.globalSpeechId) {
+          return;
+        }
+        console.warn('[MockSpeechService] Azure TTS error:', e);
+      }
+
+      // If Azure TTS is online but fails, DO NOT degrade to robotic voice
+      // unless browser has a verified natural neural voice available.
+      if (currentSpeechId !== MockSpeechService.globalSpeechId) return;
+
+      const voices = await MockSpeechService.getAvailableVoices();
+      const selectedVoice = MockSpeechService.selectBestVoice(voices, prefs.voiceName);
+      const isVoiceNatural = selectedVoice && MockSpeechService.isNaturalVoice(selectedVoice);
+
+      if (!isVoiceNatural) {
+        // Suppress robotic Windows/OS synthesizer to maintain interview quality
+        console.info('[MockSpeechService] Natural voice unavailable; suppressing legacy robotic synthesizer.');
+        onSpeakingState?.(true);
+        const simulatedMs = Math.min(Math.max(cleanText.length * 45, 1200), 4500);
+        await new Promise((r) => setTimeout(r, simulatedMs));
+        onSpeakingState?.(false);
+        return;
+      }
+    }
+
+    if (currentSpeechId !== MockSpeechService.globalSpeechId) {
+      return;
+    }
+
+    // 3. High-fidelity Web Speech fallback (used when forceDemoMode is enabled or natural voice verified)
     if ('speechSynthesis' in window) {
       const voices = await MockSpeechService.getAvailableVoices();
       const selectedVoice = MockSpeechService.selectBestVoice(voices, prefs.voiceName);
@@ -506,7 +658,7 @@ export class MockSpeechService implements ISpeechService {
           resolve();
         };
 
-        const maxDurationMs = Math.min(Math.max(text.length * 85, 2500), 12000);
+        const maxDurationMs = Math.min(Math.max(cleanText.length * 85, 2500), 12000);
         this.speechTimeout = setTimeout(() => {
           safeResolve();
         }, maxDurationMs);
@@ -517,8 +669,8 @@ export class MockSpeechService implements ISpeechService {
 
           onSpeakingState?.(true);
 
-          const cleanText = this.sanitizeForSpeech(text);
-          const utterance = new SpeechSynthesisUtterance(cleanText);
+          const speechCleanText = this.sanitizeForSpeech(cleanText);
+          const utterance = new SpeechSynthesisUtterance(speechCleanText);
 
           utterance.rate = prefs.speechRate ? Math.max(0.9, Math.min(prefs.speechRate, 1.2)) : 1.02;
           utterance.pitch = 1.0;
@@ -547,7 +699,7 @@ export class MockSpeechService implements ISpeechService {
       });
     } else {
       onSpeakingState?.(true);
-      const simulatedDurationMs = Math.min(Math.max(text.length * 60, 2000), 7000);
+      const simulatedDurationMs = Math.min(Math.max(cleanText.length * 60, 2000), 7000);
       await new Promise((r) => setTimeout(r, simulatedDurationMs));
       onSpeakingState?.(false);
     }

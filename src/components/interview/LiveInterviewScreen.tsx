@@ -146,6 +146,12 @@ export const LiveInterviewScreen: React.FC<LiveInterviewScreenProps> = ({
     // Immediately stop any leftover audio from lobby / preview / earlier rehearsals
     MockSpeechService.stopAllAudio();
 
+    // Pre-cache closing speech audio so ending the rehearsal is instantaneous with zero network latency
+    MockSpeechService.prefetch('We will conclude our session here. Generating your feedback report.');
+    MockSpeechService.prefetch(
+      `We have reached our scheduled ${context.durationMinutes}-minute time limit. Thank you for your time and answers today. Generating your feedback report now.`
+    );
+
     const initInterview = async () => {
       try {
         const speechService = await getSpeechService();
@@ -243,6 +249,7 @@ export const LiveInterviewScreen: React.FC<LiveInterviewScreenProps> = ({
   const handleEndInterviewEarly = async () => {
     if (isConcludingRef.current) return;
     isConcludingRef.current = true;
+    MockSpeechService.warmUpAudioContext();
     if (!agentRef.current) {
       onAbort();
       return;
@@ -304,7 +311,8 @@ export const LiveInterviewScreen: React.FC<LiveInterviewScreenProps> = ({
 
           <button
             onClick={handleEndInterviewEarly}
-            className="px-4 py-1.5 text-[12px] sm:text-[13px] font-semibold text-white bg-apple-amber-500 hover:bg-apple-amber-600 active:scale-[0.97] rounded-full transition-all apple-action shadow-sm"
+            disabled={isConcludingRef.current}
+            className="px-4 py-1.5 text-[12px] sm:text-[13px] font-semibold text-white bg-apple-amber-500 hover:bg-apple-amber-600 active:scale-[0.97] rounded-full transition-all apple-action shadow-sm disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
           >
             End
           </button>

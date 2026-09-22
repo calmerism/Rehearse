@@ -272,6 +272,7 @@ export const InterviewLobby: React.FC<InterviewLobbyProps> = ({
           onClick={() => {
             if (isStarting) return;
             setIsStarting(true);
+            MockSpeechService.warmUpAudioContext();
 
             // Cleanly release mic and camera preview before starting live session
             if (micStreamRef.current) {
