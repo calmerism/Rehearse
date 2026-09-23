@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rehearse — System architecture flow</title>
+  <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin />
+  <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'SF Pro Display';
+      src: url('https://fonts.cdnfonts.com/s/15011/SFPRODISPLAYREGULAR.woff') format('woff');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SF Pro Display';
+      src: url('https://fonts.cdnfonts.com/s/15011/SFPRODISPLAYMEDIUM.woff') format('woff');
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'SF Pro Display';
+      src: url('https://fonts.cdnfonts.com/s/15011/SFPRODISPLAYBOLD.woff') format('woff');
+      font-weight: 600;
+      font-style: normal;
+    }
+
+    :root {
+      --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+      --font-text: "SF Pro Text", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+
+      /* Light Mode (Faithful to Reference Design & Apple HIG) */
+      --bg: #f5f5f7;
+      --canvas-border: #e5e5ea;
+      --card-bg: #ffffff;
+      --card-border: #e5e5ea;
+      --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.02);
+      --row-bg: #f9f9fb;
+      --row-border: #ebebed;
+      --text-title: #1d1d1f;
+      --text-body: #1d1d1f;
+      --text-muted: #6e6e73;
+      --text-subtle: #86868b;
+      --header-accent: #0f766e;
+      --accent: #d05236;
+      --accent-bg: rgba(208, 82, 54, 0.06);
+      --accent-border: #d05236;
+      --accent-text: #ffffff;
+      --action-shadow: 0 2px 6px rgba(208, 82, 54, 0.22);
+      --connector: #d05236;
+      --badge-bg: #ffffff;
+      --badge-border: #d2d2d7;
+      --toggle-bg: #e5e5ea;
+      --toggle-active: #ffffff;
+    }
+
+    html[data-theme="dark"] {
+      /* Apple Pro Dark Mode (Zinc & Slate, No Neon Clichés) */
+      --bg: #0c0d10;
+      --canvas-border: #232733;
+      --card-bg: #15171e;
+      --card-border: #242938;
+      --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+      --row-bg: #1c202b;
+      --row-border: #293042;
+      --text-title: #f5f5f7;
+      --text-body: #e4e4e7;
+      --text-muted: #9ca3af;
+      --text-subtle: #6b7280;
+      --header-accent: #2dd4bf;
+      --accent: #e48229;
+      --accent-bg: rgba(228, 130, 41, 0.12);
+      --accent-border: #e48229;
+      --accent-text: #ffffff;
+      --action-shadow: 0 2px 8px rgba(228, 130, 41, 0.26);
+      --connector: #e48229;
+      --badge-bg: #1c202b;
+      --badge-border: #2b3345;
+      --toggle-bg: #1c202b;
+      --toggle-active: #2a3142;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-body);
+      font-family: var(--font-text);
+      padding: 32px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .canvas {
+      width: 100%;
+      max-width: 1220px;
+      position: relative;
+    }
+
+    /* Page Header */
+    .page-header {
+      margin-bottom: 34px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px solid var(--canvas-border);
+      padding-bottom: 18px;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--text-title);
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+    }
+
+    .page-subtitle {
+      font-family: var(--font-display);
+      font-size: 14.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-top: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      font-family: var(--font-display);
+      font-size: 12px;
+      color: var(--text-muted);
+      border: 1px solid var(--badge-border);
+      padding: 5px 12px;
+      border-radius: 9999px;
+      background: var(--badge-bg);
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    /* Apple Segmented Theme Switcher */
+    .theme-toggle {
+      display: flex;
+      background: var(--toggle-bg);
+      padding: 3px;
+      border-radius: 9999px;
+      border: 1px solid var(--canvas-border);
+    }
+
+    .theme-btn {
+      border: none;
+      background: transparent;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-family: var(--font-display);
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .theme-btn.active {
+      background: var(--toggle-active);
+      color: var(--text-title);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      font-weight: 600;
+    }
+
+    /* Diagram Canvas */
+    #diagram-canvas {
+      position: relative;
+      padding-top: 40px;
+      padding-right: 32px;
+    }
+
+    /* Flow Rows */
+    .flow-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 10;
+    }
+
+    .bottom-flow-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 18px;
+      position: relative;
+      z-index: 10;
+      margin-top: 52px;
+    }
+
+    /* Cards (Apple Grouped Container) */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: var(--card-shadow);
+      flex: 1;
+      max-width: 258px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .bottom-flow-row .card {
+      flex: 1;
+      max-width: 258px;
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 15.5px;
+      font-weight: 600;
+      color: var(--header-accent);
+      text-align: center;
+      padding-bottom: 9px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 2px;
+      letter-spacing: -0.015em;
+    }
+
+    /* Flat Item Rows (No Container Clutter / Anti-Slop) */
+    .item {
+      background: var(--row-bg);
+      border: 1px solid var(--row-border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .item-key {
+      font-family: var(--font-text);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: -0.005em;
+    }
+
+    .item-val {
+      font-family: var(--font-display);
+      color: var(--text-title);
+      font-weight: 600;
+      font-size: 13.5px;
+      line-height: 1.35;
+      letter-spacing: -0.015em;
+    }
+
+    .item-desc {
+      font-family: var(--font-text);
+      color: var(--text-muted);
+      font-size: 12.5px;
+      line-height: 1.35;
+      letter-spacing: -0.005em;
+    }
+
+    /* Distinct Apple Action Trigger Button */
+    .action-box {
+      background: var(--accent);
+      border: 1px solid var(--accent-border);
+      border-radius: 9px;
+      padding: 9px 12px;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-text);
+      text-align: center;
+      margin-top: 4px;
+      letter-spacing: -0.015em;
+      box-shadow: var(--action-shadow);
+      user-select: none;
+      transition: transform 0.1s ease;
+    }
+
+    .action-box:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Inline Connectors */
+    .inline-arrow {
+      flex-shrink: 0;
+      width: 28px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* SVG Overlay for curved loops */
+    #connector-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="canvas">
+
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">Rehearse — System architecture flow</h1>
+        <p class="page-subtitle">What we used, why we picked it, and how the interview loop adapts.</p>
+      </div>
+      <div class="header-actions">
+        <div class="theme-toggle">
+          <button id="btn-theme-light" class="theme-btn active" onclick="setTheme('light')">Light</button>
+          <button id="btn-theme-dark" class="theme-btn" onclick="setTheme('dark')">Dark</button>
+        </div>
+        <div class="badge">Azure AI-103</div>
+      </div>
+    </header>
+
+    <div id="diagram-canvas">
+
+      <!-- Dynamic SVG Overlay for Curved Connector Lines -->
+      <svg id="connector-svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path id="arrow-path" d="M 0 0 L 7 3.5 L 0 7 z" fill="var(--connector)" />
+          </marker>
+        </defs>
+
+        <!-- Top Closed-Loop: Feedback (Card 4) -> Setup (Card 1) -->
+        <path id="path-top-loop" fill="none" stroke="var(--connector)" stroke-width="1.75" marker-end="url(#arrow)" />
+
+        <!-- Down Branch: Setup (Card 1) -> Scenarios (Card 5) -->
+        <path id="path-branch-down" fill="none" stroke="var(--connector)" stroke-width="1.75" marker-end="url(#arrow)" />
+
+        <!-- Right Loop: Feedback (Card 4) -> Targeted Practice (Card 7) -->
+        <path id="path-feedback-loop" fill="none" stroke="var(--connector)" stroke-width="1.75" marker-end="url(#arrow)" />
+      </svg>
+
+      <!-- TOP ROW: LIVE INTERVIEW PIPELINE -->
+      <div class="flow-row">
+
+        <!-- Card 1 -->
+        <div id="card-1" class="card">
+          <div class="card-title">Setup & context</div>
+          <div class="item">
+            <span class="item-key">Input</span>
+            <span class="item-val">Role, duration & resume</span>
+          </div>
+          <div class="item">
+            <span class="item-key">What we used</span>
+            <span class="item-val">unpdf + mammoth</span>
+          </div>
+          <div class="item">
+            <span class="item-key">Why we picked it</span>
+            <span class="item-desc">In-memory; 0 disk storage</span>
+          </div>
+          <div class="action-box">Start interview → grounded</div>
+        </div>
+
+        <!-- Inline Arrow 1 -> 2 -->
+        <svg class="inline-arrow" viewBox="0 0 30 16">
+          <path d="M 0 8 L 22 8" stroke="var(--connector)" stroke-width="1.75" />
+          <polygon points="21,4 29,8 21,12" fill="var(--connector)" />
+        </svg>
+
+        <!-- Card 2 -->
+        <div id="card-2" class="card">
+          <div class="card-title">Live audio streaming</div>
+          <div class="item">
+            <span class="item-key">Microphone</span>
+            <span class="item-val">16kHz audio stream</span>
+          </div>
+          <div class="item">
+            <span class="item-key">What we used</span>
+            <span class="item-val">Azure continuous STT</span>
+          </div>
+          <div class="item">
+            <span class="item-key">Why we picked it</span>
+            <span class="item-desc">Real-time WebSocket; no lag</span>
+          </div>
+          <div class="action-box">Streaming interim text</div>
+        </div>
+
+        <!-- Inline Arrow 2 -> 3 -->
+        <svg class="inline-arrow" viewBox="0 0 30 16">
+          <path d="M 0 8 L 22 8" stroke="var(--connector)" stroke-width="1.75" />
+          <polygon points="21,4 29,8 21,12" fill="var(--connector)" />
+        </svg>
+
+        <!-- Card 3 -->
+        <div id="card-3" class="card">
+          <div class="card-title">Autonomous reasoning</div>
+          <div class="item">
+            <span class="item-key">Control</span>
+            <span class="item-val">Clock guard & 5 topics</span>
+          </div>
+          <div class="item">
+            <span class="item-key">What we used</span>
+            <span class="item-val">Azure OpenAI GPT-4o</span>
+          </div>
+          <div class="item">
+            <span class="item-key">Why we picked it</span>
+            <span class="item-desc">Probes trade-offs; JSON schema</span>
+          </div>
+          <div class="action-box">Adaptive counter-questioning</div>
+        </div>
+
+        <!-- Inline Arrow 3 -> 4 -->
+        <svg class="inline-arrow" viewBox="0 0 30 16">
+          <path d="M 0 8 L 22 8" stroke="var(--connector)" stroke-width="1.75" />
+          <polygon points="21,4 29,8 21,12" fill="var(--connector)" />
+        </svg>
+
+        <!-- Card 4 -->
+        <div id="card-4" class="card">
+          <div class="card-title">Feedback & scoring</div>
+          <div class="item">
+            <span class="item-key">Voice</span>
+            <span class="item-val">Azure 24kHz neural TTS</span>
+          </div>
+          <div class="item">
+            <span class="item-key">Why we picked it</span>
+            <span class="item-desc">Natural conversational style</span>
+          </div>
+          <div class="item">
+            <span class="item-key">Evaluation</span>
+            <span class="item-desc">Technical depth & trade-offs</span>
+          </div>
+          <div class="action-box">Saved to dashboard</div>
+        </div>
+
+      </div>
+
+      <!-- BOTTOM ROW: TARGETED PRACTICE & FALLBACK -->
+      <div class="bottom-flow-row">
+
+        <!-- Card 5 -->
+        <div id="card-5" class="card">
+          <div class="card-title">Question scenarios</div>
+          <div class="item">
+            <span class="item-key">Scenario</span>
+            <span class="item-val">Zero resume fallback</span>
+          </div>
+          <div class="item">
+            <span class="item-key">What we used</span>
+            <span class="item-val">5 topic pillars</span>
+          </div>
+          <div class="item">
+            <span class="item-key">Why we picked it</span>
+            <span class="item-desc">Prevents repetitive loops</span>
+          </div>
+          <div class="action-box">Practice concept</div>
+        </div>
+
+        <!-- Inline Arrow 5 -> 6 -->
+        <svg class="inline-arrow" viewBox="0 0 30 16">
+          <path d="M 0 8 L 22 8" stroke="var(--connector)" stroke-width="1.75" />
+          <polygon points="21,4 29,8 21,12" fill="var(--connector)" />
+        </svg>
+
+        <!-- Card 6 -->
+        <div id="card-6" class="card">
+          <div class="card-title">Resilience fallback</div>
+          <div class="item">
+            <span class="item-key">Fail-safe</span>
+            <span class="item-val">Browser Web Speech</span>
+          </div>
+          <div class="item">
+            <span class="item-key">What we used</span>
+            <span class="item-val">MockFoundry engine</span>
+          </div>
+          <div class="item">
+            <span class="item-key">Why we picked it</span>
+            <span class="item-desc">100% offline demo uptime</span>
+          </div>
+          <div class="action-box">Zero-crash guarantee</div>
+        </div>
+
+        <!-- Inline Arrow 6 -> 7 -->
+        <svg class="inline-arrow" viewBox="0 0 30 16">
+          <path d="M 0 8 L 22 8" stroke="var(--connector)" stroke-width="1.75" />
+          <polygon points="21,4 29,8 21,12" fill="var(--connector)" />
+        </svg>
+
+        <!-- Card 7 -->
+        <div id="card-7" class="card">
+          <div class="card-title">Targeted practice</div>
+          <div class="item">
+            <span class="item-key">Focus area</span>
+            <span class="item-val">Diagnosed weakness</span>
+          </div>
+          <div class="item">
+            <span class="item-key">What we used</span>
+            <span class="item-val">Weakness seeder</span>
+          </div>
+          <div class="item">
+            <span class="item-key">Why we picked it</span>
+            <span class="item-desc">Pivots on prior struggle</span>
+          </div>
+          <div class="action-box">Rehearse again → next round</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      const lightBtn = document.getElementById('btn-theme-light');
+      const darkBtn = document.getElementById('btn-theme-dark');
+      if (theme === 'light') {
+        lightBtn.classList.add('active');
+        darkBtn.classList.remove('active');
+      } else {
+        darkBtn.classList.add('active');
+        lightBtn.classList.remove('active');
+      }
+      updateConnectors();
+    }
+
+    function updateConnectors() {
+      const canvas = document.getElementById('diagram-canvas').getBoundingClientRect();
+      const c1 = document.getElementById('card-1').getBoundingClientRect();
+      const c4 = document.getElementById('card-4').getBoundingClientRect();
+      const c5 = document.getElementById('card-5').getBoundingClientRect();
+      const c7 = document.getElementById('card-7').getBoundingClientRect();
+
+      // 1. Top Loop: Card 4 (top center) -> Up 26px -> Across top -> Down into Card 1 (top center)
+      const topLoopStart = { x: c4.left + c4.width / 2 - canvas.left, y: c4.top - canvas.top };
+      const topLoopEnd = { x: c1.left + c1.width / 2 - canvas.left, y: c1.top - canvas.top };
+      const topLoopY = 14;
+
+      const topLoopD = `M ${topLoopStart.x} ${topLoopStart.y} ` +
+                       `L ${topLoopStart.x} ${topLoopY + 10} ` +
+                       `Q ${topLoopStart.x} ${topLoopY} ${topLoopStart.x - 10} ${topLoopY} ` +
+                       `L ${topLoopEnd.x + 10} ${topLoopY} ` +
+                       `Q ${topLoopEnd.x} ${topLoopY} ${topLoopEnd.x} ${topLoopY + 10} ` +
+                       `L ${topLoopEnd.x} ${topLoopEnd.y - 1}`;
+      document.getElementById('path-top-loop').setAttribute('d', topLoopD);
+
+      // 2. Down Branch: Card 1 (bottom center) -> Down into Card 5 (top center)
+      const branchStart = { x: c1.left + c1.width / 2 - canvas.left, y: c1.bottom - canvas.top };
+      const branchEnd = { x: c5.left + c5.width / 2 - canvas.left, y: c5.top - canvas.top };
+      const branchMidY = (branchStart.y + branchEnd.y) / 2;
+
+      const branchD = `M ${branchStart.x} ${branchStart.y} ` +
+                      `C ${branchStart.x} ${branchMidY}, ${branchEnd.x} ${branchMidY}, ${branchEnd.x} ${branchEnd.y - 1}`;
+      document.getElementById('path-branch-down').setAttribute('d', branchD);
+
+      // 3. Right Loop: Card 4 (right side) -> Down & Left into Card 7 (right side)
+      const feedStart = { x: c4.right - canvas.left, y: c4.top + c4.height / 2 - canvas.top };
+      const feedEnd = { x: c7.right - canvas.left, y: c7.top + c7.height / 2 - canvas.top };
+      const rightX = Math.max(c4.right, c7.right) - canvas.left + 26;
+
+      const feedD = `M ${feedStart.x} ${feedStart.y} ` +
+                    `L ${rightX - 10} ${feedStart.y} ` +
+                    `Q ${rightX} ${feedStart.y} ${rightX} ${feedStart.y + 10} ` +
+                    `L ${rightX} ${feedEnd.y - 10} ` +
+                    `Q ${rightX} ${feedEnd.y} ${rightX - 10} ${feedEnd.y} ` +
+                    `L ${feedEnd.x + 1} ${feedEnd.y}`;
+      document.getElementById('path-feedback-loop').setAttribute('d', feedD);
+    }
+
+    window.addEventListener('load', updateConnectors);
+    window.addEventListener('resize', updateConnectors);
+    setTimeout(updateConnectors, 50);
+  </script>
+
+</body>
+</html>
