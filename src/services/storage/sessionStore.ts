@@ -13,16 +13,44 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   forceDemoMode: false,
 };
 
+export const SAMPLE_DEMO_RESUME_TEXT = `Alex Chen
+San Francisco, CA • alex.chen@example.com • (555) 234-5678 • github.com/alexchen • linkedin.com/in/alexchen
+
+EDUCATION
+State University — B.S. in Computer Science (GPA: 3.8 / 4.0)
+Graduated May 2025 • Relevant Coursework: Data Structures, Web Applications, Database Systems, Software Design
+
+TECHNICAL SKILLS
+Languages: TypeScript, JavaScript, Python, SQL, HTML5, CSS3
+Frameworks & Tools: React, Next.js, Node.js, Express, PostgreSQL, Git, Tailwind CSS, Jest, Docker
+
+FEATURED PROJECTS
+TaskFlow — Team Task Management Web App (React, Node.js, PostgreSQL)
+• Built a responsive full-stack task manager with real-time updates and user authentication.
+• Designed clean PostgreSQL database schema for users, project boards, and task assignments.
+• Implemented drag-and-drop task organization and automated email notifications for upcoming deadlines.
+
+Campus Marketplace — Student Exchange Platform (TypeScript, React, Express)
+• Developed an online student marketplace for buying and selling textbooks and course materials.
+• Created intuitive search filters by course, department, and condition, serving 500+ active campus users.
+• Integrated secure JWT session management and responsive mobile-first UI with Tailwind CSS.
+
+WORK EXPERIENCE
+TechCorp Solutions — Software Engineering Intern (June 2024 – August 2024)
+• Developed and tested customer-facing dashboard features in React and TypeScript.
+• Collaborated in weekly agile standups and sprint planning to deliver features on schedule.
+• Wrote unit and integration tests using Jest, maintaining 85% test coverage across core components.`;
+
 export const INITIAL_SAMPLE_SESSION: InterviewSession = {
   id: 'session_sample_01',
   createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // Yesterday
   context: {
-    role: 'Software Engineer Intern',
-    company: 'Microsoft',
-    interviewType: 'technical',
+    role: 'Software Engineer',
+    company: 'TechCorp',
+    interviewType: 'behavioural',
     durationMinutes: 10,
-    resumeText: 'Experience: Built full-stack food delivery web app using React, Node.js, and PostgreSQL. Skills: TypeScript, Python, SQL, REST APIs.',
-    focusArea: 'Technical reasoning and trade-offs',
+    resumeText: SAMPLE_DEMO_RESUME_TEXT,
+    focusArea: 'Collaboration and conflict resolution',
   },
   status: 'completed',
   currentQuestionIndex: 2,

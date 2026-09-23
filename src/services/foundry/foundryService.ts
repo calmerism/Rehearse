@@ -5,6 +5,7 @@ import {
   FeedbackReportData,
 } from '@/types/interview';
 import { IFoundryService, NextQuestionDecision } from './types';
+import { SAMPLE_BEHAVIORAL_DEMO_QUESTIONS } from './mockFoundryService';
 
 /**
  * Microsoft Foundry & Azure OpenAI Service Configuration.
@@ -99,6 +100,16 @@ export class FoundryService implements IFoundryService {
   async generateIntroductionAndOpening(
     context: CandidateContext
   ): Promise<{ introText: string; firstQuestion: Question }> {
+    if (context.isSampleDemo) {
+      return {
+        introText: `Welcome to your behavioral interview rehearsal for the ${context.role} position. We will cover 5 key behavioral competencies today. Let's begin with our first question.`,
+        firstQuestion: {
+          ...SAMPLE_BEHAVIORAL_DEMO_QUESTIONS[0],
+          timestamp: new Date().toISOString(),
+        },
+      };
+    }
+
     const hasResume = !!(context.resumeText && context.resumeText.trim().length > 0);
     const systemPrompt = `You are an expert, calm, and professional technical/behavioral interviewer conducting a high-stakes, realistic interview rehearsal.
 Role: "${context.role}" at "${context.company || 'a top technology company'}".
@@ -170,13 +181,51 @@ Respond in strict JSON format:
     elapsedSeconds?: number
   ): Promise<NextQuestionDecision> {
     const questionCount = previousQuestions.length;
-    const targetQuestions = context.durationMinutes >= 30 ? 15 : context.durationMinutes >= 20 ? 10 : 6;
+
+    // Curated 5-Question Behavioral Presentation Demo Flow
+    if (context.isSampleDemo) {
+      if (questionCount >= 5) {
+        return {
+          action: 'conclude',
+          questionText: 'Thank you for sharing those thoughtful experiences. That concludes our 5-question behavioral interview rehearsal. I am now compiling your feedback and performance report.',
+          topic: 'Closing',
+          type: 'closing',
+          evaluation: {
+            understoodIntent: true,
+            clarity: 'Strong',
+            technicalAccuracy: 'Strong',
+            extractedKeyPoints: ['Clear prioritization strategy', 'Effective communication & stakeholder alignment'],
+            requiresFollowUp: false,
+            reasoningNote: 'Candidate demonstrated clear structured thinking, leadership maturity, and effective prioritization.',
+          },
+        };
+      }
+
+      const nextQ = SAMPLE_BEHAVIORAL_DEMO_QUESTIONS[questionCount];
+      return {
+        action: 'new_topic',
+        questionText: nextQ.text,
+        topic: nextQ.topic,
+        type: nextQ.type,
+        difficulty: nextQ.difficulty,
+        evaluation: {
+          understoodIntent: true,
+          clarity: 'Strong',
+          technicalAccuracy: 'Good',
+          extractedKeyPoints: ['Structured STAR response', 'Concrete actions and ownership'],
+          requiresFollowUp: false,
+          reasoningNote: 'Candidate gave a clear behavioral example demonstrating ownership, collaboration, and measurable outcome.',
+        },
+      };
+    }
+
+    const targetQuestions = context.targetQuestions || (context.durationMinutes >= 30 ? 15 : context.durationMinutes >= 20 ? 10 : 6);
     const totalAllowedSeconds = (context.durationMinutes || 10) * 60;
     const timeRemainingSeconds = elapsedSeconds !== undefined ? Math.max(totalAllowedSeconds - elapsedSeconds, 0) : undefined;
     const isTimeDriven = elapsedSeconds !== undefined;
     const isNearEnd = isTimeDriven
       ? (elapsedSeconds >= totalAllowedSeconds || (timeRemainingSeconds !== undefined && timeRemainingSeconds <= 75 && questionCount >= 3))
-      : (questionCount >= targetQuestions);
+      : (questionCount >= targetQuestions) || (context.targetQuestions ? questionCount >= context.targetQuestions : false);
     const wasFollowUp = currentQuestion && (currentQuestion.type === 'follow_up' || currentQuestion.topic?.toLowerCase().includes('follow-up') || currentQuestion.topic?.toLowerCase().includes('trade-off'));
 
     const history = previousQuestions.map((q, idx) => {

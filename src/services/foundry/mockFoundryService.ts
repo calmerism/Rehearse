@@ -8,6 +8,44 @@ import {
 } from '@/types/interview';
 import { IFoundryService, NextQuestionDecision } from './types';
 
+export const SAMPLE_BEHAVIORAL_DEMO_QUESTIONS: Omit<Question, 'timestamp'>[] = [
+  {
+    id: 'q_1',
+    text: 'To kick off our conversation, tell me about a time you worked closely with a team to deliver a project on a tight deadline. What was your role and how did you collaborate?',
+    topic: 'Teamwork & Collaboration',
+    type: 'behavioural',
+    difficulty: 'medium',
+  },
+  {
+    id: 'q_2',
+    text: 'Can you describe a situation where you had a disagreement with a teammate or stakeholder over a technical approach or project decision? How did you handle that disagreement?',
+    topic: 'Conflict Resolution',
+    type: 'behavioural',
+    difficulty: 'medium',
+  },
+  {
+    id: 'q_3',
+    text: "Tell me about a time when a project or task didn't go according to plan, or you encountered an unexpected setback. What happened and what did you learn from it?",
+    topic: 'Navigating Setbacks & Resilience',
+    type: 'behavioural',
+    difficulty: 'medium',
+  },
+  {
+    id: 'q_4',
+    text: 'Tell me about a time you took initiative to solve a problem or improve a process without being asked. What motivated you and what was the impact?',
+    topic: 'Initiative & Ownership',
+    type: 'behavioural',
+    difficulty: 'medium',
+  },
+  {
+    id: 'q_5',
+    text: 'When you have multiple competing priorities or urgent requests, how do you decide what to work on first? Can you give an example of how you managed that?',
+    topic: 'Prioritization & Time Management',
+    type: 'behavioural',
+    difficulty: 'medium',
+  },
+];
+
 export class MockFoundryService implements IFoundryService {
   isRealAzure(): boolean {
     return false;
@@ -16,10 +54,21 @@ export class MockFoundryService implements IFoundryService {
   async generateIntroductionAndOpening(
     context: CandidateContext
   ): Promise<{ introText: string; firstQuestion: Question }> {
-    const role = context.role || 'Software Engineer Intern';
+    const role = context.role || 'Software Engineer';
     const type = context.interviewType;
     const hasResume = !!(context.resumeText && context.resumeText.trim().length > 0);
     const roleLower = role.toLowerCase();
+
+    // 5-Question Behavioral Presentation Demo Preset
+    if (context.isSampleDemo) {
+      return {
+        introText: `Welcome to your behavioral interview rehearsal for the ${role} position. We will cover 5 key behavioral competencies today. Let's begin with our first question.`,
+        firstQuestion: {
+          ...SAMPLE_BEHAVIORAL_DEMO_QUESTIONS[0],
+          timestamp: new Date().toISOString(),
+        },
+      };
+    }
 
     let introText = `Hi, I will be conducting your ${type} rehearsal today for the ${role} position. I will ask a few questions and follow up based on what you share. Please take your time and answer as you would in a real interview. Let's begin.`;
 
@@ -122,13 +171,50 @@ export class MockFoundryService implements IFoundryService {
     // Simulate realistic inference processing delay
     await new Promise((r) => setTimeout(r, 600));
 
-    const targetQuestions = context.durationMinutes >= 30 ? 15 : context.durationMinutes >= 20 ? 10 : 6;
+    // Curated 5-Question Behavioral Presentation Demo Flow
+    if (context.isSampleDemo) {
+      if (questionCount >= 5) {
+        return {
+          action: 'conclude',
+          questionText: 'Thank you for sharing those thoughtful experiences. That concludes our 5-question behavioral interview rehearsal. I am now compiling your feedback and performance report.',
+          topic: 'Closing',
+          type: 'closing',
+          evaluation: {
+            understoodIntent: true,
+            clarity: 'Strong',
+            technicalAccuracy: 'Strong',
+            extractedKeyPoints: ['Clear prioritization strategy', 'Effective communication & stakeholder alignment'],
+            requiresFollowUp: false,
+            reasoningNote: 'Candidate demonstrated clear structured thinking, leadership maturity, and effective prioritization.',
+          },
+        };
+      }
+
+      const nextQ = SAMPLE_BEHAVIORAL_DEMO_QUESTIONS[questionCount];
+      return {
+        action: 'new_topic',
+        questionText: nextQ.text,
+        topic: nextQ.topic,
+        type: nextQ.type,
+        difficulty: nextQ.difficulty,
+        evaluation: {
+          understoodIntent: true,
+          clarity: 'Strong',
+          technicalAccuracy: 'Good',
+          extractedKeyPoints: ['Structured STAR response', 'Concrete actions and ownership'],
+          requiresFollowUp: false,
+          reasoningNote: 'Candidate gave a clear behavioral example demonstrating ownership, collaboration, and measurable outcome.',
+        },
+      };
+    }
+
+    const targetQuestions = context.targetQuestions || (context.durationMinutes >= 30 ? 15 : context.durationMinutes >= 20 ? 10 : 6);
     const totalAllowedSeconds = (context.durationMinutes || 10) * 60;
     const isTimeDriven = elapsedSeconds !== undefined;
     const isTimeExpired = isTimeDriven && (elapsedSeconds >= totalAllowedSeconds || (totalAllowedSeconds - elapsedSeconds <= 75 && questionCount >= 3));
 
     // Determine completion: dynamically scales with chosen rehearsal duration or when scheduled time is up
-    if (isTimeExpired || (!isTimeDriven && questionCount >= targetQuestions)) {
+    if (isTimeExpired || (!isTimeDriven && questionCount >= targetQuestions) || (context.targetQuestions && questionCount >= context.targetQuestions)) {
       return {
         action: 'conclude',
         questionText: `That concludes our scheduled ${context.durationMinutes}-minute rehearsal for today. Thank you for your thoughtful responses. I am preparing your detailed performance feedback now.`,

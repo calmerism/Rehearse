@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UploadCloud, FileText, CheckCircle2, X, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { CandidateContext, InterviewDuration, InterviewType } from '@/types/interview';
+import { SAMPLE_DEMO_RESUME_TEXT } from '@/services/storage/sessionStore';
 
 interface InterviewSetupModalProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
   const [duration, setDuration] = useState<InterviewDuration>(10);
   const [resumeText, setResumeText] = useState('');
   const [focusArea, setFocusArea] = useState(initialFocusArea || '');
+  const [isSampleDemo, setIsSampleDemo] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<{
     name: string;
     size: number;
@@ -50,11 +52,12 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
         if (initialContext.company !== undefined) setCompany(initialContext.company || '');
         if (initialContext.interviewType) setInterviewType(initialContext.interviewType);
         if (initialContext.durationMinutes) setDuration(initialContext.durationMinutes);
+        if (initialContext.isSampleDemo !== undefined) setIsSampleDemo(Boolean(initialContext.isSampleDemo));
         if (initialContext.resumeText !== undefined) {
           setResumeText(initialContext.resumeText || '');
           if (initialContext.resumeText && initialContext.resumeText.trim().length > 0) {
             setUploadedFile({
-              name: 'Grounded Resume',
+              name: initialContext.isSampleDemo ? 'demo-resume.pdf (Alex Chen)' : 'Grounded Resume',
               size: initialContext.resumeText.length,
               characterCount: initialContext.resumeText.length,
             });
@@ -69,9 +72,26 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
     }
   }, [initialFocusArea, initialContext, isOpen]);
 
+  const handleApplySampleDemoPreset = () => {
+    setRole('Software Engineer');
+    setCompany('TechCorp Solutions');
+    setInterviewType('behavioural');
+    setDuration(10);
+    setResumeText(SAMPLE_DEMO_RESUME_TEXT);
+    setUploadedFile({
+      name: 'demo-resume.pdf (Alex Chen)',
+      size: 1592,
+      characterCount: 1592,
+    });
+    setFocusArea('');
+    setIsSampleDemo(true);
+    setParseError(null);
+  };
+
   const handleFileUpload = async (file: File) => {
     setParseError(null);
     setIsParsing(true);
+    setIsSampleDemo(false);
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -103,6 +123,7 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
     setUploadedFile(null);
     setResumeText('');
     setParseError(null);
+    setIsSampleDemo(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -112,10 +133,13 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
     setParseError(null);
     setIsParsing(true);
     try {
-      const res = await fetch('/demo-resume.pdf');
-      const blob = await res.blob();
-      const file = new File([blob], 'demo-resume.pdf', { type: 'application/pdf' });
-      await handleFileUpload(file);
+      setResumeText(SAMPLE_DEMO_RESUME_TEXT);
+      setUploadedFile({
+        name: 'demo-resume.pdf (Alex Chen)',
+        size: 1592,
+        characterCount: 1592,
+      });
+      setIsParsing(false);
     } catch (err: any) {
       setParseError('Failed to load demo resume');
       setIsParsing(false);
@@ -149,6 +173,8 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
       durationMinutes: duration,
       resumeText: resumeText.trim() || undefined,
       focusArea: focusArea.trim() || undefined,
+      targetQuestions: isSampleDemo ? 5 : initialContext?.targetQuestions,
+      isSampleDemo,
     });
   };
 
@@ -198,6 +224,29 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 space-y-5 text-left overflow-y-auto flex-1">
+          {/* Quick Demo Preset Banner */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.04] border border-black/5 dark:border-white/10">
+            <div className="min-w-0 pr-2">
+              <p className="text-[13px] font-semibold text-apple-ink dark:text-white">
+                Presentation Demo Preset
+              </p>
+              <p className="text-[11px] text-apple-inkMuted truncate">
+                5-question behavioral rehearsal with Alex Chen resume
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleApplySampleDemoPreset}
+              className={`shrink-0 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all apple-action ${
+                isSampleDemo
+                  ? 'bg-[#D05236] text-white shadow-sm'
+                  : 'bg-black/[0.04] dark:bg-white/[0.08] text-apple-ink dark:text-white hover:bg-black/[0.08] dark:hover:bg-white/[0.12]'
+              }`}
+            >
+              {isSampleDemo ? 'Applied ✓' : 'Use Preset'}
+            </button>
+          </div>
+
           {focusArea && (
             <div className="p-3 rounded-xl bg-apple-amber-500/10 text-[13px] leading-snug">
               <span className="font-medium text-apple-amber-500">Targeting weakness: </span>

@@ -13,6 +13,8 @@ export interface CandidateContext {
   durationMinutes: InterviewDuration;
   resumeText?: string;
   focusArea?: string; // Seeded from previous rehearsal weakness if applicable
+  targetQuestions?: number; // Override question count (e.g. 5 questions for presentation demo)
+  isSampleDemo?: boolean; // Presentation demo flag for streamlined 5-question behavioral flow
 }
 
 export interface Question {

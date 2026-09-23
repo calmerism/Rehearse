@@ -14,6 +14,7 @@ import { getFoundryService } from '@/services/foundry/foundryFactory';
 import { InterviewAgent, AgentEvent } from '@/agent/interviewAgent';
 import { sessionStore } from '@/services/storage/sessionStore';
 import { MockSpeechService } from '@/services/speech/mockSpeechService';
+import { SAMPLE_BEHAVIORAL_DEMO_QUESTIONS } from '@/services/foundry/mockFoundryService';
 import { Video, VideoOff, Volume2, Check, Clock, Mic } from 'lucide-react';
 
 interface LiveInterviewScreenProps {
@@ -152,6 +153,15 @@ export const LiveInterviewScreen: React.FC<LiveInterviewScreenProps> = ({
       `We have reached our scheduled ${context.durationMinutes}-minute time limit. Thank you for your time and answers today. Generating your feedback report now.`
     );
 
+    if (context.isSampleDemo) {
+      SAMPLE_BEHAVIORAL_DEMO_QUESTIONS.forEach((q) => {
+        MockSpeechService.prefetch(q.text);
+      });
+      MockSpeechService.prefetch(
+        'Thank you for sharing those thoughtful experiences. That concludes our 5-question behavioral interview rehearsal. I am now compiling your feedback and performance report.'
+      );
+    }
+
     const initInterview = async () => {
       try {
         const speechService = await getSpeechService();
@@ -259,7 +269,7 @@ export const LiveInterviewScreen: React.FC<LiveInterviewScreenProps> = ({
     );
   };
 
-  const targetQuestions = context.durationMinutes >= 30 ? 15 : context.durationMinutes >= 20 ? 10 : 6;
+  const targetQuestions = context.targetQuestions || (context.durationMinutes >= 30 ? 15 : context.durationMinutes >= 20 ? 10 : 6);
   const isTimeNearEnd = elapsedSeconds >= maxDurationSeconds - 60;
 
   return (
@@ -289,7 +299,7 @@ export const LiveInterviewScreen: React.FC<LiveInterviewScreenProps> = ({
         {/* Right: Question Count, Camera Toggle, End Action */}
         <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
           <span className="text-[12px] font-medium text-apple-inkMuted dark:text-white/70 px-2.5 py-1 rounded-full bg-black/[0.03] dark:bg-white/[0.06] border border-black/[0.05] dark:border-white/[0.08]">
-            Q{questionCount} of ~{targetQuestions}
+            Q{questionCount} of {context.targetQuestions ? targetQuestions : `~${targetQuestions}`}
           </span>
 
           <button
