@@ -79,9 +79,9 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
     setDuration(10);
     setResumeText(SAMPLE_DEMO_RESUME_TEXT);
     setUploadedFile({
-      name: 'demo-resume.pdf (Alex Chen)',
-      size: 1592,
-      characterCount: 1592,
+      name: 'demo-questions-and-answers.pdf',
+      size: 7161,
+      characterCount: 6073,
     });
     setFocusArea('');
     setIsSampleDemo(true);
@@ -135,13 +135,13 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
     try {
       setResumeText(SAMPLE_DEMO_RESUME_TEXT);
       setUploadedFile({
-        name: 'demo-resume.pdf (Alex Chen)',
-        size: 1592,
-        characterCount: 1592,
+        name: 'demo-questions-and-answers.pdf',
+        size: 7161,
+        characterCount: 6073,
       });
       setIsParsing(false);
     } catch (err: any) {
-      setParseError('Failed to load demo resume');
+      setParseError('Failed to load demo document');
       setIsParsing(false);
     }
   };
@@ -231,7 +231,7 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
                 Presentation Demo Preset
               </p>
               <p className="text-[11px] text-apple-inkMuted truncate">
-                5-question behavioral rehearsal with Alex Chen resume
+                5-question behavioral rehearsal with sample Q&A document
               </p>
             </div>
             <button
@@ -482,7 +482,7 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
                     onClick={handleLoadDemoResume}
                     className="text-apple-amber-600 dark:text-apple-amber-400 hover:underline font-medium"
                   >
-                    + Load Demo Resume (Alex Chen)
+                    + Load Sample Document (5 Questions & Answers)
                   </button>
                   <button
                     type="button"

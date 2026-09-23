@@ -152,7 +152,7 @@ export const InterviewLobby: React.FC<InterviewLobbyProps> = ({
           <div className="py-2 px-3 -mx-3 rounded-xl flex items-center justify-between text-[14px] bg-[#D05236]/[0.06] dark:bg-[#D05236]/[0.12] mb-1">
             <span className="text-[#D05236] dark:text-[#E06646] font-medium">Demo Preset</span>
             <span className="font-semibold text-[#D05236] dark:text-[#E06646] text-[13px]">
-              5 Questions • Alex Chen Resume
+              5 Questions & Answers • Sample Document
             </span>
           </div>
         )}

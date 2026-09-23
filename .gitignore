@@ -18,6 +18,7 @@
 *.pem
 *.docx
 !public/demo-resume.docx
+!public/demo-questions-and-answers.docx
 *.pptx
 keynote.html
 

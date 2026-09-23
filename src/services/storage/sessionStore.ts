@@ -13,136 +13,192 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   forceDemoMode: false,
 };
 
-export const SAMPLE_DEMO_RESUME_TEXT = `Alex Chen
-San Francisco, CA • alex.chen@example.com • (555) 234-5678 • github.com/alexchen • linkedin.com/in/alexchen
+export const SAMPLE_DEMO_RESUME_TEXT = `Rehearse — Behavioral Interview Demonstration: Questions & Sample Answers
+Candidate: Alex Chen  |  Position: Software Engineer  |  Framework: STAR Method (5 Competencies)
 
-EDUCATION
-State University — B.S. in Computer Science (GPA: 3.8 / 4.0)
-Graduated May 2025 • Relevant Coursework: Data Structures, Web Applications, Database Systems, Software Design
+QUESTION 1: Teamwork & Tight Deadlines
+Prompt: "Tell me about a time you had to work with a multidisciplinary team or peer engineer under a tight deadline. How did you ensure alignment and deliver?"
+• Situation: During my software engineering internship at TechCorp Solutions, our team had a strict two-week sprint to ship an analytics reporting dashboard ahead of an executive client demo.
+• Task: I was responsible for collaborating with a frontend engineer and a product manager to design and deliver the customer-facing dashboard components and backend REST endpoints on time.
+• Action: I set up a daily 10-minute morning standup to surface blockers immediately, established OpenAPI and TypeScript interface contracts on day one, and built mock API fixtures so frontend development could proceed in parallel without waiting on database migrations.
+• Result: We shipped the feature two days ahead of the delivery date with zero integration defects during QA, resulting in a successful client presentation and renewal.
 
-TECHNICAL SKILLS
-Languages: TypeScript, JavaScript, Python, SQL, HTML5, CSS3
-Frameworks & Tools: React, Next.js, Node.js, Express, PostgreSQL, Git, Tailwind CSS, Jest, Docker
+QUESTION 2: Conflict & Disagreement Resolution
+Prompt: "Describe a situation where you had a strong disagreement with a teammate regarding a technical or product choice. How did you handle it and what was the outcome?"
+• Situation: While building TaskFlow, our full-stack collaborative task management application, a peer engineer advocated for using MongoDB for rapid schema flexibility, whereas I recommended PostgreSQL.
+• Task: We needed to reach a consensus without delaying our sprint kickoff or creating technical debt.
+• Action: Rather than debating preferences, I proposed an objective benchmark matrix. We analyzed our core entity relationships—project boards, tasks, user permissions, and audit logs. I demonstrated that relational integrity with foreign keys and ACID transaction guarantees was essential to avoid orphaned subtasks during concurrent drag-and-drop operations.
+• Result: My teammate reviewed the prototype and agreed PostgreSQL was the sounder architectural choice. We completed the project on schedule, maintaining 100% data consistency across thousands of simulated task updates.
 
-FEATURED PROJECTS
-TaskFlow — Team Task Management Web App (React, Node.js, PostgreSQL)
-• Built a responsive full-stack task manager with real-time updates and user authentication.
-• Designed clean PostgreSQL database schema for users, project boards, and task assignments.
-• Implemented drag-and-drop task organization and automated email notifications for upcoming deadlines.
+QUESTION 3: Navigating Setbacks & Incident Recovery
+Prompt: "Can you share an experience where a project or deployment didn't go as planned or failed? What immediate actions did you take, and what did you learn?"
+• Situation: During a staging deployment for the Campus Marketplace platform, an automated database migration script failed due to an unindexed unique constraint conflict on legacy user records, locking the staging database.
+• Task: As the engineer running the deployment, I had to restore staging availability immediately and resolve the root cause of the schema failure.
+• Action: I immediately notified the team on Slack, executed our automated rollback script to restore staging traffic within three minutes, and analyzed the migration logs. I isolated the conflicting records, wrote a safe, idempotent data-cleaning migration step, added comprehensive unit tests, and verified the fix against a sanitized production clone.
+• Result: The revised migration deployed cleanly in under ten seconds. I also added pre-deployment dry-run validation scripts to our CI/CD pipeline, permanently preventing similar constraint failures.
 
-Campus Marketplace — Student Exchange Platform (TypeScript, React, Express)
-• Developed an online student marketplace for buying and selling textbooks and course materials.
-• Created intuitive search filters by course, department, and condition, serving 500+ active campus users.
-• Integrated secure JWT session management and responsive mobile-first UI with Tailwind CSS.
+QUESTION 4: Initiative & Organizational Ownership
+Prompt: "Tell me about a time you went beyond your assigned responsibilities to solve a problem or improve a process for your team."
+• Situation: When I joined TechCorp Solutions as an intern, new contributor onboarding was a painful multi-step manual process. Conflicting Node and Docker versions frequently cost new engineers half a day to troubleshoot.
+• Task: Although my assigned sprint tickets were strictly user-facing dashboard features, I recognized that fixing onboarding friction would permanently save engineering hours across the entire team.
+• Action: Over the weekend, I containerized the entire local development stack using Docker Compose, authored a one-command bootstrap script (./scripts/dev-setup.sh), and restructured the outdated setup documentation with step-by-step verification checks.
+• Result: I submitted a pull request with full documentation. The engineering lead approved it, and it reduced developer onboarding time from four hours to under fifteen minutes across all incoming contributors.
 
-WORK EXPERIENCE
-TechCorp Solutions — Software Engineering Intern (June 2024 – August 2024)
-• Developed and tested customer-facing dashboard features in React and TypeScript.
-• Collaborated in weekly agile standups and sprint planning to deliver features on schedule.
-• Wrote unit and integration tests using Jest, maintaining 85% test coverage across core components.`;
+QUESTION 5: Prioritization & Competing Urgencies
+Prompt: "How do you handle situations where you are faced with competing priorities or urgent requests from stakeholders while already committed to a delivery date?"
+• Situation: During release week at TechCorp, while midway through implementing critical security authentication patches, customer success submitted an urgent request for a custom CSV export feature for a high-priority enterprise prospect.
+• Task: I had to handle the customer request without compromising our scheduled security fixes or missing our deployment window.
+• Action: I applied an urgency-versus-impact triage: security was non-negotiable. I immediately met with the product manager and customer success lead, transparently laid out our capacity, and proposed an agile compromise: I built a lightweight CSV export endpoint within two hours to satisfy the client demo, while scoping the full automated reporting engine for the subsequent sprint.
+• Result: The client signed the contract, our security authentication fixes shipped on schedule with zero regressions, and both stakeholders appreciated the transparent communication.`;
 
 export const INITIAL_SAMPLE_SESSION: InterviewSession = {
   id: 'session_sample_01',
-  createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // Yesterday
+  createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
   context: {
     role: 'Software Engineer',
-    company: 'TechCorp',
+    company: 'TechCorp Solutions',
     interviewType: 'behavioural',
     durationMinutes: 10,
+    targetQuestions: 5,
+    isSampleDemo: true,
     resumeText: SAMPLE_DEMO_RESUME_TEXT,
-    focusArea: 'Collaboration and conflict resolution',
+    focusArea: 'Collaboration, incident recovery, and STAR responses',
   },
   status: 'completed',
-  currentQuestionIndex: 2,
+  currentQuestionIndex: 4,
   questions: [
     {
       id: 'q_sample_1',
-      text: "Tell me about a technical project you've worked on and one challenging decision you had to make.",
-      topic: 'Projects & Architecture',
-      type: 'technical',
+      text: 'Tell me about a time you had to work with a multidisciplinary team or peer engineer under a tight deadline. How did you ensure alignment and deliver?',
+      topic: 'Teamwork & Tight Deadlines',
+      type: 'behavioural',
       difficulty: 'medium',
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     },
     {
       id: 'q_sample_2',
-      text: 'Why did you choose PostgreSQL for that project instead of a document store like MongoDB?',
-      topic: 'Database Selection & Trade-offs',
-      type: 'follow_up',
+      text: 'Describe a situation where you had a strong disagreement with a teammate regarding a technical or product choice. How did you handle it and what was the outcome?',
+      topic: 'Conflict & Disagreement Resolution',
+      type: 'behavioural',
       difficulty: 'medium',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 120000).toISOString(),
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 90000).toISOString(),
     },
     {
       id: 'q_sample_3',
-      text: 'How would your database design change if the number of users and orders increased significantly?',
-      topic: 'Database Scalability & Indexing',
-      type: 'follow_up',
+      text: "Can you share an experience where a project or deployment didn't go as planned or failed? What immediate actions did you take, and what did you learn?",
+      topic: 'Resilience & Setbacks',
+      type: 'behavioural',
       difficulty: 'hard',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 240000).toISOString(),
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 180000).toISOString(),
+    },
+    {
+      id: 'q_sample_4',
+      text: 'Tell me about a time you went beyond your assigned responsibilities to solve a problem or improve a process for your team.',
+      topic: 'Initiative & Ownership',
+      type: 'behavioural',
+      difficulty: 'medium',
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 270000).toISOString(),
+    },
+    {
+      id: 'q_sample_5',
+      text: 'How do you handle situations where you are faced with competing priorities or urgent requests from stakeholders while already committed to a delivery date?',
+      topic: 'Prioritization & Competing Urgencies',
+      type: 'behavioural',
+      difficulty: 'medium',
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 360000).toISOString(),
     },
   ],
   answers: [
     {
       id: 'ans_sample_1',
       questionId: 'q_sample_1',
-      transcript: 'I built a food delivery application using React, Node, and PostgreSQL. One challenging decision was choosing our primary database schema.',
-      durationSeconds: 32,
+      transcript: 'During my internship at TechCorp, our team had a two-week sprint to ship an analytics dashboard ahead of a client demo. I established daily 10-minute standups, agreed on strict OpenAPI contracts on day one, and built mock API response fixtures so the frontend developer could build UI components in parallel without waiting on backend endpoints. We shipped two days early with zero defects.',
+      durationSeconds: 38,
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 60000).toISOString(),
       evaluation: {
         understoodIntent: true,
-        clarity: 'Good',
-        technicalAccuracy: 'Good',
-        extractedKeyPoints: ['Food delivery app', 'React, Node, PostgreSQL'],
-        requiresFollowUp: true,
+        clarity: 'Strong',
+        technicalAccuracy: 'Strong',
+        extractedKeyPoints: ['Two-week sprint', 'Daily standups', 'OpenAPI contracts', 'Mock fixtures'],
+        requiresFollowUp: false,
       },
     },
     {
       id: 'ans_sample_2',
       questionId: 'q_sample_2',
-      transcript: 'We needed relational data for users, restaurants, menu items, and orders with strict ACID transaction guarantees so orders were never lost.',
-      durationSeconds: 40,
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 180000).toISOString(),
+      transcript: 'On TaskFlow, a teammate wanted to use MongoDB for rapid prototyping while I advocated for PostgreSQL. Rather than debating opinions, I built an objective benchmark matrix showing that our relational entity relationships—boards, tasks, and audit logs—required foreign keys and ACID constraints to prevent orphaned tasks during drag-and-drop actions. My peer agreed with the data and we completed on time.',
+      durationSeconds: 42,
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 150000).toISOString(),
       evaluation: {
         understoodIntent: true,
-        clarity: 'Good',
+        clarity: 'Strong',
         technicalAccuracy: 'Strong',
-        extractedKeyPoints: ['ACID transactions', 'Relational integrity'],
-        requiresFollowUp: true,
+        extractedKeyPoints: ['Benchmark matrix', 'Relational integrity', 'ACID constraints', 'Objective consensus'],
+        requiresFollowUp: false,
       },
     },
     {
       id: 'ans_sample_3',
       questionId: 'q_sample_3',
-      transcript: 'I would introduce read replicas, partition historical order tables by month, and add an in-memory Redis cache for active menus.',
+      transcript: 'During our Campus Marketplace deployment, an automated migration failed on an unindexed unique constraint, locking staging. I communicated the incident on Slack, triggered an automated rollback to restore availability in three minutes, and isolated the offending records. I wrote an idempotent migration with comprehensive unit tests and verified it on a clone. I then added dry-run validation to our CI pipeline.',
       durationSeconds: 45,
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 300000).toISOString(),
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 240000).toISOString(),
       evaluation: {
         understoodIntent: true,
         clarity: 'Strong',
         technicalAccuracy: 'Strong',
-        extractedKeyPoints: ['Read replicas', 'Table partitioning', 'Redis cache'],
+        extractedKeyPoints: ['Rollback in 3 min', 'Idempotent migration', 'CI dry-run validation', 'Root cause post-mortem'],
+        requiresFollowUp: false,
+      },
+    },
+    {
+      id: 'ans_sample_4',
+      questionId: 'q_sample_4',
+      transcript: 'At TechCorp, new engineer onboarding was a multi-step manual process costing new teammates two days of environment debugging. Although my assigned tickets were feature-focused, I containerized the entire local stack using Docker Compose, authored a one-click setup script, and overhauled the documentation. This reduced onboarding time from two days to under fifteen minutes across the team.',
+      durationSeconds: 40,
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 330000).toISOString(),
+      evaluation: {
+        understoodIntent: true,
+        clarity: 'Strong',
+        technicalAccuracy: 'Strong',
+        extractedKeyPoints: ['Docker Compose containerization', 'Automated bootstrap script', 'Onboarding cut to 15 min'],
+        requiresFollowUp: false,
+      },
+    },
+    {
+      id: 'ans_sample_5',
+      questionId: 'q_sample_5',
+      transcript: 'During release week, an urgent request for a custom CSV export came from customer success for an enterprise deal while I was completing authentication security fixes. I applied urgency-vs-impact triage: security was non-negotiable. I met with stakeholders, transparently presented capacity, and built a minimal CSV script within two hours for the demo while scheduling full automation for the next sprint.',
+      durationSeconds: 42,
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 420000).toISOString(),
+      evaluation: {
+        understoodIntent: true,
+        clarity: 'Strong',
+        technicalAccuracy: 'Strong',
+        extractedKeyPoints: ['Urgency vs impact triage', 'Non-negotiable security', 'Minimal viable delivery in 2 hours', 'Transparent stakeholder sync'],
         requiresFollowUp: false,
       },
     },
   ],
   feedback: {
-    technicalScore: 'Good',
-    communicationScore: 'Good',
-    interviewHandlingScore: 'Good',
-    summaryVerdict: 'Strong technical knowledge demonstrated on database fundamentals. Technical reasoning and trade-off comparison is your next focus.',
+    technicalScore: 'Strong',
+    communicationScore: 'Strong',
+    interviewHandlingScore: 'Strong',
+    summaryVerdict: 'Exceptional demonstration of STAR structure across all 5 behavioral competencies. Demonstrates proactive leadership, clear technical trade-off evaluation, and rapid composure during staging incidents.',
     whatWentWell: [
-      'Explained project architecture and tech stack choices directly.',
-      'Identified the need for ACID transaction semantics in ordering.',
-      'Proposed valid scaling techniques: read replicas, table partitioning, and Redis caching.',
+      'Structured every response cleanly using Situation, Task, Action, and measurable Result.',
+      'Defended technical decisions objectively using benchmarks and data integrity constraints.',
+      'Handled staging incident recovery with blameless post-mortem actions and CI prevention.',
+      'Managed competing stakeholder requests with transparent communication and agile triage.',
     ],
     whatToImprove: [
-      'Contrast why alternatives like MongoDB or DynamoDB were eliminated instead of just listing PostgreSQL benefits.',
-      'Provide concrete metrics or estimations when explaining 100x scaling (e.g. read vs write QPS).',
-      'Briefly structure your scaling answer by storage, cache layer, and query optimization.',
+      'In future rehearsals, highlight mentoring and delegation when discussing larger engineering initiatives.',
+      'Quantify business impacts with customer NPS or system performance percentiles where applicable.',
     ],
-    nextRehearsalFocus: 'Technical reasoning and architectural trade-offs.',
-    completedAt: new Date(Date.now() - 24 * 60 * 60 * 1000 + 360000).toISOString(),
+    nextRehearsalFocus: 'System design scaling and executive architectural defense.',
+    completedAt: new Date(Date.now() - 24 * 60 * 60 * 1000 + 450000).toISOString(),
   },
-  totalDurationSeconds: 480,
+  totalDurationSeconds: 450,
   isDemoMode: true,
 };
 
@@ -160,7 +216,9 @@ class SessionStore {
         localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify([INITIAL_SAMPLE_SESSION]));
         return [INITIAL_SAMPLE_SESSION];
       }
-      return JSON.parse(data);
+      const parsed: InterviewSession[] = JSON.parse(data);
+      const updated = parsed.map((s) => (s.id === 'session_sample_01' ? INITIAL_SAMPLE_SESSION : s));
+      return updated;
     } catch (err) {
       console.warn('[SessionStore] localStorage error:', err);
       return this.inMemorySessions;
