@@ -31,31 +31,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4 w-full animate-apple-in apple-stagger-2">
           <button
             onClick={() => onStartRehearsal()}
-            className="w-full sm:w-auto px-8 sm:px-9 py-3.5 rounded-full bg-[#D05236] hover:bg-[#C2492F] text-white font-semibold text-[15px] sm:text-[16px] tracking-tight transition-all apple-action shadow-sm min-h-[48px] flex items-center justify-center"
+            className="w-full sm:w-auto px-8 sm:px-9 py-3.5 rounded-full bg-[#D05236] hover:bg-[#C2492F] text-white font-semibold text-[15px] sm:text-[16px] tracking-tight transition-all apple-action shadow-sm min-h-[48px] flex items-center justify-center cursor-pointer"
           >
             Start Rehearsal
           </button>
 
           <button
             onClick={onViewHistory}
-            className="w-full sm:w-auto px-8 sm:px-9 py-3.5 rounded-full bg-[#F5F5F5] dark:bg-white/[0.08] hover:bg-[#EBEBEB] dark:hover:bg-white/[0.12] text-apple-ink dark:text-white text-[15px] sm:text-[16px] font-semibold tracking-tight border border-[#E5E5E5] dark:border-white/10 transition-all apple-action min-h-[48px] flex items-center justify-center"
+            className="w-full sm:w-auto px-8 sm:px-9 py-3.5 rounded-full bg-[#F5F5F5] dark:bg-white/[0.08] hover:bg-[#EBEBEB] dark:hover:bg-white/[0.12] text-apple-ink dark:text-white text-[15px] sm:text-[16px] font-semibold tracking-tight border border-[#E5E5E5] dark:border-white/10 transition-all apple-action min-h-[48px] flex items-center justify-center cursor-pointer"
           >
             View History
           </button>
-        </div>
 
-        {onStartSampleDemo && (
-          <div className="mt-5 sm:mt-6 animate-apple-in apple-stagger-3">
+          {onStartSampleDemo && (
             <button
               onClick={onStartSampleDemo}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-medium text-apple-inkMuted dark:text-white/70 hover:text-apple-ink dark:hover:text-white bg-black/[0.03] dark:bg-white/[0.06] hover:bg-black/[0.06] dark:hover:bg-white/[0.10] border border-black/5 dark:border-white/10 transition-all apple-action cursor-pointer"
+              className="w-full sm:w-auto px-8 sm:px-9 py-3.5 rounded-full bg-[#F5F5F5] dark:bg-white/[0.08] hover:bg-[#EBEBEB] dark:hover:bg-white/[0.12] text-apple-ink dark:text-white text-[15px] sm:text-[16px] font-semibold tracking-tight border border-[#E5E5E5] dark:border-white/10 transition-all apple-action min-h-[48px] flex items-center justify-center cursor-pointer"
             >
-              <span className="w-2 h-2 rounded-full bg-[#D05236]" />
-              <span>Sample Demo: 5-Question Behavioral</span>
-              <span className="text-[12px] opacity-60">›</span>
+              Sample Demo
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
