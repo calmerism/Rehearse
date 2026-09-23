@@ -88,8 +88,8 @@ export default function Page() {
 
   const handleStartSampleDemo = () => {
     const demoContext: CandidateContext = {
-      role: 'Software Engineer',
-      company: 'TechCorp Solutions',
+      role: 'AI & Software Engineer',
+      company: 'Chitkara University',
       interviewType: 'behavioural',
       durationMinutes: 10,
       targetQuestions: 5,

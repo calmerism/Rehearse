@@ -13,96 +13,119 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   forceDemoMode: false,
 };
 
-export const SAMPLE_DEMO_RESUME_TEXT = `Rehearse — Behavioral Interview Demonstration: Questions & Sample Answers
-Candidate: Alex Chen  |  Position: Software Engineer  |  Framework: STAR Method (5 Competencies)
+export const SAMPLE_DEMO_RESUME_TEXT = `Candidate Resume & 5-Question Interview Rehearsal Guide
+Candidate: Kashish | Chitkara University (B.E. Artificial Intelligence, CGPA 9.58)
+Target Role: AI & Software Engineer
 
-QUESTION 1: Teamwork & Tight Deadlines
-Prompt: "Tell me about a time you had to work with a multidisciplinary team or peer engineer under a tight deadline. How did you ensure alignment and deliver?"
-• Situation: During my software engineering internship at TechCorp Solutions, our team had a strict two-week sprint to ship an analytics reporting dashboard ahead of an executive client demo.
-• Task: I was responsible for collaborating with a frontend engineer and a product manager to design and deliver the customer-facing dashboard components and backend REST endpoints on time.
-• Action: I set up a daily 10-minute morning standup to surface blockers immediately, established OpenAPI and TypeScript interface contracts on day one, and built mock API fixtures so frontend development could proceed in parallel without waiting on database migrations.
-• Result: We shipped the feature two days ahead of the delivery date with zero integration defects during QA, resulting in a successful client presentation and renewal.
+EDUCATION & ACADEMICS:
+• Chitkara University, Rajpura, Punjab: Bachelor of Engineering (B.E.) in Artificial Intelligence (2024–2028) | CGPA: 9.58 / 10.00
+• Doon International School: Class XII (89.6%), Class X (91.8%)
 
-QUESTION 2: Conflict & Disagreement Resolution
-Prompt: "Describe a situation where you had a strong disagreement with a teammate regarding a technical or product choice. How did you handle it and what was the outcome?"
-• Situation: While building TaskFlow, our full-stack collaborative task management application, a peer engineer advocated for using MongoDB for rapid schema flexibility, whereas I recommended PostgreSQL.
-• Task: We needed to reach a consensus without delaying our sprint kickoff or creating technical debt.
-• Action: Rather than debating preferences, I proposed an objective benchmark matrix. We analyzed our core entity relationships—project boards, tasks, user permissions, and audit logs. I demonstrated that relational integrity with foreign keys and ACID transaction guarantees was essential to avoid orphaned subtasks during concurrent drag-and-drop operations.
-• Result: My teammate reviewed the prototype and agreed PostgreSQL was the sounder architectural choice. We completed the project on schedule, maintaining 100% data consistency across thousands of simulated task updates.
+TECHNICAL SKILLS:
+• Programming Languages: Python, C++, Java, MySQL, SQLite, HTML, CSS, JavaScript
+• Frameworks & Libraries: Django, Pandas, NumPy, Scikit-learn
+• Developer Tools & Platforms: Git, GitHub, VS Code, Figma
+• Achievements: 2nd place in Intellex (Chitkara University), 3rd place in Byte Tourney 2.0 (Figma), LadyADA 2 rounds qualified, SIH (Smart India Hackathon) & SAP Ideathon participant
 
-QUESTION 3: Navigating Setbacks & Incident Recovery
-Prompt: "Can you share an experience where a project or deployment didn't go as planned or failed? What immediate actions did you take, and what did you learn?"
-• Situation: During a staging deployment for the Campus Marketplace platform, an automated database migration script failed due to an unindexed unique constraint conflict on legacy user records, locking the staging database.
-• Task: As the engineer running the deployment, I had to restore staging availability immediately and resolve the root cause of the schema failure.
-• Action: I immediately notified the team on Slack, executed our automated rollback script to restore staging traffic within three minutes, and analyzed the migration logs. I isolated the conflicting records, wrote a safe, idempotent data-cleaning migration step, added comprehensive unit tests, and verified the fix against a sanitized production clone.
-• Result: The revised migration deployed cleanly in under ten seconds. I also added pre-deployment dry-run validation scripts to our CI/CD pipeline, permanently preventing similar constraint failures.
+PROJECTS:
+1. Telecom Customer Churn Prediction (AI/ML):
+   Developed a machine learning model to predict customer churn in the telecom sector using Python, Pandas, NumPy, and Scikit-learn. Performed exploratory data analysis (EDA), data cleaning, and feature engineering to identify primary churn risk drivers and contract patterns. Built and evaluated classification algorithms (Logistic Regression, Random Forest Classifier) prioritizing Recall and ROC-AUC metrics for imbalanced churn data. Visualized churn drivers and customer segment retention behaviors with Matplotlib.
 
-QUESTION 4: Initiative & Organizational Ownership
-Prompt: "Tell me about a time you went beyond your assigned responsibilities to solve a problem or improve a process for your team."
-• Situation: When I joined TechCorp Solutions as an intern, new contributor onboarding was a painful multi-step manual process. Conflicting Node and Docker versions frequently cost new engineers half a day to troubleshoot.
-• Task: Although my assigned sprint tickets were strictly user-facing dashboard features, I recognized that fixing onboarding friction would permanently save engineering hours across the entire team.
-• Action: Over the weekend, I containerized the entire local development stack using Docker Compose, authored a one-command bootstrap script (./scripts/dev-setup.sh), and restructured the outdated setup documentation with step-by-step verification checks.
-• Result: I submitted a pull request with full documentation. The engineering lead approved it, and it reduced developer onboarding time from four hours to under fifteen minutes across all incoming contributors.
+2. TOGETHERLY – Collaborative LinkedIn Clone (Full-Stack Backend):
+   Built a full-stack professional networking web platform utilizing Django and SQLite. Implemented secure user authentication, user profile management, and complete CRUD operations for posts, comments, and media. Designed a real-time messaging and peer connection request system enabling seamless direct communication between users.
 
-QUESTION 5: Prioritization & Competing Urgencies
-Prompt: "How do you handle situations where you are faced with competing priorities or urgent requests from stakeholders while already committed to a delivery date?"
-• Situation: During release week at TechCorp, while midway through implementing critical security authentication patches, customer success submitted an urgent request for a custom CSV export feature for a high-priority enterprise prospect.
-• Task: I had to handle the customer request without compromising our scheduled security fixes or missing our deployment window.
-• Action: I applied an urgency-versus-impact triage: security was non-negotiable. I immediately met with the product manager and customer success lead, transparently laid out our capacity, and proposed an agile compromise: I built a lightweight CSV export endpoint within two hours to satisfy the client demo, while scoping the full automated reporting engine for the subsequent sprint.
-• Result: The client signed the contract, our security authentication fixes shipped on schedule with zero regressions, and both stakeholders appreciated the transparent communication.`;
+3. INNOFIND – Tech Resource Discovery Platform (Frontend & Persistence):
+   Engineered a responsive web application to help developers and students explore curated technical tools, documentation, and frameworks. Implemented using semantic HTML, CSS, and modern JavaScript with local storage (window.localStorage) persistence for personalized study task lists and calendar planning. Built dynamic light/dark theme toggles and responsive layouts.
+
+CURATED 5-QUESTION REHEARSAL & STAR MODEL ANSWERS:
+
+QUESTION 1: Telecom Customer Churn Prediction (AI/ML)
+Prompt: "Welcome Kashish. Could you introduce yourself and tell us about your Telecom Customer Churn Prediction project—specifically, what classification models you tested and which metrics you used to evaluate them?"
+• Situation: In telecommunications, acquiring a new customer costs 5x more than retaining an existing one. I built a predictive churn model to identify at-risk subscribers before they cancel.
+• Task: I evaluated multiple classification models on customer usage, billing, and contract data, selecting the best model and performance metrics.
+• Action: I implemented Logistic Regression as a baseline and trained a Random Forest Classifier in Scikit-learn. Because customer churn has an imbalanced class distribution, standard accuracy is misleading. I focused on Recall and ROC-AUC to minimize false negatives (failing to detect churners).
+• Result: The Random Forest model achieved 84% recall on churned subscribers with an ROC-AUC of 0.88, pinpointing month-to-month contracts and lack of tech support as primary churn drivers.
+
+QUESTION 2: Data Preprocessing & Feature Engineering (Pandas & NumPy)
+Prompt: "In your telecom churn analysis, how did you handle data preprocessing and feature engineering with Pandas and NumPy, especially for missing values and categorical data?"
+• Situation: Raw customer telemetry contained missing total charges, inconsistent data types, and non-numeric categorical columns (payment method, contract type).
+• Task: I needed to engineer a clean, leak-free preprocessing pipeline to feed into Scikit-learn classifiers.
+• Action: Using Pandas, I detected blank strings in total charges, converted them to float, and imputed missing values using median tenure grouping. I applied One-Hot Encoding via pd.get_dummies and Scikit-learn's OneHotEncoder for nominal categories. With NumPy and StandardScaler, I normalized continuous attributes (tenure, monthly charges) to ensure equal feature weighting.
+• Result: The resulting preprocessed matrix maintained zero data leakage, preserved feature variance, and reduced training convergence time.
+
+QUESTION 3: Togetherly – Django Backend & Database (Django & SQLite)
+Prompt: "You built TOGETHERLY, a LinkedIn clone using Django and SQLite. How did you structure your models and implement user authentication, CRUD operations, and real-time messaging?"
+• Situation: Professional networking platforms require complex entity relationships—profiles, connection graphs, posts, comments, and private messages.
+• Task: Architect a modular Django backend with secure authentication and real-time peer messaging.
+• Action: I designed relational models using Django's ORM: UserProfile with OneToOneField to auth.User, Post and Comment with foreign keys, and a Message model linking sender and recipient with timestamp ordering. I leveraged Django's built-in authentication and CSRF protection for session security, wrote class-based views for CRUD post operations, and implemented an asynchronous message inbox using AJAX endpoints.
+• Result: Built a responsive, secure networking platform supporting seamless post publishing, profile editing, and sub-second direct messaging.
+
+QUESTION 4: INNOFIND – Frontend & Local Storage (HTML/CSS/JS)
+Prompt: "For INNOFIND, you created a tech resource discovery platform using HTML, CSS, and JavaScript. How did you implement local storage for data persistence across features like the to-do list and calendar?"
+• Situation: Users wanted a personalized workspace to bookmark development resources, track study tasks, and schedule learning goals without creating server-side accounts.
+• Task: Implement resilient client-side state persistence for to-do items, calendar events, and theme preferences.
+• Action: I built a centralized StorageManager utility wrapping window.localStorage with JSON serialization and deserialization. Every state change (adding a task, checking off a study item, updating calendar dates) calls saveState() with try-catch validation. On initial page load, the application hydrates the DOM from localStorage, falling back gracefully to empty states if storage is cleared.
+• Result: Users retain their study roadmaps and theme preferences across page reloads and browser sessions with zero network latency.
+
+QUESTION 5: Hackathons, Teamwork & Problem Solving (Intellex & SIH)
+Prompt: "You have participated in hackathons like the Smart India Hackathon and won second place in Intellex at Chitkara University. Tell me about a time in a team project or hackathon where you faced a tough technical roadblock and how you collaborated to solve it."
+• Situation: During the Intellex hackathon at Chitkara University, where our team won second place, our application suffered critical CORS errors and asynchronous race conditions four hours before final judging.
+• Task: We needed to debug the API connection and state synchronization without panicking or missing our demo presentation deadline.
+• Action: I initiated a quick 5-minute team standup, divided tasks cleanly: I took ownership of debugging the network payloads in browser DevTools, configuring backend CORS middleware, and wrapping asynchronous fetch calls with try/catch and loading state guards. Meanwhile, my teammate polished the pitch deck and user flow slides.
+• Result: We resolved the race condition in two hours, tested end-to-end flows, and delivered an error-free live demonstration, winning 2nd place among competing teams.`;
 
 export const INITIAL_SAMPLE_SESSION: InterviewSession = {
   id: 'session_sample_01',
   createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
   context: {
-    role: 'Software Engineer',
-    company: 'TechCorp Solutions',
+    role: 'AI & Software Engineer',
+    company: 'Chitkara University',
     interviewType: 'behavioural',
     durationMinutes: 10,
     targetQuestions: 5,
     isSampleDemo: true,
     resumeText: SAMPLE_DEMO_RESUME_TEXT,
-    focusArea: 'Collaboration, incident recovery, and STAR responses',
+    focusArea: 'Telecom Churn ML, Django Backend, Frontend Persistence & Hackathons',
   },
   status: 'completed',
   currentQuestionIndex: 4,
   questions: [
     {
       id: 'q_sample_1',
-      text: 'Tell me about a time you had to work with a multidisciplinary team or peer engineer under a tight deadline. How did you ensure alignment and deliver?',
-      topic: 'Teamwork & Tight Deadlines',
-      type: 'behavioural',
-      difficulty: 'medium',
+      text: 'Welcome Kashish. Could you introduce yourself and tell us about your Telecom Customer Churn Prediction project—specifically, what classification models you tested and which metrics you used to evaluate them?',
+      topic: 'Telecom Churn Prediction (AI/ML)',
+      type: 'technical',
+      difficulty: 'easy',
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     },
     {
       id: 'q_sample_2',
-      text: 'Describe a situation where you had a strong disagreement with a teammate regarding a technical or product choice. How did you handle it and what was the outcome?',
-      topic: 'Conflict & Disagreement Resolution',
-      type: 'behavioural',
+      text: 'In your telecom churn analysis, how did you handle data preprocessing and feature engineering with Pandas and NumPy, especially for missing values and categorical data?',
+      topic: 'Data Preprocessing & Feature Engineering',
+      type: 'technical',
       difficulty: 'medium',
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 90000).toISOString(),
     },
     {
       id: 'q_sample_3',
-      text: "Can you share an experience where a project or deployment didn't go as planned or failed? What immediate actions did you take, and what did you learn?",
-      topic: 'Resilience & Setbacks',
-      type: 'behavioural',
-      difficulty: 'hard',
+      text: 'You built TOGETHERLY, a LinkedIn clone using Django and SQLite. How did you structure your models and implement user authentication, CRUD operations, and real-time messaging?',
+      topic: 'Togetherly – Django Backend & Database',
+      type: 'technical',
+      difficulty: 'medium',
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 180000).toISOString(),
     },
     {
       id: 'q_sample_4',
-      text: 'Tell me about a time you went beyond your assigned responsibilities to solve a problem or improve a process for your team.',
-      topic: 'Initiative & Ownership',
-      type: 'behavioural',
+      text: 'For INNOFIND, you created a tech resource discovery platform using HTML, CSS, and JavaScript. How did you implement local storage for data persistence across features like the to-do list and calendar?',
+      topic: 'INNOFIND – Frontend & Local Storage',
+      type: 'technical',
       difficulty: 'medium',
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 270000).toISOString(),
     },
     {
       id: 'q_sample_5',
-      text: 'How do you handle situations where you are faced with competing priorities or urgent requests from stakeholders while already committed to a delivery date?',
-      topic: 'Prioritization & Competing Urgencies',
+      text: 'You have participated in hackathons like the Smart India Hackathon and won second place in Intellex at Chitkara University. Tell me about a time in a team project or hackathon where you faced a tough technical roadblock and how you collaborated to solve it.',
+      topic: 'Hackathons, Teamwork & Problem Solving',
       type: 'behavioural',
       difficulty: 'medium',
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 360000).toISOString(),
@@ -112,70 +135,70 @@ export const INITIAL_SAMPLE_SESSION: InterviewSession = {
     {
       id: 'ans_sample_1',
       questionId: 'q_sample_1',
-      transcript: 'During my internship at TechCorp, our team had a two-week sprint to ship an analytics dashboard ahead of a client demo. I established daily 10-minute standups, agreed on strict OpenAPI contracts on day one, and built mock API response fixtures so the frontend developer could build UI components in parallel without waiting on backend endpoints. We shipped two days early with zero defects.',
-      durationSeconds: 38,
+      transcript: "Hi, I'm Kashish, a B.E. Artificial Intelligence student at Chitkara University. In my Telecom Customer Churn Prediction project, my objective was to forecast which customers were at risk of leaving so the retention team could take proactive steps. I tested Logistic Regression as a baseline and then trained a Random Forest Classifier with Scikit-learn. Because customer churn involves imbalanced classes, standard accuracy would be misleading, so I prioritized Recall and the ROC-AUC score. Random Forest achieved over 84% recall on churned customers, ensuring we caught high-risk accounts while maintaining high precision.",
+      durationSeconds: 42,
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 60000).toISOString(),
       evaluation: {
         understoodIntent: true,
         clarity: 'Strong',
         technicalAccuracy: 'Strong',
-        extractedKeyPoints: ['Two-week sprint', 'Daily standups', 'OpenAPI contracts', 'Mock fixtures'],
+        extractedKeyPoints: ['B.E. AI at Chitkara University', 'Logistic Regression & Random Forest', 'Recall & ROC-AUC for imbalanced data', '84% recall on churners'],
         requiresFollowUp: false,
       },
     },
     {
       id: 'ans_sample_2',
       questionId: 'q_sample_2',
-      transcript: 'On TaskFlow, a teammate wanted to use MongoDB for rapid prototyping while I advocated for PostgreSQL. Rather than debating opinions, I built an objective benchmark matrix showing that our relational entity relationships—boards, tasks, and audit logs—required foreign keys and ACID constraints to prevent orphaned tasks during drag-and-drop actions. My peer agreed with the data and we completed on time.',
-      durationSeconds: 42,
+      transcript: "For the churn dataset, preprocessing was critical. Using Pandas, I first identified missing values in total charges and imputed them based on tenure and contract type. For categorical features like contract terms, payment methods, and internet service types, I applied One-Hot Encoding via Pandas get_dummies and Scikit-learn's OneHotEncoder. I used NumPy to handle numerical scaling for continuous attributes such as monthly charges and tenure using StandardScaler, preventing high-magnitude features from dominating model training.",
+      durationSeconds: 40,
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 150000).toISOString(),
       evaluation: {
         understoodIntent: true,
         clarity: 'Strong',
         technicalAccuracy: 'Strong',
-        extractedKeyPoints: ['Benchmark matrix', 'Relational integrity', 'ACID constraints', 'Objective consensus'],
+        extractedKeyPoints: ['Missing value imputation', 'One-Hot Encoding with pd.get_dummies', 'NumPy & StandardScaler normalization'],
         requiresFollowUp: false,
       },
     },
     {
       id: 'ans_sample_3',
       questionId: 'q_sample_3',
-      transcript: 'During our Campus Marketplace deployment, an automated migration failed on an unindexed unique constraint, locking staging. I communicated the incident on Slack, triggered an automated rollback to restore availability in three minutes, and isolated the offending records. I wrote an idempotent migration with comprehensive unit tests and verified it on a clone. I then added dry-run validation to our CI pipeline.',
+      transcript: "In TOGETHERLY, I used Django's Model-View-Template architecture with an SQLite database. I designed relational models for UserProfile, Post, ConnectionRequest, and Message with foreign key and ManyToMany relationships. For authentication, I utilized Django's built-in auth framework with custom user profile extensions and session-based security. I built complete CRUD views for posts and comments, and implemented a real-time messaging inbox using Django channels and AJAX endpoints to allow instant messaging between connected peers.",
       durationSeconds: 45,
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 240000).toISOString(),
       evaluation: {
         understoodIntent: true,
         clarity: 'Strong',
         technicalAccuracy: 'Strong',
-        extractedKeyPoints: ['Rollback in 3 min', 'Idempotent migration', 'CI dry-run validation', 'Root cause post-mortem'],
+        extractedKeyPoints: ['Django MVT architecture & SQLite', 'UserProfile, Post, Message models', 'Built-in auth & CRUD views', 'Real-time AJAX messaging inbox'],
         requiresFollowUp: false,
       },
     },
     {
       id: 'ans_sample_4',
       questionId: 'q_sample_4',
-      transcript: 'At TechCorp, new engineer onboarding was a multi-step manual process costing new teammates two days of environment debugging. Although my assigned tickets were feature-focused, I containerized the entire local stack using Docker Compose, authored a one-click setup script, and overhauled the documentation. This reduced onboarding time from two days to under fifteen minutes across the team.',
-      durationSeconds: 40,
+      transcript: "For INNOFIND, I created a client-side resource discovery hub using semantic HTML5, modern CSS flexbox and grid, and vanilla JavaScript. To persist user data without requiring a backend server, I built a modular storage manager on top of window.localStorage. Whenever users added tasks to their study to-do list, pinned events on the calendar, or toggled the theme, the state was serialized as JSON into localStorage. On page load, the app parses the stored keys and reconstructs the DOM state immediately, providing seamless persistence across browser sessions.",
+      durationSeconds: 38,
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 330000).toISOString(),
       evaluation: {
         understoodIntent: true,
         clarity: 'Strong',
         technicalAccuracy: 'Strong',
-        extractedKeyPoints: ['Docker Compose containerization', 'Automated bootstrap script', 'Onboarding cut to 15 min'],
+        extractedKeyPoints: ['Semantic HTML5, CSS grid/flexbox, JS', 'window.localStorage JSON serialization', 'DOM hydration on reload', 'To-do, calendar, and theme persistence'],
         requiresFollowUp: false,
       },
     },
     {
       id: 'ans_sample_5',
       questionId: 'q_sample_5',
-      transcript: 'During release week, an urgent request for a custom CSV export came from customer success for an enterprise deal while I was completing authentication security fixes. I applied urgency-vs-impact triage: security was non-negotiable. I met with stakeholders, transparently presented capacity, and built a minimal CSV script within two hours for the demo while scheduling full automation for the next sprint.',
-      durationSeconds: 42,
+      transcript: "During the Intellex hackathon at Chitkara University, where our team won second place, we faced a critical roadblock four hours before final judging. Our frontend API calls were failing due to unexpected CORS headers and asynchronous state race conditions during live demo testing. Rather than panicking, I called an immediate 5-minute huddle, divided our tasks: I traced the network tab in DevTools and configured proper CORS middleware and async/await error handling, while my teammate finalized the presentation slide deck. We resolved the bug, verified all endpoints, and delivered a smooth live demo that secured 2nd place.",
+      durationSeconds: 44,
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000 + 420000).toISOString(),
       evaluation: {
         understoodIntent: true,
         clarity: 'Strong',
         technicalAccuracy: 'Strong',
-        extractedKeyPoints: ['Urgency vs impact triage', 'Non-negotiable security', 'Minimal viable delivery in 2 hours', 'Transparent stakeholder sync'],
+        extractedKeyPoints: ['Intellex hackathon at Chitkara University (2nd place)', 'CORS & async race condition bug', 'DevTools network tracing & middleware fix', 'Team task division & calm delivery'],
         requiresFollowUp: false,
       },
     },
@@ -184,18 +207,19 @@ export const INITIAL_SAMPLE_SESSION: InterviewSession = {
     technicalScore: 'Strong',
     communicationScore: 'Strong',
     interviewHandlingScore: 'Strong',
-    summaryVerdict: 'Exceptional demonstration of STAR structure across all 5 behavioral competencies. Demonstrates proactive leadership, clear technical trade-off evaluation, and rapid composure during staging incidents.',
+    summaryVerdict: 'Outstanding demonstration across machine learning fundamentals, full-stack backend development with Django, client-side persistence, and hackathon teamwork. Candidate articulated technical trade-offs with clarity and composure.',
     whatWentWell: [
-      'Structured every response cleanly using Situation, Task, Action, and measurable Result.',
-      'Defended technical decisions objectively using benchmarks and data integrity constraints.',
-      'Handled staging incident recovery with blameless post-mortem actions and CI prevention.',
-      'Managed competing stakeholder requests with transparent communication and agile triage.',
+      'Grounded machine learning evaluation in Recall and ROC-AUC for imbalanced churn datasets.',
+      'Clearly articulated data preprocessing, missing value imputation, and feature scaling with Pandas and NumPy.',
+      'Demonstrated solid architectural understanding of Django ORM, authentication, and relational data structures in Togetherly.',
+      'Explained client-side state persistence and JSON serialization with localStorage in INNOFIND.',
+      'Exhibited effective hackathon problem-solving, calm triage under deadline pressure, and teamwork during Intellex.',
     ],
     whatToImprove: [
-      'In future rehearsals, highlight mentoring and delegation when discussing larger engineering initiatives.',
-      'Quantify business impacts with customer NPS or system performance percentiles where applicable.',
+      'Consider discussing hyperparameter tuning (e.g., GridSearchCV) when detailing Random Forest optimization.',
+      'Mention caching strategies (e.g., Redis) or database indexing when discussing future scaling for Django messaging.',
     ],
-    nextRehearsalFocus: 'System design scaling and executive architectural defense.',
+    nextRehearsalFocus: 'Advanced distributed backend architectures and end-to-end ML model deployment pipelines.',
     completedAt: new Date(Date.now() - 24 * 60 * 60 * 1000 + 450000).toISOString(),
   },
   totalDurationSeconds: 450,

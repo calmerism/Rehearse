@@ -57,7 +57,7 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
           setResumeText(initialContext.resumeText || '');
           if (initialContext.resumeText && initialContext.resumeText.trim().length > 0) {
             setUploadedFile({
-              name: initialContext.isSampleDemo ? 'demo-resume.pdf (Alex Chen)' : 'Grounded Resume',
+              name: initialContext.isSampleDemo ? 'demo-resume.pdf (Kashish)' : 'Grounded Resume',
               size: initialContext.resumeText.length,
               characterCount: initialContext.resumeText.length,
             });
@@ -73,15 +73,15 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
   }, [initialFocusArea, initialContext, isOpen]);
 
   const handleApplySampleDemoPreset = () => {
-    setRole('Software Engineer');
-    setCompany('TechCorp Solutions');
+    setRole('AI & Software Engineer');
+    setCompany('Chitkara University');
     setInterviewType('behavioural');
     setDuration(10);
     setResumeText(SAMPLE_DEMO_RESUME_TEXT);
     setUploadedFile({
-      name: 'demo-questions-and-answers.pdf',
-      size: 7161,
-      characterCount: 6073,
+      name: 'demo-resume.pdf (Kashish)',
+      size: 2175,
+      characterCount: 2175,
     });
     setFocusArea('');
     setIsSampleDemo(true);
@@ -135,9 +135,9 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
     try {
       setResumeText(SAMPLE_DEMO_RESUME_TEXT);
       setUploadedFile({
-        name: 'demo-questions-and-answers.pdf',
-        size: 7161,
-        characterCount: 6073,
+        name: 'demo-resume.pdf (Kashish)',
+        size: 2175,
+        characterCount: 2175,
       });
       setIsParsing(false);
     } catch (err: any) {
@@ -228,10 +228,10 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
           <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.04] border border-black/5 dark:border-white/10">
             <div className="min-w-0 pr-2">
               <p className="text-[13px] font-semibold text-apple-ink dark:text-white">
-                Presentation Demo Preset
+                Presentation Demo Preset (Kashish)
               </p>
               <p className="text-[11px] text-apple-inkMuted truncate">
-                5-question behavioral rehearsal with sample Q&A document
+                5-question rehearsal grounded in Kashish&apos;s resume &amp; projects
               </p>
             </div>
             <button
@@ -482,7 +482,7 @@ export const InterviewSetupModal: React.FC<InterviewSetupModalProps> = ({
                     onClick={handleLoadDemoResume}
                     className="text-apple-amber-600 dark:text-apple-amber-400 hover:underline font-medium"
                   >
-                    + Load Sample Document (5 Questions & Answers)
+                    + Load Sample Resume &amp; Q&amp;A (Kashish)
                   </button>
                   <button
                     type="button"

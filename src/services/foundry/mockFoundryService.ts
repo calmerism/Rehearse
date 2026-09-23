@@ -11,36 +11,36 @@ import { IFoundryService, NextQuestionDecision } from './types';
 export const SAMPLE_BEHAVIORAL_DEMO_QUESTIONS: Omit<Question, 'timestamp'>[] = [
   {
     id: 'q_1',
-    text: 'To kick off our conversation, tell me about a time you worked closely with a team to deliver a project on a tight deadline. What was your role and how did you collaborate?',
-    topic: 'Teamwork & Collaboration',
-    type: 'behavioural',
-    difficulty: 'medium',
+    text: 'Welcome Kashish. Could you introduce yourself and tell us about your Telecom Customer Churn Prediction project—specifically, what classification models you tested and which metrics you used to evaluate them?',
+    topic: 'Telecom Churn Prediction (AI/ML)',
+    type: 'technical',
+    difficulty: 'easy',
   },
   {
     id: 'q_2',
-    text: 'Can you describe a situation where you had a disagreement with a teammate or stakeholder over a technical approach or project decision? How did you handle that disagreement?',
-    topic: 'Conflict Resolution',
-    type: 'behavioural',
+    text: 'In your telecom churn analysis, how did you handle data preprocessing and feature engineering with Pandas and NumPy, especially for missing values and categorical data?',
+    topic: 'Data Preprocessing & Feature Engineering',
+    type: 'technical',
     difficulty: 'medium',
   },
   {
     id: 'q_3',
-    text: "Tell me about a time when a project or task didn't go according to plan, or you encountered an unexpected setback. What happened and what did you learn from it?",
-    topic: 'Navigating Setbacks & Resilience',
-    type: 'behavioural',
+    text: 'You built TOGETHERLY, a LinkedIn clone using Django and SQLite. How did you structure your models and implement user authentication, CRUD operations, and real-time messaging?',
+    topic: 'Togetherly – Django Backend & Database',
+    type: 'technical',
     difficulty: 'medium',
   },
   {
     id: 'q_4',
-    text: 'Tell me about a time you took initiative to solve a problem or improve a process without being asked. What motivated you and what was the impact?',
-    topic: 'Initiative & Ownership',
-    type: 'behavioural',
+    text: 'For INNOFIND, you created a tech resource discovery platform using HTML, CSS, and JavaScript. How did you implement local storage for data persistence across features like the to-do list and calendar?',
+    topic: 'INNOFIND – Frontend & Local Storage',
+    type: 'technical',
     difficulty: 'medium',
   },
   {
     id: 'q_5',
-    text: 'When you have multiple competing priorities or urgent requests, how do you decide what to work on first? Can you give an example of how you managed that?',
-    topic: 'Prioritization & Time Management',
+    text: 'You have participated in hackathons like the Smart India Hackathon and won second place in Intellex at Chitkara University. Tell me about a time in a team project or hackathon where you faced a tough technical roadblock and how you collaborated to solve it.',
+    topic: 'Hackathons, Teamwork & Problem Solving',
     type: 'behavioural',
     difficulty: 'medium',
   },
@@ -59,10 +59,10 @@ export class MockFoundryService implements IFoundryService {
     const hasResume = !!(context.resumeText && context.resumeText.trim().length > 0);
     const roleLower = role.toLowerCase();
 
-    // 5-Question Behavioral Presentation Demo Preset
+    // 5-Question Presentation Demo Preset Grounded in Kashish's Resume
     if (context.isSampleDemo) {
       return {
-        introText: `Welcome to your behavioral interview rehearsal for the ${role} position. We will cover 5 key behavioral competencies today. Let's begin with our first question.`,
+        introText: `Welcome Kashish to your interview rehearsal. We will cover 5 key technical and project areas from your resume today. Let's begin with our first question.`,
         firstQuestion: {
           ...SAMPLE_BEHAVIORAL_DEMO_QUESTIONS[0],
           timestamp: new Date().toISOString(),
@@ -176,16 +176,16 @@ export class MockFoundryService implements IFoundryService {
       if (questionCount >= 5) {
         return {
           action: 'conclude',
-          questionText: 'Thank you for sharing those thoughtful experiences. That concludes our 5-question behavioral interview rehearsal. I am now compiling your feedback and performance report.',
+          questionText: 'Thank you Kashish for sharing those detailed technical and project experiences. That concludes our 5-question interview rehearsal. I am now compiling your feedback and performance report.',
           topic: 'Closing',
           type: 'closing',
           evaluation: {
             understoodIntent: true,
             clarity: 'Strong',
             technicalAccuracy: 'Strong',
-            extractedKeyPoints: ['Clear prioritization strategy', 'Effective communication & stakeholder alignment'],
+            extractedKeyPoints: ['Clear problem-solving strategy', 'Effective communication & technical depth'],
             requiresFollowUp: false,
-            reasoningNote: 'Candidate demonstrated clear structured thinking, leadership maturity, and effective prioritization.',
+            reasoningNote: 'Candidate demonstrated clear structured thinking, solid technical fundamentals, and effective problem solving across projects.',
           },
         };
       }

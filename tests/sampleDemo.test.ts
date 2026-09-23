@@ -7,8 +7,8 @@ describe('Sample Behavioral Demo Flow (5 Questions)', () => {
   const foundry = new MockFoundryService();
 
   const demoContext: CandidateContext = {
-    role: 'Software Engineer',
-    company: 'TechCorp Solutions',
+    role: 'AI & Software Engineer',
+    company: 'Chitkara University',
     interviewType: 'behavioural',
     durationMinutes: 10,
     targetQuestions: 5,
@@ -19,7 +19,8 @@ describe('Sample Behavioral Demo Flow (5 Questions)', () => {
   it('guarantees exactly 5 preset behavioral questions in sequence and concludes with diagnostic report', async () => {
     // 1. Initial question
     const { introText, firstQuestion } = await foundry.generateIntroductionAndOpening(demoContext);
-    expect(introText).toContain('5 key behavioral competencies');
+    expect(introText).toContain('Welcome Kashish');
+    expect(introText).toContain('5 key technical and project areas');
     expect(firstQuestion.text).toBe(SAMPLE_BEHAVIORAL_DEMO_QUESTIONS[0].text);
 
     const questions: Question[] = [firstQuestion];
@@ -27,11 +28,11 @@ describe('Sample Behavioral Demo Flow (5 Questions)', () => {
 
     // Step through Q1 -> Q2 -> Q3 -> Q4 -> Q5
     const candidateAnswers = [
-      "I was working on a project with a frontend and backend engineer under a strict two-week deadline. I established daily standups and API contract documentation early on.",
-      "A teammate and I disagreed on whether to use REST or GraphQL. We benchmarked the payload sizes and client requirements, and agreed REST suited our timeline best.",
-      "During deployment, our database migration failed in staging. I stayed calm, rolled back immediately, debugged the index constraint, and re-applied without downtime.",
-      "I noticed our onboarding docs had broken links for new contributors, so I voluntarily updated the environment setup scripts and guide over the weekend.",
-      "I used the Eisenhower matrix to triage high-urgency bug fixes against roadmap deliverables, communicating timeline expectations transparently to stakeholders."
+      "Hi, I'm Kashish from Chitkara University. For my Telecom Churn project, I tested Logistic Regression and Random Forest, evaluating with Recall and ROC-AUC because the churn data was imbalanced.",
+      "With Pandas, I imputed missing total charges with median values and used get_dummies for categorical encoding, while using StandardScaler with NumPy for continuous values.",
+      "In TOGETHERLY, I built relational models for profiles, posts, and messages in Django ORM with SQLite, session auth, and real-time AJAX messaging.",
+      "For INNOFIND, I stored the to-do list, calendar events, and theme in window.localStorage with JSON serialization so user state persisted across page reloads.",
+      "During the Intellex hackathon, when CORS and race conditions broke our app before judging, I debugged the middleware and async fetch calls while my partner prepped the slides, winning 2nd place."
     ];
 
     for (let i = 0; i < 4; i++) {
@@ -88,7 +89,7 @@ describe('Sample Behavioral Demo Flow (5 Questions)', () => {
     );
 
     expect(concludeDecision.action).toBe('conclude');
-    expect(concludeDecision.questionText).toContain('concludes our 5-question behavioral interview rehearsal');
+    expect(concludeDecision.questionText).toContain('concludes our 5-question interview rehearsal');
 
     const report = await foundry.generateFeedbackReport(demoContext, questions, answers);
     expect(report).toBeDefined();

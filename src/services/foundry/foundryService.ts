@@ -102,7 +102,7 @@ export class FoundryService implements IFoundryService {
   ): Promise<{ introText: string; firstQuestion: Question }> {
     if (context.isSampleDemo) {
       return {
-        introText: `Welcome to your behavioral interview rehearsal for the ${context.role} position. We will cover 5 key behavioral competencies today. Let's begin with our first question.`,
+        introText: `Welcome Kashish to your interview rehearsal. We will cover 5 key technical and project areas from your resume today. Let's begin with our first question.`,
         firstQuestion: {
           ...SAMPLE_BEHAVIORAL_DEMO_QUESTIONS[0],
           timestamp: new Date().toISOString(),
@@ -187,16 +187,16 @@ Respond in strict JSON format:
       if (questionCount >= 5) {
         return {
           action: 'conclude',
-          questionText: 'Thank you for sharing those thoughtful experiences. That concludes our 5-question behavioral interview rehearsal. I am now compiling your feedback and performance report.',
+          questionText: 'Thank you Kashish for sharing those detailed technical and project experiences. That concludes our 5-question interview rehearsal. I am now compiling your feedback and performance report.',
           topic: 'Closing',
           type: 'closing',
           evaluation: {
             understoodIntent: true,
             clarity: 'Strong',
             technicalAccuracy: 'Strong',
-            extractedKeyPoints: ['Clear prioritization strategy', 'Effective communication & stakeholder alignment'],
+            extractedKeyPoints: ['Clear problem-solving strategy', 'Effective communication & technical depth'],
             requiresFollowUp: false,
-            reasoningNote: 'Candidate demonstrated clear structured thinking, leadership maturity, and effective prioritization.',
+            reasoningNote: 'Candidate demonstrated clear structured thinking, solid technical fundamentals, and effective problem solving across projects.',
           },
         };
       }
