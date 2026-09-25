@@ -14,7 +14,7 @@ import { getFoundryService } from '@/services/foundry/foundryFactory';
 import { InterviewAgent, AgentEvent } from '@/agent/interviewAgent';
 import { sessionStore } from '@/services/storage/sessionStore';
 import { MockSpeechService } from '@/services/speech/mockSpeechService';
-import { Video, VideoOff, Volume2, Check, Clock, Mic, ShieldCheck } from 'lucide-react';
+import { Video, VideoOff, Volume2, Check, Clock, Mic } from 'lucide-react';
 
 interface LiveInterviewScreenProps {
   context: CandidateContext;
@@ -36,7 +36,6 @@ export const LiveInterviewScreen: React.FC<LiveInterviewScreenProps> = ({
   const [questionCount, setQuestionCount] = useState(1);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
-  const [guardrailNotice, setGuardrailNotice] = useState<string | null>(null);
 
   const agentRef = useRef<InterviewAgent | null>(null);
   const sessionRef = useRef<InterviewSession | null>(null);
@@ -195,18 +194,7 @@ export const LiveInterviewScreen: React.FC<LiveInterviewScreenProps> = ({
               setCurrentTranscript(event.text);
               break;
             case 'guardrail_triggered':
-              setGuardrailNotice(
-                event.flag === 'off_topic'
-                  ? 'Response not related to the question — redirecting'
-                  : event.flag === 'profanity'
-                  ? 'Conduct Guardrail: Please maintain professional decorum'
-                  : event.flag === 'prompt_injection'
-                  ? 'Security Guardrail: Prompt injection intercepted'
-                  : event.actionTaken === 'redirect' || event.actionTaken === 'follow_up'
-                  ? 'Guardrail: Redirecting back to interview agenda'
-                  : 'Pacing Guardrail: Topic rotated to new technical domain'
-              );
-              setTimeout(() => setGuardrailNotice(null), 5000);
+              // Guardrails operate seamlessly under the hood; no disruptive on-screen badges
               break;
             case 'interview_completed':
               if (sessionRef.current) {
@@ -300,11 +288,6 @@ export const LiveInterviewScreen: React.FC<LiveInterviewScreenProps> = ({
             <Clock className="w-3 h-3 text-apple-inkMuted dark:text-white/50" />
             <span>{formatTime(Math.min(elapsedSeconds, maxDurationSeconds))} / {context.durationMinutes}:00</span>
           </div>
-
-          <div className="hidden md:flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 shrink-0">
-            <ShieldCheck className="w-3 h-3" />
-            <span>Guardrails Active</span>
-          </div>
         </div>
 
         {/* Right: Question Count, Camera Toggle, End Action */}
@@ -339,20 +322,6 @@ export const LiveInterviewScreen: React.FC<LiveInterviewScreenProps> = ({
           </button>
         </div>
       </div>
-
-      <AnimatePresence>
-        {guardrailNotice && (
-          <motion.div
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            className="mb-2.5 px-3 py-1 rounded-full bg-apple-amber-500/10 border border-apple-amber-500/20 text-apple-amber-600 dark:text-apple-amber-400 text-[12px] font-medium flex items-center gap-1.5 mx-auto w-fit"
-          >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>{guardrailNotice}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Error notification if present */}
       {errorMessage && (
