@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -30,55 +30,25 @@
       --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
       --font-text: "SF Pro Text", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
 
-      /* Light Mode (Faithful to Reference Design & Apple HIG) */
-      --bg: #f5f5f7;
-      --canvas-border: #e5e5ea;
-      --card-bg: #ffffff;
-      --card-border: #e5e5ea;
-      --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.02);
-      --row-bg: #f9f9fb;
-      --row-border: #ebebed;
-      --text-title: #1d1d1f;
-      --text-body: #1d1d1f;
-      --text-muted: #6e6e73;
-      --text-subtle: #86868b;
-      --header-accent: #0f766e;
-      --accent: #d05236;
-      --accent-bg: rgba(208, 82, 54, 0.06);
-      --accent-border: #d05236;
-      --accent-text: #ffffff;
-      --action-shadow: 0 2px 6px rgba(208, 82, 54, 0.22);
-      --connector: #d05236;
-      --badge-bg: #ffffff;
-      --badge-border: #d2d2d7;
-      --toggle-bg: #e5e5ea;
-      --toggle-active: #ffffff;
-    }
-
-    html[data-theme="dark"] {
-      /* Apple Pro Dark Mode (Zinc & Slate, No Neon Clichés) */
-      --bg: #0c0d10;
-      --canvas-border: #232733;
-      --card-bg: #15171e;
-      --card-border: #242938;
-      --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
-      --row-bg: #1c202b;
-      --row-border: #293042;
-      --text-title: #f5f5f7;
-      --text-body: #e4e4e7;
-      --text-muted: #9ca3af;
-      --text-subtle: #6b7280;
-      --header-accent: #2dd4bf;
+      /* Pitch Black Apple Pro Palette */
+      --bg: #000000;
+      --canvas-border: #1a1a1f;
+      --card-bg: #0c0c0e;
+      --card-border: #1e1e24;
+      --row-bg: rgba(255, 255, 255, 0.025);
+      --row-border: rgba(255, 255, 255, 0.05);
+      --text-title: #ffffff;
+      --text-body: #ffffff;
+      --text-muted: #ffffff;
+      --text-dim: #ffffff;
+      --card-title: #ffffff;
       --accent: #e48229;
       --accent-bg: rgba(228, 130, 41, 0.12);
       --accent-border: #e48229;
       --accent-text: #ffffff;
-      --action-shadow: 0 2px 8px rgba(228, 130, 41, 0.26);
       --connector: #e48229;
-      --badge-bg: #1c202b;
-      --badge-border: #2b3345;
-      --toggle-bg: #1c202b;
-      --toggle-active: #2a3142;
+      --badge-bg: #111114;
+      --badge-border: #222228;
     }
 
     * {
@@ -91,14 +61,13 @@
       background: var(--bg);
       color: var(--text-body);
       font-family: var(--font-text);
-      padding: 32px 20px;
+      padding: 36px 24px;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      transition: background 0.2s ease, color 0.2s ease;
     }
 
     .canvas {
@@ -109,17 +78,16 @@
 
     /* Page Header */
     .page-header {
-      margin-bottom: 34px;
+      margin-bottom: 28px;
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      border-bottom: 1px solid var(--canvas-border);
-      padding-bottom: 18px;
+      padding-bottom: 2px;
     }
 
     .page-title {
       font-family: var(--font-display);
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 600;
       color: var(--text-title);
       letter-spacing: -0.025em;
@@ -128,58 +96,23 @@
 
     .page-subtitle {
       font-family: var(--font-display);
-      font-size: 14.5px;
+      font-size: 14px;
       font-weight: 400;
-      color: var(--text-muted);
-      margin-top: 6px;
+      color: #ffffff;
+      margin-top: 5px;
       letter-spacing: -0.01em;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
     }
 
     .badge {
       font-family: var(--font-display);
       font-size: 12px;
-      color: var(--text-muted);
+      color: #ffffff;
       border: 1px solid var(--badge-border);
       padding: 5px 12px;
       border-radius: 9999px;
       background: var(--badge-bg);
       font-weight: 500;
       letter-spacing: -0.01em;
-    }
-
-    /* Apple Segmented Theme Switcher */
-    .theme-toggle {
-      display: flex;
-      background: var(--toggle-bg);
-      padding: 3px;
-      border-radius: 9999px;
-      border: 1px solid var(--canvas-border);
-    }
-
-    .theme-btn {
-      border: none;
-      background: transparent;
-      padding: 4px 10px;
-      border-radius: 9999px;
-      font-family: var(--font-display);
-      font-size: 11.5px;
-      font-weight: 500;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .theme-btn.active {
-      background: var(--toggle-active);
-      color: var(--text-title);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-      font-weight: 600;
     }
 
     /* Diagram Canvas */
@@ -208,19 +141,17 @@
       margin-top: 52px;
     }
 
-    /* Cards (Apple Grouped Container) */
+    /* Simplified Cards (Clean Apple Surface, No Stacking) */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 16px 14px 16px;
+      border-radius: 12px;
+      padding: 16px 14px 15px;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      box-shadow: var(--card-shadow);
       flex: 1;
       max-width: 258px;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .bottom-flow-row .card {
@@ -230,22 +161,21 @@
 
     .card-title {
       font-family: var(--font-display);
-      font-size: 15.5px;
+      font-size: 15px;
       font-weight: 600;
-      color: var(--header-accent);
+      color: var(--card-title);
       text-align: center;
-      padding-bottom: 9px;
-      border-bottom: 1px solid var(--card-border);
-      margin-bottom: 2px;
+      padding-bottom: 2px;
+      margin-bottom: 4px;
       letter-spacing: -0.015em;
     }
 
-    /* Flat Item Rows (No Container Clutter / Anti-Slop) */
+    /* Flat Clean Item Rows (Zero Cardocalypse Clutter) */
     .item {
       background: var(--row-bg);
       border: 1px solid var(--row-border);
-      border-radius: 8px;
-      padding: 8px 10px;
+      border-radius: 7px;
+      padding: 7px 10px;
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -255,47 +185,40 @@
       font-family: var(--font-text);
       font-size: 11px;
       font-weight: 500;
-      color: var(--text-muted);
+      color: #ffffff;
       letter-spacing: -0.005em;
     }
 
     .item-val {
       font-family: var(--font-display);
-      color: var(--text-title);
-      font-weight: 600;
+      color: #ffffff;
+      font-weight: 500;
       font-size: 13.5px;
       line-height: 1.35;
-      letter-spacing: -0.015em;
+      letter-spacing: -0.01em;
     }
 
     .item-desc {
       font-family: var(--font-text);
-      color: var(--text-muted);
-      font-size: 12.5px;
+      color: #ffffff;
+      font-size: 12px;
       line-height: 1.35;
-      letter-spacing: -0.005em;
     }
 
-    /* Distinct Apple Action Trigger Button */
+    /* Simplified Action Trigger Pill */
     .action-box {
       background: var(--accent);
       border: 1px solid var(--accent-border);
-      border-radius: 9px;
-      padding: 9px 12px;
+      border-radius: 8px;
+      padding: 8px 12px;
       font-family: var(--font-display);
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
       color: var(--accent-text);
       text-align: center;
-      margin-top: 4px;
+      margin-top: 3px;
       letter-spacing: -0.015em;
-      box-shadow: var(--action-shadow);
       user-select: none;
-      transition: transform 0.1s ease;
-    }
-
-    .action-box:hover {
-      transform: translateY(-1px);
     }
 
     /* Inline Connectors */
@@ -329,12 +252,8 @@
         <h1 class="page-title">Rehearse — System architecture flow</h1>
         <p class="page-subtitle">What we used, why we picked it, and how the interview loop adapts.</p>
       </div>
-      <div class="header-actions">
-        <div class="theme-toggle">
-          <button id="btn-theme-light" class="theme-btn active" onclick="setTheme('light')">Light</button>
-          <button id="btn-theme-dark" class="theme-btn" onclick="setTheme('dark')">Dark</button>
-        </div>
-        <div class="badge">Azure AI-103</div>
+      <div>
+        <span class="badge">Azure AI-103</span>
       </div>
     </header>
 
@@ -418,7 +337,7 @@
           </div>
           <div class="item">
             <span class="item-key">What we used</span>
-            <span class="item-val">Azure OpenAI GPT-4o</span>
+            <span class="item-val">Azure OpenAI GPT-4.1 mini</span>
           </div>
           <div class="item">
             <span class="item-key">Why we picked it</span>
@@ -529,20 +448,6 @@
   </div>
 
   <script>
-    function setTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      const lightBtn = document.getElementById('btn-theme-light');
-      const darkBtn = document.getElementById('btn-theme-dark');
-      if (theme === 'light') {
-        lightBtn.classList.add('active');
-        darkBtn.classList.remove('active');
-      } else {
-        darkBtn.classList.add('active');
-        lightBtn.classList.remove('active');
-      }
-      updateConnectors();
-    }
-
     function updateConnectors() {
       const canvas = document.getElementById('diagram-canvas').getBoundingClientRect();
       const c1 = document.getElementById('card-1').getBoundingClientRect();
@@ -550,10 +455,10 @@
       const c5 = document.getElementById('card-5').getBoundingClientRect();
       const c7 = document.getElementById('card-7').getBoundingClientRect();
 
-      // 1. Top Loop: Card 4 (top center) -> Up 26px -> Across top -> Down into Card 1 (top center)
+      // 1. Top Loop: Card 4 (top center) -> Across top -> Down into Card 1 (top center)
       const topLoopStart = { x: c4.left + c4.width / 2 - canvas.left, y: c4.top - canvas.top };
       const topLoopEnd = { x: c1.left + c1.width / 2 - canvas.left, y: c1.top - canvas.top };
-      const topLoopY = 14;
+      const topLoopY = 12;
 
       const topLoopD = `M ${topLoopStart.x} ${topLoopStart.y} ` +
                        `L ${topLoopStart.x} ${topLoopY + 10} ` +

@@ -148,14 +148,6 @@ export const InterviewLobby: React.FC<InterviewLobbyProps> = ({
 
       {/* Unified Apple Row Table without card enclosure */}
       <div className="space-y-1 text-left animate-apple-in apple-stagger-1">
-        {context.isSampleDemo && (
-          <div className="py-2 px-3 -mx-3 rounded-xl flex items-center justify-between text-[14px] bg-[#D05236]/[0.06] dark:bg-[#D05236]/[0.12] mb-1">
-            <span className="text-[#D05236] dark:text-[#E06646] font-medium">Demo Preset</span>
-            <span className="font-semibold text-[#D05236] dark:text-[#E06646] text-[13px]">
-              5 Questions & Answers • Sample Document
-            </span>
-          </div>
-        )}
 
         {/* Row 1: Role */}
         <div className="py-2.5 px-3 -mx-3 rounded-xl flex items-center justify-between text-[15px] hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors">

@@ -5,7 +5,7 @@ import {
   FeedbackReportData,
 } from '@/types/interview';
 import { IFoundryService, NextQuestionDecision } from './types';
-import { SAMPLE_BEHAVIORAL_DEMO_QUESTIONS } from './mockFoundryService';
+import { InterviewGuardrails } from '@/services/guardrails/guardrailsService';
 
 /**
  * Microsoft Foundry & Azure OpenAI Service Configuration.
@@ -100,22 +100,17 @@ export class FoundryService implements IFoundryService {
   async generateIntroductionAndOpening(
     context: CandidateContext
   ): Promise<{ introText: string; firstQuestion: Question }> {
-    if (context.isSampleDemo) {
-      return {
-        introText: `Welcome Kashish to your interview rehearsal. We will cover 5 key technical and project areas from your resume today. Let's begin with our first question.`,
-        firstQuestion: {
-          ...SAMPLE_BEHAVIORAL_DEMO_QUESTIONS[0],
-          timestamp: new Date().toISOString(),
-        },
-      };
-    }
-
     const hasResume = !!(context.resumeText && context.resumeText.trim().length > 0);
     const systemPrompt = `You are an expert, calm, and professional technical/behavioral interviewer conducting a high-stakes, realistic interview rehearsal.
 Role: "${context.role}" at "${context.company || 'a top technology company'}".
 Interview Type: ${context.interviewType}.
 Duration: ${context.durationMinutes} minutes.
 ${context.focusArea ? `Identified Priority/Gap from Prior Rehearsal: ${context.focusArea}` : ''}
+
+GUARDRAILS & INTERVIEW PERSONA DIRECTIVES:
+1. Maintain strict interviewer persona at all times. Do not break character, lecture, or output conversational filler like "Great question!" or "Sure!".
+2. Never output markdown formatting symbols, asterisks, brackets, or quotes in "questionText" or "introText" so speech synthesis sounds natural.
+3. The opening question must be concise, direct, and engaging.
 
 ${hasResume ? `CANDIDATE'S ACTUAL UPLOADED RESUME:
 """
@@ -157,9 +152,14 @@ Respond in strict JSON format:
           ? 'How would you approach designing a scalable, distributed rate-limiting service to protect backend APIs from unexpected traffic spikes?'
           : 'When designing an API service that handles high-throughput traffic, how do you approach database schema design and indexing to prevent latency bottlenecks?');
 
+    const rawQuestionText = response.questionText || response.question || response.prompt || fallbackOpeningText;
+    const sanitizedQuestionText = InterviewGuardrails.sanitizeForSpeech(rawQuestionText);
+    const rawIntroText = response.introText || `Welcome to your ${context.interviewType} rehearsal for the ${context.role} position. Let's begin.`;
+    const sanitizedIntroText = InterviewGuardrails.sanitizeForSpeech(rawIntroText);
+
     const firstQuestion: Question = {
       id: `q_1`,
-      text: response.questionText || response.question || response.prompt || fallbackOpeningText,
+      text: sanitizedQuestionText,
       topic: response.topic || (context.interviewType === 'behavioural' ? 'Collaboration & Disagreements' : 'Core Architecture & Principles'),
       type: context.interviewType === 'behavioural' ? 'behavioural' : 'technical',
       difficulty: response.difficulty || 'medium',
@@ -167,7 +167,7 @@ Respond in strict JSON format:
     };
 
     return {
-      introText: response.introText || `Welcome to your ${context.interviewType} rehearsal for the ${context.role} position. Let's begin.`,
+      introText: sanitizedIntroText,
       firstQuestion,
     };
   }
@@ -181,44 +181,6 @@ Respond in strict JSON format:
     elapsedSeconds?: number
   ): Promise<NextQuestionDecision> {
     const questionCount = previousQuestions.length;
-
-    // Curated 5-Question Behavioral Presentation Demo Flow
-    if (context.isSampleDemo) {
-      if (questionCount >= 5) {
-        return {
-          action: 'conclude',
-          questionText: 'Thank you Kashish for sharing those detailed technical and project experiences. That concludes our 5-question interview rehearsal. I am now compiling your feedback and performance report.',
-          topic: 'Closing',
-          type: 'closing',
-          evaluation: {
-            understoodIntent: true,
-            clarity: 'Strong',
-            technicalAccuracy: 'Strong',
-            extractedKeyPoints: ['Clear problem-solving strategy', 'Effective communication & technical depth'],
-            requiresFollowUp: false,
-            reasoningNote: 'Candidate demonstrated clear structured thinking, solid technical fundamentals, and effective problem solving across projects.',
-          },
-        };
-      }
-
-      const nextQ = SAMPLE_BEHAVIORAL_DEMO_QUESTIONS[questionCount];
-      return {
-        action: 'new_topic',
-        questionText: nextQ.text,
-        topic: nextQ.topic,
-        type: nextQ.type,
-        difficulty: nextQ.difficulty,
-        evaluation: {
-          understoodIntent: true,
-          clarity: 'Strong',
-          technicalAccuracy: 'Good',
-          extractedKeyPoints: ['Structured STAR response', 'Concrete actions and ownership'],
-          requiresFollowUp: false,
-          reasoningNote: 'Candidate gave a clear behavioral example demonstrating ownership, collaboration, and measurable outcome.',
-        },
-      };
-    }
-
     const targetQuestions = context.targetQuestions || (context.durationMinutes >= 30 ? 15 : context.durationMinutes >= 20 ? 10 : 6);
     const totalAllowedSeconds = (context.durationMinutes || 10) * 60;
     const timeRemainingSeconds = elapsedSeconds !== undefined ? Math.max(totalAllowedSeconds - elapsedSeconds, 0) : undefined;
@@ -257,6 +219,22 @@ ${history}
 Latest Candidate Answer to "${currentQuestion.text}":
 "${latestAnswer.transcript}"
 
+CRITICAL RELEVANCE & OFF-TOPIC ENFORCEMENT:
+Evaluate whether the candidate's latest answer is actually related, responsive, and relevant to the specific question asked: "${currentQuestion.text}".
+1. IF THE ANSWER IS NOT RELATED (e.g. candidate talks about unrelated topics, everyday chatter, hobbies, food, movies, weather, personal life, dodges the technical prompt, or discusses unrelated technologies with no connection to the question):
+   - You MUST NOT ignore it or pretend they answered!
+   - You MUST set evaluation.isRelevant: false and evaluation.understoodIntent: false.
+   - You MUST set action: "follow_up".
+   - In "questionText", you MUST explicitly call out that their answer is not related to the question asked, and redirect them back to the topic.
+     Required format:
+     "That doesn't seem related to the question I asked. We are focusing on [topic or concept of current question]. Could you walk me through [rephrased direct question]?"
+     or
+     "That doesn't quite address what I asked. Let's stay on topic: [rephrased direct question]?"
+   - Do NOT advance to a new topic when candidate gave an unrelated response.
+2. IF THE ANSWER IS RELEVANT:
+   - Set evaluation.isRelevant: true.
+   - Proceed with normal technical evaluation and progression.
+
 ${isNearEnd ? `CRITICAL SCHEDULE PACING: The scheduled ${context.durationMinutes}-minute time limit has arrived. You MUST set action: "conclude" now. Provide a warm, gracious closing remark thanking the candidate for their time.` : wasFollowUp ? `CRITICAL PROGRESSION MANDATE: The previous question (Q${questionCount}) was already a follow-up probe. You MUST NOT ask another follow-up on this same project or topic. Action MUST BE "new_topic" (or "conclude" if finished).` : ''}
 
 MANDATORY TOPIC ROTATION & DIVERSITY RULES:
@@ -284,7 +262,8 @@ Respond in strict JSON format:
   "type": "${isNearEnd ? 'closing' : wasFollowUp ? 'technical' : 'follow_up'}",
   "difficulty": "easy" | "medium" | "hard",
   "evaluation": {
-    "understoodIntent": true,
+    "understoodIntent": true | false,
+    "isRelevant": true | false,
     "clarity": "Strong" | "Good" | "Needs Improvement",
     "technicalAccuracy": "Strong" | "Good" | "Needs Improvement",
     "extractedKeyPoints": ["point 1", "point 2"],
@@ -329,7 +308,7 @@ Respond in strict JSON format:
       .replace(/^["'\u201C\u201D\u2018\u2019]+|["'\u201C\u201D\u2018\u2019]+$/g, '')
       .trim();
 
-    return {
+    const initialDecision: NextQuestionDecision = {
       action: resolvedAction,
       questionText: cleanedQuestionText,
       topic: response.topic || (resolvedAction === 'conclude' ? 'Rehearsal Conclusion' : 'System Architecture & Reliability'),
@@ -343,6 +322,13 @@ Respond in strict JSON format:
         requiresFollowUp: false,
       },
     };
+
+    return InterviewGuardrails.enforcePacingAndProgression(
+      initialDecision,
+      context,
+      previousQuestions,
+      elapsedSeconds
+    );
   }
 
   async generateFeedbackReport(

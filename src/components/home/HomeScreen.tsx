@@ -6,14 +6,12 @@ import { InterviewSession } from '@/types/interview';
 interface HomeScreenProps {
   onStartRehearsal: (focusArea?: string) => void;
   onViewHistory: () => void;
-  onStartSampleDemo?: () => void;
   latestSession?: InterviewSession | null;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
   onStartRehearsal,
   onViewHistory,
-  onStartSampleDemo,
 }) => {
   return (
     <div className="min-h-[calc(100dvh-44px)] flex flex-col justify-center items-center px-4 sm:px-6 md:px-8 py-10">
@@ -42,15 +40,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           >
             View History
           </button>
-
-          {onStartSampleDemo && (
-            <button
-              onClick={onStartSampleDemo}
-              className="w-full sm:w-auto px-8 sm:px-9 py-3.5 rounded-full bg-[#F5F5F5] dark:bg-white/[0.08] hover:bg-[#EBEBEB] dark:hover:bg-white/[0.12] text-apple-ink dark:text-white text-[15px] sm:text-[16px] font-semibold tracking-tight border border-[#E5E5E5] dark:border-white/10 transition-all apple-action min-h-[48px] flex items-center justify-center cursor-pointer"
-            >
-              Sample Demo
-            </button>
-          )}
         </div>
       </div>
     </div>

@@ -13,8 +13,24 @@ export interface CandidateContext {
   durationMinutes: InterviewDuration;
   resumeText?: string;
   focusArea?: string; // Seeded from previous rehearsal weakness if applicable
-  targetQuestions?: number; // Override question count (e.g. 5 questions for presentation demo)
-  isSampleDemo?: boolean; // Presentation demo flag for streamlined 5-question behavioral flow
+  targetQuestions?: number; // Override question count if specified
+  isSampleDemo?: boolean; // Deprecated, kept for backward compatibility
+}
+
+export type GuardrailFlag =
+  | 'prompt_injection'
+  | 'profanity'
+  | 'off_topic'
+  | 'evasion'
+  | 'topic_loop_prevented'
+  | 'pacing_enforced';
+
+export interface GuardrailEvent {
+  id: string;
+  timestamp: string;
+  flag: GuardrailFlag;
+  reason: string;
+  actionTaken: string;
 }
 
 export interface Question {
@@ -37,12 +53,15 @@ export interface Answer {
 
 export interface AnswerEvaluation {
   understoodIntent: boolean;
+  isRelevant?: boolean;
   technicalAccuracy?: QualitativeScore;
   clarity: QualitativeScore;
   extractedKeyPoints: string[];
   suggestedFollowUpTopic?: string;
   requiresFollowUp: boolean;
   reasoningNote?: string;
+  guardrailStatus?: 'passed' | 'redirected' | 'pivoted';
+  guardrailNote?: string;
 }
 
 export interface FeedbackReportData {
@@ -67,6 +86,7 @@ export interface InterviewSession {
   feedback?: FeedbackReportData;
   totalDurationSeconds: number;
   isDemoMode: boolean;
+  guardrailsTriggered?: GuardrailEvent[];
 }
 
 export interface UserPreferences {

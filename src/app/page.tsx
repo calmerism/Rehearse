@@ -10,7 +10,7 @@ import { FeedbackReport } from '@/components/feedback/FeedbackReport';
 import { RehearsalHistoryScreen } from '@/components/history/RehearsalHistoryScreen';
 import { SettingsScreen } from '@/components/settings/SettingsScreen';
 import { CandidateContext, InterviewSession } from '@/types/interview';
-import { sessionStore, SAMPLE_DEMO_RESUME_TEXT } from '@/services/storage/sessionStore';
+import { sessionStore } from '@/services/storage/sessionStore';
 
 export type ScreenState = 'home' | 'lobby' | 'live_interview' | 'feedback';
 
@@ -86,21 +86,6 @@ export default function Page() {
     setScreenState('lobby');
   };
 
-  const handleStartSampleDemo = () => {
-    const demoContext: CandidateContext = {
-      role: 'AI & Software Engineer',
-      company: 'Chitkara University',
-      interviewType: 'behavioural',
-      durationMinutes: 10,
-      targetQuestions: 5,
-      isSampleDemo: true,
-      resumeText: SAMPLE_DEMO_RESUME_TEXT,
-    };
-    setActiveContext(demoContext);
-    setIsSetupOpen(false);
-    setCurrentTab('home');
-    setScreenState('lobby');
-  };
 
   const handleStartLiveInterview = () => {
     setScreenState('live_interview');
@@ -171,7 +156,6 @@ export default function Page() {
               <HomeScreen
                 onStartRehearsal={handleStartRehearsalClick}
                 onViewHistory={() => setCurrentTab('history')}
-                onStartSampleDemo={handleStartSampleDemo}
                 latestSession={latestSession}
               />
             )}

@@ -9,7 +9,7 @@ import { sessionStore } from '@/services/storage/sessionStore';
 import { MockFoundryService } from './mockFoundryService';
 
 export class ApiFoundryService implements IFoundryService {
-  private isReal: boolean = false;
+  private isReal: boolean = true;
   private fallbackService = new MockFoundryService();
 
   constructor() {
@@ -22,9 +22,7 @@ export class ApiFoundryService implements IFoundryService {
       this.isReal = false;
       return;
     }
-    if (prefs.azureOpenAiKey && prefs.azureOpenAiEndpoint) {
-      this.isReal = true;
-    }
+    this.isReal = true;
   }
 
   isRealAzure(): boolean {

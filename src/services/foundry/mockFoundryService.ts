@@ -7,44 +7,7 @@ import {
   QualitativeScore,
 } from '@/types/interview';
 import { IFoundryService, NextQuestionDecision } from './types';
-
-export const SAMPLE_BEHAVIORAL_DEMO_QUESTIONS: Omit<Question, 'timestamp'>[] = [
-  {
-    id: 'q_1',
-    text: 'Welcome Kashish. Could you introduce yourself and tell us about your Telecom Customer Churn Prediction project—specifically, what classification models you tested and which metrics you used to evaluate them?',
-    topic: 'Telecom Churn Prediction (AI/ML)',
-    type: 'technical',
-    difficulty: 'easy',
-  },
-  {
-    id: 'q_2',
-    text: 'In your telecom churn analysis, how did you handle data preprocessing and feature engineering with Pandas and NumPy, especially for missing values and categorical data?',
-    topic: 'Data Preprocessing & Feature Engineering',
-    type: 'technical',
-    difficulty: 'medium',
-  },
-  {
-    id: 'q_3',
-    text: 'You built TOGETHERLY, a LinkedIn clone using Django and SQLite. How did you structure your models and implement user authentication, CRUD operations, and real-time messaging?',
-    topic: 'Togetherly – Django Backend & Database',
-    type: 'technical',
-    difficulty: 'medium',
-  },
-  {
-    id: 'q_4',
-    text: 'For INNOFIND, you created a tech resource discovery platform using HTML, CSS, and JavaScript. How did you implement local storage for data persistence across features like the to-do list and calendar?',
-    topic: 'INNOFIND – Frontend & Local Storage',
-    type: 'technical',
-    difficulty: 'medium',
-  },
-  {
-    id: 'q_5',
-    text: 'You have participated in hackathons like the Smart India Hackathon and won second place in Intellex at Chitkara University. Tell me about a time in a team project or hackathon where you faced a tough technical roadblock and how you collaborated to solve it.',
-    topic: 'Hackathons, Teamwork & Problem Solving',
-    type: 'behavioural',
-    difficulty: 'medium',
-  },
-];
+import { InterviewGuardrails } from '@/services/guardrails/guardrailsService';
 
 export class MockFoundryService implements IFoundryService {
   isRealAzure(): boolean {
@@ -58,17 +21,6 @@ export class MockFoundryService implements IFoundryService {
     const type = context.interviewType;
     const hasResume = !!(context.resumeText && context.resumeText.trim().length > 0);
     const roleLower = role.toLowerCase();
-
-    // 5-Question Presentation Demo Preset Grounded in Kashish's Resume
-    if (context.isSampleDemo) {
-      return {
-        introText: `Welcome Kashish to your interview rehearsal. We will cover 5 key technical and project areas from your resume today. Let's begin with our first question.`,
-        firstQuestion: {
-          ...SAMPLE_BEHAVIORAL_DEMO_QUESTIONS[0],
-          timestamp: new Date().toISOString(),
-        },
-      };
-    }
 
     let introText = `Hi, I will be conducting your ${type} rehearsal today for the ${role} position. I will ask a few questions and follow up based on what you share. Please take your time and answer as you would in a real interview. Let's begin.`;
 
@@ -171,43 +123,6 @@ export class MockFoundryService implements IFoundryService {
     // Simulate realistic inference processing delay
     await new Promise((r) => setTimeout(r, 600));
 
-    // Curated 5-Question Behavioral Presentation Demo Flow
-    if (context.isSampleDemo) {
-      if (questionCount >= 5) {
-        return {
-          action: 'conclude',
-          questionText: 'Thank you Kashish for sharing those detailed technical and project experiences. That concludes our 5-question interview rehearsal. I am now compiling your feedback and performance report.',
-          topic: 'Closing',
-          type: 'closing',
-          evaluation: {
-            understoodIntent: true,
-            clarity: 'Strong',
-            technicalAccuracy: 'Strong',
-            extractedKeyPoints: ['Clear problem-solving strategy', 'Effective communication & technical depth'],
-            requiresFollowUp: false,
-            reasoningNote: 'Candidate demonstrated clear structured thinking, solid technical fundamentals, and effective problem solving across projects.',
-          },
-        };
-      }
-
-      const nextQ = SAMPLE_BEHAVIORAL_DEMO_QUESTIONS[questionCount];
-      return {
-        action: 'new_topic',
-        questionText: nextQ.text,
-        topic: nextQ.topic,
-        type: nextQ.type,
-        difficulty: nextQ.difficulty,
-        evaluation: {
-          understoodIntent: true,
-          clarity: 'Strong',
-          technicalAccuracy: 'Good',
-          extractedKeyPoints: ['Structured STAR response', 'Concrete actions and ownership'],
-          requiresFollowUp: false,
-          reasoningNote: 'Candidate gave a clear behavioral example demonstrating ownership, collaboration, and measurable outcome.',
-        },
-      };
-    }
-
     const targetQuestions = context.targetQuestions || (context.durationMinutes >= 30 ? 15 : context.durationMinutes >= 20 ? 10 : 6);
     const totalAllowedSeconds = (context.durationMinutes || 10) * 60;
     const isTimeDriven = elapsedSeconds !== undefined;
@@ -226,6 +141,29 @@ export class MockFoundryService implements IFoundryService {
           technicalAccuracy: 'Good',
           extractedKeyPoints: ['Covered technical overview', 'Responded to follow-ups'],
           requiresFollowUp: false,
+        },
+      };
+    }
+
+    // Check if candidate response is unrelated to the question asked
+    const unrelatedCheck = InterviewGuardrails.isAnswerUnrelated(transcript, currentQuestion);
+    if (unrelatedCheck.isUnrelated) {
+      return {
+        action: 'follow_up',
+        questionText: `That doesn't seem related to the question I asked. We are focusing on ${currentQuestion.topic || 'the technical problem at hand'}. Could you address: ${currentQuestion.text}`,
+        topic: currentQuestion.topic || 'Topic Redirection',
+        type: 'follow_up',
+        difficulty: currentQuestion.difficulty || 'medium',
+        evaluation: {
+          understoodIntent: false,
+          isRelevant: false,
+          clarity: 'Needs Improvement',
+          technicalAccuracy: 'Needs Improvement',
+          extractedKeyPoints: ['Response not related to question'],
+          requiresFollowUp: true,
+          reasoningNote: 'Candidate gave an answer unrelated to the interview question. Interviewer redirected back to question.',
+          guardrailStatus: 'redirected',
+          guardrailNote: 'Off-topic response intercepted. Candidate notified that response is not related to the question.',
         },
       };
     }

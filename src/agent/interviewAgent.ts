@@ -5,9 +5,11 @@ import {
   Answer,
   InterviewState,
   FeedbackReportData,
+  GuardrailFlag,
 } from '@/types/interview';
 import { IFoundryService } from '@/services/foundry/types';
 import { ISpeechService } from '@/services/speech/types';
+import { InterviewGuardrails } from '@/services/guardrails/guardrailsService';
 
 /**
  * Event taxonomy emitted by InterviewAgent across its conversational lifecycle.
@@ -21,6 +23,7 @@ export type AgentEvent =
   | { type: 'interim_transcript'; text: string }
   | { type: 'final_transcript'; text: string }
   | { type: 'evaluating_answer' }
+  | { type: 'guardrail_triggered'; flag: GuardrailFlag; reason: string; actionTaken: string; redirectionText?: string }
   | { type: 'interview_completed'; feedback: FeedbackReportData }
   | { type: 'error'; message: string };
 
@@ -116,9 +119,10 @@ export class InterviewAgent {
       this.emit({ type: 'state_changed', state: 'speaking' });
 
       // Combine intro and opening question into ONE seamless utterance so voices never overlap!
-      const fullOpening = introText
+      const rawOpening = introText
         ? `${introText.trim()} ${firstQuestion.text.trim()}`
         : firstQuestion.text.trim();
+      const fullOpening = InterviewGuardrails.sanitizeForSpeech(rawOpening);
 
       await this.speechService.speak(fullOpening, (isSpeaking) => {
         if (!this.isAborted) {
@@ -204,6 +208,57 @@ export class InterviewAgent {
       this.session.answers.push(answerRecord);
       this.emit({ type: 'evaluating_answer' });
 
+      // 1. Guardrail Check on Candidate Input (Prompt Injection, Profanity, Evasion, Off-Topic)
+      const guardrailCheck = InterviewGuardrails.checkCandidateInput(finalTranscript, currentQuestion);
+
+      if (guardrailCheck.flagged) {
+        const flag = guardrailCheck.flag!;
+        const reason = guardrailCheck.reason || 'Guardrail triggered';
+        const actionTaken = guardrailCheck.actionOverride || 'redirect';
+
+        this.session.guardrailsTriggered = this.session.guardrailsTriggered || [];
+        this.session.guardrailsTriggered.push(
+          InterviewGuardrails.createEvent(flag, reason, actionTaken)
+        );
+        this.emit({
+          type: 'guardrail_triggered',
+          flag,
+          reason,
+          actionTaken,
+          redirectionText: guardrailCheck.redirectionText,
+        });
+
+        if (guardrailCheck.evaluationOverride) {
+          answerRecord.evaluation = guardrailCheck.evaluationOverride;
+        }
+
+        // If redirecting without advancing question (e.g. prompt injection, profanity, off-topic)
+        if (actionTaken === 'follow_up' && guardrailCheck.redirectionText) {
+          const spokenRedirection = InterviewGuardrails.sanitizeForSpeech(guardrailCheck.redirectionText);
+          this.emit({ type: 'state_changed', state: 'speaking' });
+          await this.speechService.speak(spokenRedirection, (isSpeaking) => {
+            if (!this.isAborted) {
+              this.emit({ type: 'state_changed', state: isSpeaking ? 'speaking' : 'idle' });
+            }
+          });
+
+          if (this.isAborted) return;
+          await this.startListeningForAnswer();
+          return;
+        }
+
+        // If evasion / skip: speak acknowledgment before pivoting to next topic
+        if (actionTaken === 'new_topic' && guardrailCheck.redirectionText) {
+          const spokenAck = InterviewGuardrails.sanitizeForSpeech(guardrailCheck.redirectionText);
+          this.emit({ type: 'state_changed', state: 'speaking' });
+          await this.speechService.speak(spokenAck, (isSpeaking) => {
+            if (!this.isAborted) {
+              this.emit({ type: 'state_changed', state: isSpeaking ? 'speaking' : 'idle' });
+            }
+          });
+        }
+      }
+
       const elapsedSec = this.getElapsedSeconds();
       const maxDurationSec = (this.session.context.durationMinutes || 10) * 60;
 
@@ -230,6 +285,25 @@ export class InterviewAgent {
         answerRecord.evaluation = decision.evaluation;
       }
 
+      // If the reasoning engine flagged the answer as unrelated, record guardrail event & notify
+      if (decision.evaluation && decision.evaluation.isRelevant === false) {
+        this.session.guardrailsTriggered = this.session.guardrailsTriggered || [];
+        this.session.guardrailsTriggered.push(
+          InterviewGuardrails.createEvent(
+            'off_topic',
+            'Candidate answer was not related to the question.',
+            'redirect'
+          )
+        );
+        this.emit({
+          type: 'guardrail_triggered',
+          flag: 'off_topic',
+          reason: 'Candidate answer was not related to the question.',
+          actionTaken: 'redirect',
+          redirectionText: decision.questionText,
+        });
+      }
+
       if (this.isAborted) return;
 
       // If the agent determines the interview objectives have been satisfied, wrap up
@@ -239,9 +313,10 @@ export class InterviewAgent {
       }
 
       // Construct and enqueue the next adaptive question
+      const sanitizedQuestionText = InterviewGuardrails.sanitizeForSpeech(decision.questionText);
       const nextQuestion: Question = {
         id: `q_${this.session.questions.length + 1}`,
-        text: decision.questionText,
+        text: sanitizedQuestionText,
         topic: decision.topic,
         type: decision.type,
         difficulty: decision.difficulty,
@@ -304,8 +379,9 @@ export class InterviewAgent {
       }
 
       if (closingSpokenText && !this.isAborted) {
+        const sanitizedClosing = InterviewGuardrails.sanitizeForSpeech(closingSpokenText);
         this.emit({ type: 'state_changed', state: 'speaking' });
-        await this.speechService.speak(closingSpokenText, (isSpeaking) => {
+        await this.speechService.speak(sanitizedClosing, (isSpeaking) => {
           if (!this.isAborted) {
             this.emit({ type: 'state_changed', state: isSpeaking ? 'speaking' : 'idle' });
           }
