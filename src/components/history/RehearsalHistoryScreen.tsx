@@ -45,7 +45,7 @@ export const RehearsalHistoryScreen: React.FC<RehearsalHistoryScreenProps> = ({
 
         <button
           onClick={() => onStartRehearsal()}
-          className="px-4 py-2 sm:py-1.5 rounded-full bg-apple-amber-500 hover:bg-apple-amber-600 text-white text-[13px] font-semibold apple-action shadow-sm"
+          className="px-4 py-2 sm:py-1.5 rounded-full bg-[#D05236] hover:bg-[#C94730] text-white text-[13px] font-semibold apple-action shadow-sm"
         >
           New Rehearsal
         </button>

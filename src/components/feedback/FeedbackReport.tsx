@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CandidateContext, InterviewSession, QualitativeScore, Question } from '@/types/interview';
-import { Check, Copy, RotateCcw, ChevronDown, ChevronUp, Clock, ArrowLeft, History, Award } from 'lucide-react';
+import { Check, Copy, RotateCcw, ChevronDown, ChevronUp, ArrowLeft, ArrowUpRight } from 'lucide-react';
 
 interface FeedbackReportProps {
   session: InterviewSession;
@@ -24,8 +24,8 @@ export const FeedbackReport: React.FC<FeedbackReportProps> = ({
 
   if (!feedback) {
     return (
-      <div className="max-w-[760px] mx-auto px-6 py-24 text-center">
-        <div className="w-10 h-10 border-2 border-apple-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+      <div className="max-w-[760px] mx-auto px-6 py-28 text-center">
+        <div className="w-8 h-8 border-2 border-[#D05236] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p className="text-apple-inkMuted dark:text-white/60 text-[15px]">
           Compiling your rehearsal feedback report...
         </p>
@@ -33,28 +33,42 @@ export const FeedbackReport: React.FC<FeedbackReportProps> = ({
     );
   }
 
-  const getScoreBadge = (score: QualitativeScore) => {
-    switch (score) {
-      case 'Strong':
-        return (
-          <span className="px-3 py-1 rounded-full text-[12px] font-semibold tracking-tight bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/25">
-            Strong
-          </span>
-        );
-      case 'Good':
-        return (
-          <span className="px-3 py-1 rounded-full text-[12px] font-semibold tracking-tight bg-apple-amber-500/15 text-apple-amber-600 dark:text-apple-amber-400 border border-apple-amber-500/25">
-            Good
-          </span>
-        );
-      case 'Needs Improvement':
-      default:
-        return (
-          <span className="px-3 py-1 rounded-full text-[12px] font-semibold tracking-tight bg-black/[0.05] dark:bg-white/[0.08] text-apple-inkMuted dark:text-white/70 border border-black/10 dark:border-white/12">
-            Needs Improvement
-          </span>
-        );
-    }
+  const renderRatingBar = (score: QualitativeScore) => {
+    const level = score === 'Strong' ? 3 : score === 'Good' ? 2 : 1;
+    const labelColor =
+      score === 'Strong'
+        ? 'text-[#34c759]'
+        : score === 'Good'
+        ? 'text-[#D05236]'
+        : 'text-apple-inkMuted dark:text-white/50';
+
+    return (
+      <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-1.5" aria-hidden="true">
+          {[1, 2, 3].map((step) => {
+            const isFilled = step <= level;
+            const stepColor =
+              score === 'Strong'
+                ? 'bg-[#34c759]'
+                : score === 'Good'
+                ? 'bg-[#D05236]'
+                : 'bg-black/40 dark:bg-white/40';
+
+            return (
+              <span
+                key={step}
+                className={`w-3.5 h-1 rounded-full transition-colors ${
+                  isFilled ? stepColor : 'bg-black/10 dark:bg-white/10'
+                }`}
+              />
+            );
+          })}
+        </div>
+        <span className={`text-[13px] font-medium tracking-tight ${labelColor} min-w-[110px] text-right`}>
+          {score}
+        </span>
+      </div>
+    );
   };
 
   const handleCopySummary = () => {
@@ -69,7 +83,7 @@ Scores:
 Strengths:
 ${feedback.whatWentWell.map((w) => `• ${w}`).join('\n')}
 
-Growth Areas:
+Areas for Improvement:
 ${feedback.whatToImprove.map((i) => `• ${i}`).join('\n')}
 
 Next Rehearsal Focus:
@@ -89,11 +103,12 @@ Next Rehearsal Focus:
     : 'Recent';
 
   const durationMin = Math.max(Math.round((session.totalDurationSeconds || 0) / 60), 1);
+  const questionsCount = session.questions?.length || 0;
 
   return (
-    <div className="max-w-[820px] mx-auto px-4 sm:px-8 py-6 sm:py-12 text-apple-ink dark:text-white">
-      {/* Top Navigation & Context Breadcrumb */}
-      <div className="flex items-center justify-between text-[13px] text-apple-inkMuted dark:text-white/60 mb-6 sm:mb-8">
+    <div className="max-w-[760px] mx-auto px-4 sm:px-8 py-8 sm:py-16 text-apple-ink dark:text-white">
+      {/* Top Navigation & Breadcrumbs */}
+      <div className="flex items-center justify-between text-[13px] text-apple-inkMuted dark:text-white/50 mb-8 sm:mb-12">
         <button
           onClick={onBackToHome}
           className="flex items-center gap-1.5 hover:text-apple-ink dark:hover:text-white transition-colors apple-action"
@@ -102,200 +117,191 @@ Next Rehearsal Focus:
           <span>Home</span>
         </button>
 
-        <div className="flex items-center gap-2 font-mono text-[12px]">
-          <span>{session.context.role}</span>
-          <span className="opacity-40">•</span>
-          <span>{session.context.interviewType}</span>
-          <span className="opacity-40">•</span>
-          <span>{formattedDate}</span>
-        </div>
+        <button
+          onClick={onViewHistory}
+          className="flex items-center gap-1 hover:text-apple-ink dark:hover:text-white transition-colors apple-action"
+        >
+          <span>All Rehearsals</span>
+          <ArrowUpRight className="w-3.5 h-3.5" />
+        </button>
       </div>
 
-      {/* Main Title (SF Pro Display, strict negative tracking, no kicker chip) */}
-      <div className="mb-6 sm:mb-8 text-center sm:text-left">
-        <h1 className="text-3xl sm:text-4xl md:text-[42px] font-semibold tracking-[-0.03em] leading-[1.1] text-apple-ink dark:text-white">
+      {/* Main Title & Editorial Context */}
+      <div className="mb-10 sm:mb-14">
+        <h1 className="text-3xl sm:text-4xl md:text-[44px] font-semibold tracking-[-0.03em] leading-[1.08] text-apple-ink dark:text-white mb-3">
           Rehearsal Summary
         </h1>
+        <p className="text-[14px] sm:text-[15px] text-apple-inkMuted dark:text-white/60 tracking-tight">
+          {session.context.role}
+          <span className="mx-2 opacity-40">·</span>
+          {session.context.interviewType.charAt(0).toUpperCase() + session.context.interviewType.slice(1)} Rehearsal
+          <span className="mx-2 opacity-40">·</span>
+          {durationMin} min
+          <span className="mx-2 opacity-40">·</span>
+          {formattedDate}
+        </p>
       </div>
 
-      {/* Executive Summary Surface (Pitch Black, Crisp Hairline, Warm Apple Depth) */}
-      <div className="mb-8 p-6 sm:p-7 rounded-2xl bg-black/[0.02] dark:bg-[#111113] border border-black/[0.08] dark:border-white/[0.1] shadow-sm">
-        <div className="flex items-start justify-between gap-4 mb-4">
-          <div className="space-y-1">
-            <span className="text-[12px] font-semibold tracking-tight uppercase text-apple-inkMuted dark:text-white/60">
-              Executive Assessment
-            </span>
-            <p className="text-[17px] sm:text-[19px] font-medium leading-[1.45] text-apple-ink dark:text-white max-w-2xl">
-              {feedback.summaryVerdict}
-            </p>
-          </div>
-          <div className="w-9 h-9 rounded-full bg-apple-amber-500/10 border border-apple-amber-500/20 text-apple-amber-500 flex items-center justify-center shrink-0">
-            <Award className="w-4 h-4" />
-          </div>
-        </div>
+      {/* Editorial Assessment Statement (Unboxed, pure typography on canvas) */}
+      <div className="mb-12 sm:mb-16">
+        <p className="text-[19px] sm:text-[22px] font-normal leading-[1.55] text-apple-ink/90 dark:text-white/90 max-w-2xl">
+          {feedback.summaryVerdict}
+        </p>
 
-        {/* Priority Focus Banner */}
-        <div className="mt-5 pt-5 border-t border-black/[0.06] dark:border-white/[0.08] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-0.5">
-            <span className="text-[11px] font-semibold tracking-wide uppercase text-apple-amber-600 dark:text-apple-amber-400">
-              Next Priority Focus
+        {/* Priority Focus & Primary Action */}
+        <div className="mt-8 pt-8 border-t border-black/10 dark:border-white/10 flex flex-col sm:flex-row sm:items-baseline justify-between gap-6">
+          <div className="max-w-lg space-y-1">
+            <span className="text-[13px] font-medium text-apple-inkMuted dark:text-white/50 block">
+              Priority Focus for Next Session
             </span>
-            <p className="text-[15px] font-medium text-apple-ink dark:text-white">
+            <p className="text-[16px] sm:text-[17px] font-medium text-apple-ink dark:text-white leading-relaxed">
               "{feedback.nextRehearsalFocus}"
             </p>
           </div>
 
-          <button
-            onClick={() =>
-              onRehearseAgain({
-                role: session.context.role,
-                company: session.context.company,
-                interviewType: session.context.interviewType,
-                durationMinutes: session.context.durationMinutes,
-                resumeText: session.context.resumeText,
-                focusArea: feedback.nextRehearsalFocus || session.context.focusArea,
-              })
-            }
-            className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-apple-amber-500 hover:bg-apple-amber-600 active:scale-[0.97] text-white text-[13px] sm:text-[14px] font-semibold tracking-tight transition-all apple-action shadow-sm flex items-center justify-center gap-1.5 shrink-0"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Rehearse Again</span>
-          </button>
+          <div className="flex items-center gap-3 shrink-0 pt-1 sm:pt-0">
+            <button
+              onClick={() =>
+                onRehearseAgain({
+                  role: session.context.role,
+                  company: session.context.company,
+                  interviewType: session.context.interviewType,
+                  durationMinutes: session.context.durationMinutes,
+                  resumeText: session.context.resumeText,
+                  focusArea: feedback.nextRehearsalFocus || session.context.focusArea,
+                })
+              }
+              className="px-6 py-2.5 rounded-full bg-[#D05236] hover:bg-[#C94730] active:scale-[0.97] text-white text-[14px] font-semibold tracking-tight transition-all apple-action shadow-sm flex items-center gap-2"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Rehearse Again</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Evaluated Competency Dimensions (Apple Inset Grouped Row Layout) */}
-      <div className="mb-8">
-        <h2 className="text-[17px] sm:text-[18px] font-semibold tracking-[-0.015em] mb-3 text-apple-ink dark:text-white">
-          Evaluated Dimensions
+      {/* Evaluated Dimensions (Apple Inset-Grouped Hairline Table) */}
+      <div className="mb-12 sm:mb-16">
+        <h2 className="text-[15px] font-semibold tracking-tight text-apple-ink dark:text-white mb-4">
+          Assessment Dimensions
         </h2>
 
-        <div className="rounded-2xl bg-black/[0.02] dark:bg-[#111113] border border-black/[0.08] dark:border-white/[0.1] divide-y divide-black/[0.06] dark:divide-white/[0.08] overflow-hidden">
+        <div className="border-t border-b border-black/10 dark:border-white/10 divide-y divide-black/10 dark:divide-white/10">
           {/* Dimension 1: Technical */}
-          <div className="px-5 py-4 flex items-center justify-between gap-4">
-            <div>
-              <span className="text-[15px] font-medium block text-apple-ink dark:text-white">
+          <div className="py-4 flex items-baseline justify-between gap-4">
+            <div className="space-y-0.5 max-w-md">
+              <span className="text-[15px] font-medium text-apple-ink dark:text-white block">
                 Technical Accuracy & Architecture
               </span>
-              <span className="text-[13px] text-apple-inkMuted dark:text-white/60 block mt-0.5">
-                Depth of system design choices, data modeling, concurrency, and trade-offs
+              <span className="text-[13px] text-apple-inkMuted dark:text-white/60 block leading-normal">
+                Evaluation of system trade-offs, architecture choices, and depth
               </span>
             </div>
-            <div className="shrink-0">{getScoreBadge(feedback.technicalScore)}</div>
+            {renderRatingBar(feedback.technicalScore)}
           </div>
 
           {/* Dimension 2: Communication */}
-          <div className="px-5 py-4 flex items-center justify-between gap-4">
-            <div>
-              <span className="text-[15px] font-medium block text-apple-ink dark:text-white">
+          <div className="py-4 flex items-baseline justify-between gap-4">
+            <div className="space-y-0.5 max-w-md">
+              <span className="text-[15px] font-medium text-apple-ink dark:text-white block">
                 Communication & Structural Clarity
               </span>
-              <span className="text-[13px] text-apple-inkMuted dark:text-white/60 block mt-0.5">
-                Structured explanations, concise phrasing, and logical problem breakdown
+              <span className="text-[13px] text-apple-inkMuted dark:text-white/60 block leading-normal">
+                Verbal structure, concise answers, and logical problem breakdown
               </span>
             </div>
-            <div className="shrink-0">{getScoreBadge(feedback.communicationScore)}</div>
+            {renderRatingBar(feedback.communicationScore)}
           </div>
 
           {/* Dimension 3: Interview Handling */}
-          <div className="px-5 py-4 flex items-center justify-between gap-4">
-            <div>
-              <span className="text-[15px] font-medium block text-apple-ink dark:text-white">
+          <div className="py-4 flex items-baseline justify-between gap-4">
+            <div className="space-y-0.5 max-w-md">
+              <span className="text-[15px] font-medium text-apple-ink dark:text-white block">
                 Interview Handling & Agility
               </span>
-              <span className="text-[13px] text-apple-inkMuted dark:text-white/60 block mt-0.5">
+              <span className="text-[13px] text-apple-inkMuted dark:text-white/60 block leading-normal">
                 Composure under technical follow-ups, constraints, and interviewer probes
               </span>
             </div>
-            <div className="shrink-0">{getScoreBadge(feedback.interviewHandlingScore)}</div>
+            {renderRatingBar(feedback.interviewHandlingScore)}
           </div>
         </div>
       </div>
 
-      {/* Two-Column Structured Takeaways (Editorial Flow) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+      {/* Observations: Strengths & Growth Areas (Clean Editorial Columns) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 mb-14 sm:mb-18">
         {/* Demonstrated Strengths */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-black/[0.02] dark:bg-[#111113] border border-black/[0.08] dark:border-white/[0.1] flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-2 mb-3.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <h3 className="text-[16px] font-semibold tracking-tight text-apple-ink dark:text-white">
-                Demonstrated Strengths
-              </h3>
-            </div>
-            <ul className="space-y-3">
-              {feedback.whatWentWell.map((item, idx) => (
-                <li key={idx} className="text-[14px] text-apple-ink/90 dark:text-white/90 leading-relaxed flex items-start gap-2.5">
-                  <span className="text-emerald-500 shrink-0 font-bold">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div>
+          <h2 className="text-[15px] font-semibold tracking-tight text-apple-ink dark:text-white mb-3">
+            Demonstrated Strengths
+          </h2>
+          <ul className="space-y-2.5">
+            {feedback.whatWentWell.map((item, idx) => (
+              <li key={idx} className="text-[14px] text-apple-ink/85 dark:text-white/85 leading-relaxed flex items-start gap-2">
+                <span className="text-apple-inkMuted dark:text-white/40 shrink-0 select-none">–</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Growth Recommendations */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-black/[0.02] dark:bg-[#111113] border border-black/[0.08] dark:border-white/[0.1] flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-2 mb-3.5">
-              <span className="w-2 h-2 rounded-full bg-apple-amber-500" />
-              <h3 className="text-[16px] font-semibold tracking-tight text-apple-ink dark:text-white">
-                Growth Recommendations
-              </h3>
-            </div>
-            <ul className="space-y-3">
-              {feedback.whatToImprove.map((item, idx) => (
-                <li key={idx} className="text-[14px] text-apple-ink/90 dark:text-white/90 leading-relaxed flex items-start gap-2.5">
-                  <span className="text-apple-amber-500 shrink-0 font-bold">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div>
+          <h2 className="text-[15px] font-semibold tracking-tight text-apple-ink dark:text-white mb-3">
+            Areas to Strengthen
+          </h2>
+          <ul className="space-y-2.5">
+            {feedback.whatToImprove.map((item, idx) => (
+              <li key={idx} className="text-[14px] text-apple-ink/85 dark:text-white/85 leading-relaxed flex items-start gap-2">
+                <span className="text-[#D05236] shrink-0 select-none">•</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
-      {/* Session Questions & Transcript Breakdown (Apple Transcripts style) */}
+      {/* Session Questions & Transcripts (Quiet, Collapsible Apple Disclosure) */}
       {session.questions && session.questions.length > 0 && (
-        <div className="mb-10">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[17px] sm:text-[18px] font-semibold tracking-[-0.015em] text-apple-ink dark:text-white">
-              Questions & Transcripts
+        <div className="mb-14 sm:mb-18 pt-6 border-t border-black/10 dark:border-white/10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[15px] font-semibold tracking-tight text-apple-ink dark:text-white">
+              Session Transcript
             </h2>
             <span className="text-[12px] text-apple-inkMuted dark:text-white/50">
-              {session.questions.length} questions • {durationMin} min rehearsal
+              {questionsCount} {questionsCount === 1 ? 'question' : 'questions'}
             </span>
           </div>
 
-          <div className="rounded-2xl bg-black/[0.02] dark:bg-[#111113] border border-black/[0.08] dark:border-white/[0.1] divide-y divide-black/[0.06] dark:divide-white/[0.08] overflow-hidden">
+          <div className="divide-y divide-black/10 dark:divide-white/10 border-t border-b border-black/10 dark:border-white/10">
             {session.questions.map((q: Question, idx: number) => {
               const answer = session.answers[idx];
-              const isExpanded = expandedQuestionId === (q.id || `q_${idx}`);
               const questionId = q.id || `q_${idx}`;
+              const isExpanded = expandedQuestionId === questionId;
 
               return (
-                <div key={questionId} className="transition-colors hover:bg-black/[0.01] dark:hover:bg-white/[0.02]">
+                <div key={questionId} className="py-1">
                   <button
                     onClick={() => setExpandedQuestionId(isExpanded ? null : questionId)}
-                    className="w-full px-5 py-3.5 text-left flex items-start justify-between gap-3 group"
+                    className="w-full py-3 text-left flex items-start justify-between gap-4 group"
                   >
-                    <div className="flex items-baseline gap-2.5 min-w-0 pr-2">
-                      <span className="font-mono text-[12px] font-semibold text-apple-amber-500 shrink-0">
-                        Q{idx + 1}
+                    <div className="flex items-baseline gap-3 min-w-0 pr-2">
+                      <span className="font-mono text-[12px] text-apple-inkMuted dark:text-white/50 shrink-0">
+                        {String(idx + 1).padStart(2, '0')}
                       </span>
-                      <span className="text-[14px] sm:text-[15px] font-medium text-apple-ink dark:text-white leading-snug line-clamp-2">
+                      <span className="text-[14px] sm:text-[15px] font-medium text-apple-ink dark:text-white leading-normal line-clamp-2">
                         {q.text.replace(/^["'\u201C\u201D\u2018\u2019]+|["'\u201C\u201D\u2018\u2019]+$/g, '').trim()}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0 text-apple-inkMuted dark:text-white/50 pt-0.5">
-                      <span className="text-[11px] hidden sm:inline-block">
+                    <div className="flex items-center gap-1.5 shrink-0 text-apple-inkMuted dark:text-white/50 pt-0.5">
+                      <span className="text-[12px] hidden sm:inline-block">
                         {isExpanded ? 'Hide' : 'Review'}
                       </span>
                       {isExpanded ? (
-                        <ChevronUp className="w-4 h-4 opacity-70 group-hover:opacity-100" />
+                        <ChevronUp className="w-4 h-4 opacity-60 group-hover:opacity-100 transition-opacity" />
                       ) : (
-                        <ChevronDown className="w-4 h-4 opacity-70 group-hover:opacity-100" />
+                        <ChevronDown className="w-4 h-4 opacity-60 group-hover:opacity-100 transition-opacity" />
                       )}
                     </div>
                   </button>
@@ -306,27 +312,27 @@ Next Rehearsal Focus:
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                         className="overflow-hidden"
                       >
-                        <div className="px-5 pb-4 pt-1 bg-black/[0.015] dark:bg-white/[0.02] border-t border-black/[0.04] dark:border-white/[0.05] space-y-3">
+                        <div className="pl-8 pr-2 pb-4 pt-1 space-y-3">
                           <div>
-                            <span className="text-[11px] font-semibold uppercase tracking-wider text-apple-inkMuted dark:text-white/50 block mb-1">
-                              Your Answer
+                            <span className="text-[11px] font-semibold uppercase tracking-wider text-apple-inkMuted dark:text-white/40 block mb-1">
+                              Response Captured
                             </span>
                             <p className="text-[14px] text-apple-ink/90 dark:text-white/90 italic leading-relaxed">
-                              "{answer?.transcript || 'No spoken answer captured.'}"
+                              "{answer?.transcript || 'No spoken response recorded.'}"
                             </p>
                           </div>
 
                           {answer?.evaluation && (
-                            <div className="flex flex-wrap items-center gap-2 pt-1 text-[12px] text-apple-inkMuted dark:text-white/60">
+                            <div className="flex flex-wrap items-center gap-3 text-[12px] text-apple-inkMuted dark:text-white/50 pt-1 border-t border-black/5 dark:border-white/5">
                               <span>Clarity: <strong className="font-medium text-apple-ink dark:text-white">{answer.evaluation.clarity}</strong></span>
-                              <span className="opacity-40">•</span>
-                              <span>Accuracy: <strong className="font-medium text-apple-ink dark:text-white">{answer.evaluation.technicalAccuracy || 'Good'}</strong></span>
+                              <span>•</span>
+                              <span>Technical Accuracy: <strong className="font-medium text-apple-ink dark:text-white">{answer.evaluation.technicalAccuracy || 'Good'}</strong></span>
                               {answer.durationSeconds && (
                                 <>
-                                  <span className="opacity-40">•</span>
+                                  <span>•</span>
                                   <span>{answer.durationSeconds}s duration</span>
                                 </>
                               )}
@@ -343,40 +349,28 @@ Next Rehearsal Focus:
         </div>
       )}
 
-      {/* Footer Navigation Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-black/[0.08] dark:border-white/[0.1] text-[13px] text-apple-inkMuted dark:text-white/60">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={handleCopySummary}
-            className="flex items-center gap-1.5 hover:text-apple-ink dark:hover:text-white transition-colors apple-action"
-          >
-            {copied ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-emerald-500" />
-                <span className="text-emerald-600 dark:text-emerald-400 font-medium">Copied Summary</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5" />
-                <span>Copy Summary</span>
-              </>
-            )}
-          </button>
-
-          <span className="opacity-40 hidden sm:inline">•</span>
-
-          <button
-            onClick={onViewHistory}
-            className="flex items-center gap-1.5 hover:text-apple-ink dark:hover:text-white transition-colors apple-action"
-          >
-            <History className="w-3.5 h-3.5" />
-            <span>View All Rehearsals</span>
-          </button>
-        </div>
+      {/* Bottom Utility Actions */}
+      <div className="pt-6 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-[13px] text-apple-inkMuted dark:text-white/50">
+        <button
+          onClick={handleCopySummary}
+          className="flex items-center gap-1.5 hover:text-apple-ink dark:hover:text-white transition-colors apple-action"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3.5 h-3.5 text-[#34c759]" />
+              <span className="text-[#34c759] font-medium">Summary Copied</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5" />
+              <span>Copy Summary</span>
+            </>
+          )}
+        </button>
 
         <button
           onClick={onBackToHome}
-          className="text-apple-inkMuted dark:text-white/60 hover:text-apple-ink dark:hover:text-white transition-colors apple-action"
+          className="hover:text-apple-ink dark:hover:text-white transition-colors apple-action"
         >
           Return to Home
         </button>
